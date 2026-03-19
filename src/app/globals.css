@@ -1,0 +1,59 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #0D0D1A;
+  --card: #1A1A2E;
+  --primary: #9B59B6;
+  --gold: #F39C12;
+}
+
+body {
+  background-color: var(--bg);
+  color: #E8E8F0;
+  font-family: 'Inter', sans-serif;
+}
+
+.font-cinzel {
+  font-family: 'Cinzel', serif;
+}
+
+/* Tarot card flip animation */
+.card-container {
+  perspective: 1000px;
+}
+
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.card-container.flipped .card-inner {
+  transform: rotateY(180deg);
+}
+
+.card-front,
+.card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 12px;
+}
+
+.card-back {
+  transform: rotateY(180deg);
+}
+
+/* Gold glow on hover */
+.tarot-card:hover {
+  box-shadow: 0 0 20px rgba(243, 156, 18, 0.4);
+  transform: translateY(-4px);
+  transition: all 0.3s ease;
+}
