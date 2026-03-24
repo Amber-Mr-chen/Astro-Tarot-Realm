@@ -1,13 +1,16 @@
 // AI client - supports OpenAI format (Gemini Flash / DeepSeek / OpenAI)
 import OpenAI from 'openai'
 
-const client = new OpenAI({
-  apiKey: process.env.AI_API_KEY!,
-  baseURL: process.env.AI_BASE_URL || 'https://api.openai.com/v1',
-})
+function getClient() {
+  return new OpenAI({
+    apiKey: process.env.AI_API_KEY || 'placeholder',
+    baseURL: process.env.AI_BASE_URL || 'https://api.openai.com/v1',
+  })
+}
 
 export async function generateTarotReading(cardName: string, isReversed: boolean): Promise<string> {
   const position = isReversed ? 'REVERSED' : 'UPRIGHT'
+  const client = getClient();
   const res = await client.chat.completions.create({
     model: process.env.AI_MODEL || 'gpt-4o-mini',
     messages: [{
@@ -31,6 +34,7 @@ Do NOT mention that you are an AI.`
 
 export async function generateYesNoReading(question: string, cardName: string, isReversed: boolean): Promise<string> {
   const answer = isReversed ? 'No' : 'Yes'
+  const client = getClient();
   const res = await client.chat.completions.create({
     model: process.env.AI_MODEL || 'gpt-4o-mini',
     messages: [{
@@ -52,6 +56,7 @@ Keep it under 80 words. Tone: direct but compassionate.`
 }
 
 export async function generateHoroscope(sign: string, date: string): Promise<string> {
+  const client = getClient();
   const res = await client.chat.completions.create({
     model: process.env.AI_MODEL || 'gpt-4o-mini',
     messages: [{
