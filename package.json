@@ -14,7 +14,7 @@
     "@tsparticles/react": "^3.0.0",
     "@tsparticles/slim": "^3.4.0",
     "next": "^15.2.4",
-    "next-auth": "^5.0.0-beta.30",
+    "next-auth": "^4.24.13",
     "openai": "^4.47.1",
     "react": "^19",
     "react-dom": "^19",
