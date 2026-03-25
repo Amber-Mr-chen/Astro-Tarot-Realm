@@ -12,20 +12,4 @@ if (fs.existsSync(workerSrc)) {
   console.log('✓ Renamed worker.js to _worker.js');
 }
 
-// Move assets/_next to _next at root
-const assetsSrc = path.join(openNextDir, 'assets', '_next');
-const assetsDst = path.join(openNextDir, '_next');
-if (fs.existsSync(assetsSrc) && !fs.existsSync(assetsDst)) {
-  fs.renameSync(assetsSrc, assetsDst);
-  console.log('✓ Moved assets/_next to .open-next/_next');
-}
-
-// Copy BUILD_ID to root
-const buildIdSrc = path.join(openNextDir, 'assets', 'BUILD_ID');
-const buildIdDst = path.join(openNextDir, 'BUILD_ID');
-if (fs.existsSync(buildIdSrc) && !fs.existsSync(buildIdDst)) {
-  fs.copyFileSync(buildIdSrc, buildIdDst);
-  console.log('✓ Copied BUILD_ID to root');
-}
-
 console.log('postbuild complete');
