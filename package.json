@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:cf": "npx @opennextjs/cloudflare build && node scripts/postbuild.js",
     "start": "next start",
     "lint": "next lint"
   },
