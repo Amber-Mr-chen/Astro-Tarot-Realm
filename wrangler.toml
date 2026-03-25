@@ -1,4 +1,5 @@
 name = "astro-tarot-realm"
+account_id = "ba1d688671ae99c51095e2ad24945f77"
 compatibility_date = "2026-03-24"
 compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = ".open-next"
