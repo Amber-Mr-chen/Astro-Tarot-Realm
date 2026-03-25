@@ -1,8 +1,6 @@
 import NextAuth from "next-auth"
 import Google from "next-auth/providers/google"
 
-const { handlers } = NextAuth({
+export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [Google],
 })
-
-export const { GET, POST } = handlers
