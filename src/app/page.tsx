@@ -2,9 +2,25 @@
 
 import Link from 'next/link'
 import { useSession, signIn, signOut } from 'next-auth/react'
+import { useEffect } from 'react'
 
 export default function Home() {
   const { data: session } = useSession()
+
+  useEffect(() => {
+    if (session?.user?.email) {
+      fetch('/api/user/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: (session.user as any).id || session.user.email,
+          email: session.user.email,
+          name: session.user.name,
+          image: session.user.image,
+        }),
+      }).catch(() => {})
+    }
+  }, [session])
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center px-6 py-20 text-center">
