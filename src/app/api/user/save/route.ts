@@ -18,9 +18,21 @@ export async function POST(request: NextRequest) {
     }
 
     const now = Date.now()
-    await db.prepare(
-      'INSERT OR REPLACE INTO users (id, email, name, image, created_at) VALUES (?, ?, ?, ?, ?)'
-    ).bind(id || email, email, name || '', image || '', now).run()
+    
+    // Check if user exists
+    const existing = await db.prepare('SELECT id FROM users WHERE email = ?').bind(email).first()
+    
+    if (existing) {
+      // User exists, only update name and image
+      await db.prepare(
+        'UPDATE users SET name = ?, image = ? WHERE email = ?'
+      ).bind(name || '', image || '', email).run()
+    } else {
+      // New user, insert with defaults
+      await db.prepare(
+        'INSERT INTO users (id, email, name, image, plan, created_at) VALUES (?, ?, ?, ?, ?, ?)'
+      ).bind(id || email, email, name || '', image || '', 'free', now).run()
+    }
 
     return NextResponse.json({ ok: true })
   } catch (error: any) {
