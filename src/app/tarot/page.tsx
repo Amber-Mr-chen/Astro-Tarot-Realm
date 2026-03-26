@@ -1,21 +1,31 @@
 'use client'
 import { useState } from 'react'
-import { useSession } from 'next-auth/react'
+import { useSession, signIn } from 'next-auth/react'
+import Link from 'next/link'
 
 export default function TarotPage() {
   const { data: session } = useSession()
   const [state, setState] = useState<'idle' | 'loading' | 'done'>('idle')
-  const [result, setResult] = useState<{ card: { name: string; isReversed: boolean }; reading: string } | null>(null)
+  const [result, setResult] = useState<{ card: { name: string; isReversed: boolean }; reading: string; remaining: number } | null>(null)
+  const [error, setError] = useState<string | null>(null)
   const [saved, setSaved] = useState(false)
 
   async function drawCard() {
     setState('loading')
     setSaved(false)
+    setError(null)
     const res = await fetch('/api/tarot', { method: 'POST' })
     const data = await res.json()
+
+    if (res.status === 429) {
+      setError(data.message)
+      setState('idle')
+      return
+    }
+
     setResult(data)
     setState('done')
-    
+
     if (session?.user?.email) {
       await fetch('/api/reading/save', {
         method: 'POST',
@@ -37,11 +47,32 @@ export default function TarotPage() {
       <h1 className="font-cinzel text-4xl md:text-5xl font-bold text-textMain mb-4">Daily Tarot</h1>
       <p className="text-textSub mb-12 max-w-md">Focus your mind, take a breath, and draw your card for today.</p>
 
-      {state === 'idle' && (
+      {error && (
+        <div className="max-w-md w-full rounded-2xl p-6 mb-8 text-left"
+          style={{ backgroundColor: '#2D1B1B', border: '1px solid rgba(220,53,69,0.3)' }}>
+          <div className="text-red-400 font-semibold mb-2">Daily Limit Reached</div>
+          <p className="text-textSub text-sm mb-4">{error}</p>
+          {!session ? (
+            <button onClick={() => signIn('google')}
+              className="w-full py-2 rounded-full text-sm font-semibold text-white"
+              style={{ background: 'linear-gradient(135deg, #9B59B6, #6C3483)' }}>
+              Sign In for 3 Free Readings
+            </button>
+          ) : (
+            <Link href="/pricing"
+              className="block w-full py-2 rounded-full text-sm font-semibold text-center text-white"
+              style={{ background: 'linear-gradient(135deg, #F39C12, #E67E22)' }}>
+              Upgrade to Pro →
+            </Link>
+          )}
+        </div>
+      )}
+
+      {state === 'idle' && !error && (
         <div className="flex gap-6 mb-8">
           {[0, 1, 2].map((i) => (
             <button key={i} onClick={drawCard}
-              className="tarot-card w-24 h-40 md:w-32 md:h-52 rounded-xl cursor-pointer transition-all"
+              className="tarot-card w-24 h-40 md:w-32 md:h-52 rounded-xl cursor-pointer transition-all hover:scale-105"
               style={{ background: 'linear-gradient(135deg, #1A1A2E, #2D1B69)', border: '2px solid #9B59B6' }}>
               <div className="w-full h-full flex items-center justify-center text-4xl">✦</div>
             </button>
@@ -61,10 +92,15 @@ export default function TarotPage() {
             <h2 className="font-cinzel text-2xl font-bold text-gold">{result.card.name}</h2>
             <span className="text-textSub text-sm">{result.card.isReversed ? '(Reversed)' : '(Upright)'}</span>
           </div>
-          <p className="text-textMain leading-relaxed whitespace-pre-line">{result.reading}</p>
-          {saved && <p className="text-green-400 text-sm mt-3 text-center">✓ Reading saved to your history</p>}
-          <button onClick={() => { setState('idle'); setResult(null); setSaved(false) }}
-            className="mt-6 w-full py-3 rounded-full text-sm font-semibold transition-all hover:opacity-80"
+          <p className="text-textMain leading-relaxed whitespace-pre-line mb-4">{result.reading}</p>
+          {saved && <p className="text-green-400 text-sm text-center mb-4">✓ Reading saved to your history</p>}
+          {result.remaining <= 1 && !session && (
+            <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3 mb-4 text-sm text-yellow-200">
+              📌 You have <strong>{result.remaining}</strong> free reading left today. <button onClick={() => signIn('google')} className="underline">Sign in</button> for 3 total.
+            </div>
+          )}
+          <button onClick={() => { setState('idle'); setResult(null); setSaved(false); setError(null) }}
+            className="w-full py-3 rounded-full text-sm font-semibold transition-all hover:opacity-80"
             style={{ background: 'linear-gradient(135deg, #9B59B6, #6C3483)', color: 'white' }}>
             Draw Another Card
           </button>
