@@ -40,16 +40,22 @@ export async function POST(req: NextRequest) {
 
     if (captureData.status === 'COMPLETED') {
       const db = await getDB()
-      if (db) {
-        const expiresAt = plan === 'monthly' 
-          ? Date.now() + 30 * 24 * 60 * 60 * 1000 
-          : Date.now() + 365 * 24 * 60 * 60 * 1000
-
-        await db.prepare(
-          'UPDATE users SET plan = ?, plan_expires_at = ? WHERE email = ?'
-        ).bind('pro', expiresAt, token.email).run()
+      console.log('[PayPal] Payment completed, DB:', !!db, 'Email:', token.email, 'Plan:', plan)
+      
+      if (!db) {
+        console.error('[PayPal] DB not available, cannot upgrade user')
+        return NextResponse.json({ error: 'Database unavailable' }, { status: 500 })
       }
 
+      const expiresAt = plan === 'monthly' 
+        ? Date.now() + 30 * 24 * 60 * 60 * 1000 
+        : Date.now() + 365 * 24 * 60 * 60 * 1000
+
+      const result = await db.prepare(
+        'UPDATE users SET plan = ?, plan_expires_at = ? WHERE email = ?'
+      ).bind('pro', expiresAt, token.email).run()
+
+      console.log('[PayPal] User upgraded:', result)
       return NextResponse.json({ success: true })
     }
 
