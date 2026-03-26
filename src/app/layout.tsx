@@ -16,18 +16,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AuthProvider>
           <nav className="border-b border-purple-900/30 px-4 md:px-6 py-4">
             <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
-              <div className="flex items-center gap-3 md:gap-4">
+              <div className="flex items-center gap-3">
                 <BackButton />
                 <a href="/" className="font-cinzel text-lg md:text-xl font-bold text-gold tracking-widest">
                   ✦ AstraTarot
                 </a>
               </div>
-              <div className="flex items-center gap-4 md:gap-6">
+              <div className="flex items-center gap-3 md:gap-5">
                 <div className="flex gap-3 md:gap-4 text-xs md:text-sm text-textSub">
                   <a href="/tarot" className="hover:text-gold transition-colors">Tarot</a>
-                  <a href="/yes-no-tarot" className="hover:text-gold transition-colors">Yes/No</a>
-                  <a href="/horoscope" className="hover:text-gold transition-colors">Horoscope</a>
-                  <a href="/history" className="hover:text-gold transition-colors">History</a>
+                  <a href="/yes-no-tarot" className="hover:text-gold transition-colors hidden sm:inline">Yes/No</a>
+                  <a href="/horoscope" className="hover:text-gold transition-colors hidden sm:inline">Horoscope</a>
+                  <a href="/history" className="hover:text-gold transition-colors hidden md:inline">History</a>
+                  <a href="/pricing" className="hover:text-gold transition-colors" style={{ color: '#F39C12' }}>Pro ✨</a>
                 </div>
                 <AuthButton />
               </div>
