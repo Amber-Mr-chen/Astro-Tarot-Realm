@@ -93,11 +93,7 @@ function PayPalButton({ planKey, color }: { planKey: string; color: string }) {
     if (buttonRendered.current) return
     buttonRendered.current = true
 
-    const clientId = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID
-    if (!clientId) {
-      setMessage('PayPal not configured')
-      return
-    }
+    const clientId = 'AS4b4DJ7D6RHTBG2cBrwc6c7O25k09WdK5TAgnXI5EaAyzZBsznIGFpUzBIUWO8VNaPJa_Ow77CcXONm'
 
     // Load PayPal JS SDK dynamically
     const script = document.createElement('script')
