@@ -12,3 +12,6 @@ binding = "ASSETS"
 binding = "DB"
 database_name = "astro-tarot-db"
 database_id = "a7d11bd2-73e7-4ea1-870f-62af80838d74"
+
+[ai]
+binding = "AI"

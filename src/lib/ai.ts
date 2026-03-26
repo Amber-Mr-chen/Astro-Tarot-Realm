@@ -1,79 +1,58 @@
-// AI client - supports OpenAI format (Gemini Flash / DeepSeek / OpenAI)
-import OpenAI from 'openai'
-
-function getClient() {
-  return new OpenAI({
-    apiKey: process.env.AI_API_KEY || 'placeholder',
-    baseURL: process.env.AI_BASE_URL || 'https://api.openai.com/v1',
-  })
-}
+import { getCloudflareContext } from '@opennextjs/cloudflare'
 
 export async function generateTarotReading(cardName: string, isReversed: boolean): Promise<string> {
   const position = isReversed ? 'REVERSED' : 'UPRIGHT'
-  const client = getClient();
-  const res = await client.chat.completions.create({
-    model: process.env.AI_MODEL || 'gpt-4o-mini',
-    messages: [{
-      role: 'user',
-      content: `You are a wise and mystical tarot reader with decades of experience.
-A user has drawn the ${cardName} card (${position}) for their daily reading.
+  const ctx = await getCloudflareContext({ async: true })
+  const ai = (ctx.env as any).AI
 
-Please provide a personalized daily reading that includes:
-1. Overall energy for the day (2-3 sentences)
-2. Key message or warning (1-2 sentences)
-3. An inspiring one-line affirmation
+  if (!ai) {
+    return `The ${cardName} card (${position}) brings powerful energy today. Trust your intuition and embrace the journey ahead.`
+  }
 
-Tone: warm, mystical, insightful, and empowering.
-Length: under 200 words. Language: English.
-Do NOT mention that you are an AI.`
-    }],
-    max_tokens: 300,
+  const prompt = `You are a wise tarot reader. A user drew the ${cardName} card (${position}) for their daily reading. Provide a personalized reading (under 150 words): overall energy, key message, and an affirmation. Be warm and mystical.`
+
+  const response = await ai.run('@cf/meta/llama-3.1-8b-instruct', {
+    messages: [{ role: 'user', content: prompt }]
   })
-  return res.choices[0].message.content || ''
+
+  return response.response || 'The cards speak of transformation and new beginnings.'
 }
 
 export async function generateYesNoReading(question: string, cardName: string, isReversed: boolean): Promise<string> {
   const answer = isReversed ? 'No' : 'Yes'
-  const client = getClient();
-  const res = await client.chat.completions.create({
-    model: process.env.AI_MODEL || 'gpt-4o-mini',
-    messages: [{
-      role: 'user',
-      content: `You are a tarot reader. The user asked: "${question}"
-They drew the ${cardName} card in ${isReversed ? 'REVERSED' : 'UPRIGHT'} position.
-The answer is: ${answer}
+  const ctx = await getCloudflareContext({ async: true })
+  const ai = (ctx.env as any).AI
 
-Respond with:
-1. Start with a clear "${answer}"
-2. Give a brief 2-sentence explanation based on the card's meaning
-3. End with a gentle piece of advice
+  if (!ai) {
+    return `${answer}. The ${cardName} card suggests this path. Trust your inner wisdom.`
+  }
 
-Keep it under 80 words. Tone: direct but compassionate.`
-    }],
-    max_tokens: 150,
+  const prompt = `User asked: "${question}". They drew ${cardName} (${isReversed ? 'REVERSED' : 'UPRIGHT'}). Answer is: ${answer}. Give a 2-sentence explanation and advice (under 60 words).`
+
+  const response = await ai.run('@cf/meta/llama-3.1-8b-instruct', {
+    messages: [{ role: 'user', content: prompt }]
   })
-  return res.choices[0].message.content || ''
+
+  return response.response || `${answer}. The cards have spoken.`
 }
 
 export async function generateHoroscope(sign: string, date: string): Promise<string> {
-  const client = getClient();
-  const res = await client.chat.completions.create({
-    model: process.env.AI_MODEL || 'gpt-4o-mini',
-    messages: [{
-      role: 'user',
-      content: `You are an expert astrologer. Generate today's horoscope for ${sign}.
+  const ctx = await getCloudflareContext({ async: true })
+  const ai = (ctx.env as any).AI
 
-Provide readings in this exact JSON format:
-{
-  "love": { "text": "...(50 words)", "stars": 4 },
-  "career": { "text": "...(50 words)", "stars": 3 },
-  "money": { "text": "...(50 words)", "stars": 5 }
-}
+  if (!ai) {
+    return JSON.stringify({
+      love: { text: "Romance is in the air today.", stars: 4 },
+      career: { text: "Focus on your goals.", stars: 3 },
+      money: { text: "Financial stability ahead.", stars: 4 }
+    })
+  }
 
-Date context: ${date}
-Tone: encouraging, specific, and mystical. Do NOT be generic.`
-    }],
-    max_tokens: 400,
+  const prompt = `Generate today's horoscope for ${sign} (${date}). Return JSON: {"love":{"text":"...","stars":1-5},"career":{"text":"...","stars":1-5},"money":{"text":"...","stars":1-5}}. Each text under 40 words.`
+
+  const response = await ai.run('@cf/meta/llama-3.1-8b-instruct', {
+    messages: [{ role: 'user', content: prompt }]
   })
-  return res.choices[0].message.content || ''
+
+  return response.response || '{}'
 }
