@@ -7,14 +7,23 @@ export type UsageCheck = {
   deepRemaining?: number
 }
 
-async function getDB() {
+export async function getDB() {
+  try {
+    // Try sync first (works in production worker context)
+    const ctx = getCloudflareContext()
+    const db = (ctx?.env as any)?.DB
+    if (db) return db
+  } catch {
+    // fall through to async
+  }
   try {
     const ctx = await getCloudflareContext({ async: true })
     const db = (ctx?.env as any)?.DB
-    return db || null
+    if (db) return db
   } catch {
-    return null
+    // fall through
   }
+  return null
 }
 
 export async function checkUsageLimit(email: string | null, ip: string): Promise<UsageCheck> {
