@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 import AuthProvider from './providers'
 import BackButton from './back-button'
+import AuthButton from './auth-button'
 
 export const metadata: Metadata = {
   title: 'Free AI Tarot Reading & Astrology | AstraTarot',
@@ -13,19 +14,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className="min-h-screen" style={{ backgroundColor: '#0D0D1A' }}>
         <AuthProvider>
-          <nav className="border-b border-purple-900/30 px-6 py-4">
-            <div className="max-w-6xl mx-auto flex items-center justify-between">
-              <div className="flex items-center gap-4">
+          <nav className="border-b border-purple-900/30 px-4 md:px-6 py-4">
+            <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3 md:gap-4">
                 <BackButton />
-                <a href="/" className="font-cinzel text-xl font-bold text-gold tracking-widest">
+                <a href="/" className="font-cinzel text-lg md:text-xl font-bold text-gold tracking-widest">
                   ✦ AstraTarot
                 </a>
               </div>
-              <div className="flex gap-6 text-sm text-textSub">
-                <a href="/tarot" className="hover:text-gold transition-colors">Tarot</a>
-                <a href="/yes-no-tarot" className="hover:text-gold transition-colors">Yes/No</a>
-                <a href="/horoscope" className="hover:text-gold transition-colors">Horoscope</a>
-                <a href="/history" className="hover:text-gold transition-colors">History</a>
+              <div className="flex items-center gap-4 md:gap-6">
+                <div className="flex gap-3 md:gap-4 text-xs md:text-sm text-textSub">
+                  <a href="/tarot" className="hover:text-gold transition-colors">Tarot</a>
+                  <a href="/yes-no-tarot" className="hover:text-gold transition-colors">Yes/No</a>
+                  <a href="/horoscope" className="hover:text-gold transition-colors">Horoscope</a>
+                  <a href="/history" className="hover:text-gold transition-colors">History</a>
+                </div>
+                <AuthButton />
               </div>
             </div>
           </nav>

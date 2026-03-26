@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useSession, signIn, signOut } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
 import { useEffect } from 'react'
 
 export default function Home() {
@@ -24,22 +24,6 @@ export default function Home() {
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center px-6 py-20 text-center">
-      {/* Auth Button */}
-      <div className="absolute top-6 right-6">
-        {session ? (
-          <div className="flex items-center gap-3">
-            <span className="text-textSub text-sm">{session.user?.name}</span>
-            <button onClick={() => signOut()} className="px-4 py-2 rounded-full text-sm font-semibold bg-gray-700 text-white hover:bg-gray-600">
-              Sign Out
-            </button>
-          </div>
-        ) : (
-          <button onClick={() => signIn('google')} className="px-4 py-2 rounded-full text-sm font-semibold" style={{ background: 'linear-gradient(135deg, #9B59B6, #6C3483)', color: 'white' }}>
-            Sign In with Google
-          </button>
-        )}
-      </div>
-
       {/* Hero */}
       <div className="mb-4 text-gold text-sm tracking-[0.3em] uppercase font-cinzel">
         ✦ AI-Powered Divination ✦
