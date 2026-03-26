@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import AuthProvider from './providers'
+import BackButton from './back-button'
 
 export const metadata: Metadata = {
   title: 'Free AI Tarot Reading & Astrology | AstraTarot',
@@ -14,9 +15,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AuthProvider>
           <nav className="border-b border-purple-900/30 px-6 py-4">
             <div className="max-w-6xl mx-auto flex items-center justify-between">
-              <a href="/" className="font-cinzel text-xl font-bold text-gold tracking-widest">
-                ✦ AstraTarot
-              </a>
+              <div className="flex items-center gap-4">
+                <BackButton />
+                <a href="/" className="font-cinzel text-xl font-bold text-gold tracking-widest">
+                  ✦ AstraTarot
+                </a>
+              </div>
               <div className="flex gap-6 text-sm text-textSub">
                 <a href="/tarot" className="hover:text-gold transition-colors">Tarot</a>
                 <a href="/yes-no-tarot" className="hover:text-gold transition-colors">Yes/No</a>
