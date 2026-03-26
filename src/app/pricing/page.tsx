@@ -3,6 +3,30 @@ import { useSession, signIn } from 'next-auth/react'
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 
+const PAYPAL_CLIENT_ID = 'AS4b4DJ7D6RHTBG2cBrwc6c7O25k09WdK5TAgnXI5EaAyzZBsznIGFpUzBIUWO8VNaPJa_Ow77CcXONm'
+
+// Load PayPal SDK once globally
+let paypalLoaded = false
+let paypalLoadPromise: Promise<void> | null = null
+
+function loadPayPalSDK(): Promise<void> {
+  if (paypalLoaded) return Promise.resolve()
+  if (paypalLoadPromise) return paypalLoadPromise
+
+  paypalLoadPromise = new Promise((resolve, reject) => {
+    const existing = document.getElementById('paypal-sdk')
+    if (existing) { paypalLoaded = true; resolve(); return }
+
+    const script = document.createElement('script')
+    script.id = 'paypal-sdk'
+    script.src = `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT_ID}&currency=USD`
+    script.onload = () => { paypalLoaded = true; resolve() }
+    script.onerror = reject
+    document.head.appendChild(script)
+  })
+
+  return paypalLoadPromise
+}
 const plans = [
   {
     name: 'Free',
@@ -93,51 +117,47 @@ function PayPalButton({ planKey, color }: { planKey: string; color: string }) {
     if (buttonRendered.current) return
     buttonRendered.current = true
 
-    const clientId = 'AS4b4DJ7D6RHTBG2cBrwc6c7O25k09WdK5TAgnXI5EaAyzZBsznIGFpUzBIUWO8VNaPJa_Ow77CcXONm'
+    loadPayPalSDK().then(() => {
+      if (!(window as any).paypal || !paypalRef.current) return
 
-    // Load PayPal JS SDK dynamically
-    const script = document.createElement('script')
-    script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&currency=USD`
-    script.onload = () => {
-      if ((window as any).paypal && paypalRef.current) {
-        (window as any).paypal.Buttons({
-          style: { layout: 'vertical', color: 'gold', shape: 'pill', label: 'pay' },
-          createOrder: async () => {
-            setLoading(true)
-            const res = await fetch('/api/paypal/create-order', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ plan: planKey }),
-            })
-            const data = await res.json()
-            setLoading(false)
-            if (!data.id) throw new Error('Failed to create order')
-            return data.id
-          },
-          onApprove: async (data: any) => {
-            setLoading(true)
-            const res = await fetch('/api/paypal/capture-order', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ orderID: data.orderID, plan: planKey }),
-            })
-            const result = await res.json()
-            setLoading(false)
-            if (result.success) {
-              setMessage('🎉 Payment successful! Redirecting...')
-              setTimeout(() => router.push('/profile'), 2000)
-            } else {
-              setMessage('❌ Payment failed. Please try again.')
-            }
-          },
-          onError: () => {
-            setLoading(false)
+      ;(window as any).paypal.Buttons({
+        style: { layout: 'vertical', color: 'gold', shape: 'pill', label: 'pay' },
+        createOrder: async () => {
+          setLoading(true)
+          const res = await fetch('/api/paypal/create-order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ plan: planKey }),
+          })
+          const data = await res.json()
+          setLoading(false)
+          if (!data.id) throw new Error('Failed to create order')
+          return data.id
+        },
+        onApprove: async (data: any) => {
+          setLoading(true)
+          const res = await fetch('/api/paypal/capture-order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ orderID: data.orderID, plan: planKey }),
+          })
+          const result = await res.json()
+          setLoading(false)
+          if (result.success) {
+            setMessage('🎉 Payment successful! Redirecting...')
+            setTimeout(() => router.push('/profile'), 2000)
+          } else {
             setMessage('❌ Payment failed. Please try again.')
-          },
-        }).render(paypalRef.current)
-      }
-    }
-    document.head.appendChild(script)
+          }
+        },
+        onError: () => {
+          setLoading(false)
+          setMessage('❌ Payment failed. Please try again.')
+        },
+      }).render(paypalRef.current)
+    }).catch(() => {
+      setMessage('❌ Failed to load PayPal. Please refresh.')
+    })
   }, [planKey, router])
 
   return (
