@@ -21,6 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <a href="/tarot" className="hover:text-gold transition-colors">Tarot</a>
                 <a href="/yes-no-tarot" className="hover:text-gold transition-colors">Yes/No</a>
                 <a href="/horoscope" className="hover:text-gold transition-colors">Horoscope</a>
+                <a href="/history" className="hover:text-gold transition-colors">History</a>
               </div>
             </div>
           </nav>

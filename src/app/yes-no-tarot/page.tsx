@@ -1,14 +1,18 @@
 'use client'
 import { useState } from 'react'
+import { useSession } from 'next-auth/react'
 
 export default function YesNoPage() {
+  const { data: session } = useSession()
   const [question, setQuestion] = useState('')
   const [state, setState] = useState<'idle' | 'loading' | 'done'>('idle')
   const [result, setResult] = useState<{ card: { name: string; isReversed: boolean }; reading: string; answer: string } | null>(null)
+  const [saved, setSaved] = useState(false)
 
   async function ask() {
     if (!question.trim()) return
     setState('loading')
+    setSaved(false)
     const res = await fetch('/api/tarot/yesno', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -17,6 +21,20 @@ export default function YesNoPage() {
     const data = await res.json()
     setResult(data)
     setState('done')
+
+    if (session?.user?.email) {
+      await fetch('/api/reading/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: session.user.email,
+          type: 'yes-no',
+          question: question,
+          result: `Answer: ${data.answer}\n${data.card.name} ${data.card.isReversed ? '(Reversed)' : '(Upright)'}\n\n${data.reading}`
+        })
+      })
+      setSaved(true)
+    }
   }
 
   const shareText = result ? `I asked the tarot: "${question}" — The answer is ${result.answer}! ✨ Try it at AstraTarot` : ''
@@ -56,8 +74,9 @@ export default function YesNoPage() {
             <div className="text-gold font-cinzel">{result.card.name} {result.card.isReversed ? '(Reversed)' : '(Upright)'}</div>
           </div>
           <p className="text-textMain leading-relaxed">{result.reading}</p>
+          {saved && <p className="text-green-400 text-sm mt-3 text-center">✓ Reading saved to your history</p>}
           <div className="flex gap-3 mt-6">
-            <button onClick={() => { setState('idle'); setResult(null); setQuestion('') }}
+            <button onClick={() => { setState('idle'); setResult(null); setQuestion(''); setSaved(false) }}
               className="flex-1 py-3 rounded-full text-sm font-semibold transition-all hover:opacity-80"
               style={{ background: 'linear-gradient(135deg, #9B59B6, #6C3483)', color: 'white' }}>
               Ask Another

@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useSession } from 'next-auth/react'
 import { ZODIAC_SIGNS } from '@/lib/tarot'
 
 type Horoscope = {
@@ -17,13 +18,16 @@ function Stars({ count }: { count: number }) {
 }
 
 export default function HoroscopePage() {
+  const { data: session } = useSession()
   const [selected, setSelected] = useState<string | null>(null)
   const [state, setState] = useState<'idle' | 'loading' | 'done'>('idle')
   const [horoscope, setHoroscope] = useState<Horoscope | null>(null)
+  const [saved, setSaved] = useState(false)
 
   async function getHoroscope(sign: string) {
     setSelected(sign)
     setState('loading')
+    setSaved(false)
     const res = await fetch('/api/horoscope', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -32,6 +36,21 @@ export default function HoroscopePage() {
     const data = await res.json()
     setHoroscope(data.horoscope)
     setState('done')
+
+    if (session?.user?.email) {
+      const resultText = `Love: ${data.horoscope.love.stars}★ - ${data.horoscope.love.text}\n\nCareer: ${data.horoscope.career.stars}★ - ${data.horoscope.career.text}\n\nMoney: ${data.horoscope.money.stars}★ - ${data.horoscope.money.text}`
+      await fetch('/api/reading/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: session.user.email,
+          type: 'horoscope',
+          question: sign,
+          result: resultText
+        })
+      })
+      setSaved(true)
+    }
   }
 
   return (
@@ -42,7 +61,6 @@ export default function HoroscopePage() {
         <p className="text-textSub max-w-md mx-auto">Select your zodiac sign to receive your personalized AI-powered daily forecast.</p>
       </div>
 
-      {/* Zodiac Grid */}
       <div className="grid grid-cols-4 md:grid-cols-6 gap-3 mb-12">
         {ZODIAC_SIGNS.map((z) => (
           <button key={z.name} onClick={() => getHoroscope(z.name)}
@@ -80,7 +98,8 @@ export default function HoroscopePage() {
               <p className="text-textSub leading-relaxed">{section.data.text}</p>
             </div>
           ))}
-          <button onClick={() => { setState('idle'); setSelected(null); setHoroscope(null) }}
+          {saved && <p className="text-green-400 text-sm text-center">✓ Reading saved to your history</p>}
+          <button onClick={() => { setState('idle'); setSelected(null); setHoroscope(null); setSaved(false) }}
             className="w-full mt-4 py-3 rounded-full text-sm font-semibold transition-all hover:opacity-80"
             style={{ background: 'linear-gradient(135deg, #9B59B6, #6C3483)', color: 'white' }}>
             Check Another Sign

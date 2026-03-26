@@ -1,16 +1,34 @@
 'use client'
 import { useState } from 'react'
+import { useSession } from 'next-auth/react'
 
 export default function TarotPage() {
+  const { data: session } = useSession()
   const [state, setState] = useState<'idle' | 'loading' | 'done'>('idle')
   const [result, setResult] = useState<{ card: { name: string; isReversed: boolean }; reading: string } | null>(null)
+  const [saved, setSaved] = useState(false)
 
   async function drawCard() {
     setState('loading')
+    setSaved(false)
     const res = await fetch('/api/tarot', { method: 'POST' })
     const data = await res.json()
     setResult(data)
     setState('done')
+    
+    if (session?.user?.email) {
+      await fetch('/api/reading/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: session.user.email,
+          type: 'tarot',
+          question: null,
+          result: `${data.card.name} ${data.card.isReversed ? '(Reversed)' : '(Upright)'}\n\n${data.reading}`
+        })
+      })
+      setSaved(true)
+    }
   }
 
   return (
@@ -44,7 +62,8 @@ export default function TarotPage() {
             <span className="text-textSub text-sm">{result.card.isReversed ? '(Reversed)' : '(Upright)'}</span>
           </div>
           <p className="text-textMain leading-relaxed whitespace-pre-line">{result.reading}</p>
-          <button onClick={() => { setState('idle'); setResult(null) }}
+          {saved && <p className="text-green-400 text-sm mt-3 text-center">✓ Reading saved to your history</p>}
+          <button onClick={() => { setState('idle'); setResult(null); setSaved(false) }}
             className="mt-6 w-full py-3 rounded-full text-sm font-semibold transition-all hover:opacity-80"
             style={{ background: 'linear-gradient(135deg, #9B59B6, #6C3483)', color: 'white' }}>
             Draw Another Card
