@@ -4,6 +4,12 @@ import { generateTarotReading } from '@/lib/ai'
 import { checkUsageLimit, incrementUsage } from '@/lib/usage'
 import { getToken } from 'next-auth/jwt'
 
+function extractSection(text: string, label: string): string {
+  const regex = new RegExp(`${label}:\\s*([\\s\\S]*?)(?=\\n[A-Z]+:|$)`, 'i')
+  const match = text.match(regex)
+  return match ? match[1].trim() : ''
+}
+
 export async function POST(req: NextRequest) {
   try {
     const token = await getToken({ req, secret: process.env.AUTH_SECRET })
@@ -46,12 +52,6 @@ export async function POST(req: NextRequest) {
     await incrementUsage(email, ip, deep)
 
     if (deep) {
-      // Parse labeled sections: "LABEL: text" format
-      function extractSection(text: string, label: string): string {
-        const regex = new RegExp(`${label}:\\s*([\\s\\S]*?)(?=\\n[A-Z]+:|$)`, 'i')
-        const match = text.match(regex)
-        return match ? match[1].trim() : ''
-      }
       const deepReading = {
         symbol: extractSection(raw, 'ENERGY'),
         timeline: {
