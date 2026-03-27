@@ -33,15 +33,15 @@ function DeepReadingView({ dr }: { dr: DeepReading }) {
         <h3 className="font-cinzel text-sm font-bold text-gold mb-3 uppercase tracking-wider">⏳ Past · Present · Future</h3>
         <div className="space-y-3">
           <div>
-            <span className="text-xs text-textSub uppercase tracking-wider">过去</span>
+            <span className="text-xs text-textSub uppercase tracking-wider">Past</span>
             <p className="text-textMain leading-relaxed mt-1">{String(dr.timeline?.past ?? '')}</p>
           </div>
           <div>
-            <span className="text-xs text-textSub uppercase tracking-wider">当下</span>
+            <span className="text-xs text-textSub uppercase tracking-wider">Present</span>
             <p className="text-textMain leading-relaxed mt-1">{String(dr.timeline?.present ?? '')}</p>
           </div>
           <div>
-            <span className="text-xs text-textSub uppercase tracking-wider">未来</span>
+            <span className="text-xs text-textSub uppercase tracking-wider">Future</span>
             <p className="text-textMain leading-relaxed mt-1">{String(dr.timeline?.future ?? '')}</p>
           </div>
         </div>
