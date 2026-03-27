@@ -81,7 +81,9 @@ export async function POST(req: NextRequest) {
         { name: 'Strength', meaning: 'inner courage' },
         { name: 'Temperance', meaning: 'balance and recovery' }
       ]
-      const selectedCard = hopeCards[Math.floor(Math.random() * hopeCards.length)]
+      // Use question hash to consistently select same card for same question
+      const hash = question.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
+      const selectedCard = hopeCards[hash % hopeCards.length]
       
       const crisisReading = deep
         ? `**I See You**\n\nYour pain is real, and I'm not going to minimize it. Right now might feel like drowning, but you're still here. That takes courage, even if it doesn't feel like it.\n\n**Your Worth Isn't Conditional**\n\nFamily can wound us in ways that cut deep. When love feels unequal or absent, it's easy to believe we're the problem. But here's the truth: your value doesn't come from how others treat you. You matter because you exist, period. Not because of what you do, achieve, or earn. Just because you're here.\n\n**Three Things You Can Do Right Now**\n\n1) Text or call one person - doesn't have to be deep, just "hey, I'm having a rough day" counts\n2) Do something small and kind for yourself - step outside, drink water, put on a song you love\n3) Talk to someone trained to help - they've heard it all, and they won't judge you\n\n**Help Is Real**\n\nNational Suicide Prevention Lifeline (US): 988\nCrisis Text Line: Text HOME to 741741\nInternational: findahelpline.com\n\nThese aren't just numbers. Real people answer. They care.\n\n**This Isn't Forever**\n\nWhat you're feeling right now - this specific intensity of pain - it shifts. Not instantly, but it does. Healing isn't linear, but it's possible. A year from now, you might look back and be so glad you stayed. Your story isn't over. You deserve to see what comes next.`
