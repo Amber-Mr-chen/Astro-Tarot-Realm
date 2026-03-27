@@ -19,11 +19,12 @@ export default function HoroscopePage() {
   const [selected, setSelected] = useState<string | null>(null)
   const [state, setState] = useState<'idle' | 'loading' | 'done'>('idle')
   const [horoscope, setHoroscope] = useState<Horoscope | null>(null)
+  const [isDeep, setIsDeep] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [saved, setSaved] = useState(false)
   const [remaining, setRemaining] = useState<number | null>(null)
 
-  async function getHoroscope(sign: string) {
+  async function getHoroscope(sign: string, deep = false) {
     setSelected(sign)
     setState('loading')
     setSaved(false)
@@ -32,11 +33,11 @@ export default function HoroscopePage() {
     const res = await fetch('/api/horoscope', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ sign }),
+      body: JSON.stringify({ sign, deep }),
     })
     const data = await res.json()
 
-    if (res.status === 429) {
+    if (res.status === 429 || res.status === 403) {
       setError(data.message)
       setState('idle')
       return
@@ -44,6 +45,7 @@ export default function HoroscopePage() {
 
     setHoroscope(data.horoscope)
     setRemaining(data.remaining ?? null)
+    setIsDeep(deep)
     setState('done')
 
     if (session?.user?.email) {
@@ -99,9 +101,9 @@ export default function HoroscopePage() {
         </div>
       )}
 
-      <div className="grid grid-cols-4 md:grid-cols-6 gap-3 mb-12">
+      <div className="grid grid-cols-4 md:grid-cols-6 gap-3 mb-6">
         {ZODIAC_SIGNS.map((z) => (
-          <button key={z.name} onClick={() => getHoroscope(z.name)}
+          <button key={z.name} onClick={() => getHoroscope(z.name, false)}
             className="rounded-xl p-3 text-center transition-all hover:scale-105"
             style={{
               backgroundColor: selected === z.name ? '#9B59B6' : '#1A1A2E',
@@ -111,6 +113,28 @@ export default function HoroscopePage() {
             <div className="text-xs text-textSub font-cinzel">{z.name}</div>
           </button>
         ))}
+      </div>
+
+      {/* Deep Reading Option */}
+      <div className="rounded-xl p-4 mb-6 text-center"
+        style={{ background: 'linear-gradient(135deg, rgba(243,156,18,0.1), rgba(155,89,182,0.1))', border: '1px solid rgba(243,156,18,0.3)' }}>
+        <p className="text-sm text-textSub mb-2">✨ <strong className="text-gold">Deep Reading</strong> — detailed planetary insights, love & career deep dive (Pro only)</p>
+        {session ? (
+          <div className="flex flex-wrap justify-center gap-2">
+            {ZODIAC_SIGNS.map((z) => (
+              <button key={z.name} onClick={() => getHoroscope(z.name, true)}
+                className="px-3 py-1 rounded-full text-xs font-semibold text-white transition-all hover:opacity-80"
+                style={{ background: 'linear-gradient(135deg, #F39C12, #E67E22)' }}>
+                {z.emoji} {z.name}
+              </button>
+            ))}
+          </div>
+        ) : (
+          <Link href="/pricing" className="inline-block px-5 py-2 rounded-full text-sm font-semibold text-white"
+            style={{ background: 'linear-gradient(135deg, #F39C12, #E67E22)' }}>
+            Upgrade to Pro →
+          </Link>
+        )}
       </div>
 
       {/* Quick links to individual sign pages */}
@@ -136,6 +160,7 @@ export default function HoroscopePage() {
         <div className="space-y-4">
           <h2 className="font-cinzel text-2xl text-center text-gold mb-6">
             {ZODIAC_SIGNS.find(z => z.name === selected)?.emoji} {selected} — Today's Reading
+            {isDeep && <span className="text-xs ml-2">✨ Deep</span>}
           </h2>
           {[
             { key: 'love', label: '💕 Love & Relationships', data: horoscope.love },
