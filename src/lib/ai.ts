@@ -20,7 +20,7 @@ export async function generateTarotReading(cardName: string, isReversed: boolean
   return response.response || 'The cards speak of transformation and new beginnings.'
 }
 
-export async function generateYesNoReading(question: string, cardName: string, isReversed: boolean): Promise<string> {
+export async function generateYesNoReading(question: string, cardName: string, isReversed: boolean, deep = false): Promise<string> {
   const answer = isReversed ? 'No' : 'Yes'
   const ctx = await getCloudflareContext({ async: true })
   const ai = (ctx.env as any).AI
@@ -29,7 +29,9 @@ export async function generateYesNoReading(question: string, cardName: string, i
     return `${answer}. The ${cardName} card suggests this path. Trust your inner wisdom.`
   }
 
-  const prompt = `User asked: "${question}". They drew ${cardName} (${isReversed ? 'REVERSED' : 'UPRIGHT'}). Answer is: ${answer}. Give a 2-sentence explanation and advice (under 60 words).`
+  const prompt = deep
+    ? `You are a master tarot reader. User asked: "${question}". They drew ${cardName} (${isReversed ? 'REVERSED' : 'UPRIGHT'}). The answer is: ${answer}. Provide a deep analysis (150-200 words) covering: 1) Why the cards say ${answer}, 2) Hidden factors or energies at play, 3) What to watch out for, 4) Empowering advice for moving forward.`
+    : `User asked: "${question}". They drew ${cardName} (${isReversed ? 'REVERSED' : 'UPRIGHT'}). Answer is: ${answer}. Give a 2-sentence explanation and advice (under 60 words).`
 
   const response = await ai.run('@cf/meta/llama-3.1-8b-instruct', {
     messages: [{ role: 'user', content: prompt }]

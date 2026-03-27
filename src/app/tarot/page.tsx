@@ -74,28 +74,14 @@ export default function TarotPage() {
       )}
 
       {state === 'idle' && !error && (
-        <div className="flex flex-col items-center gap-6 mb-8">
-          <div className="flex gap-6">
-            {[0, 1, 2].map((i) => (
-              <button key={i} onClick={() => drawCard(false)}
-                className="tarot-card w-24 h-40 md:w-32 md:h-52 rounded-xl cursor-pointer transition-all hover:scale-105"
-                style={{ background: 'linear-gradient(135deg, #1A1A2E, #2D1B69)', border: '2px solid #9B59B6' }}>
-                <div className="w-full h-full flex items-center justify-center text-4xl">✦</div>
-              </button>
-            ))}
-          </div>
-          {session ? (
-            <div className="text-center">
-              <p className="text-textSub text-xs mb-2">Pro members:</p>
-              <button onClick={() => drawCard(true)}
-                className="px-6 py-2 rounded-full text-sm font-semibold text-white transition-all hover:opacity-80"
-                style={{ background: 'linear-gradient(135deg, #F39C12, #E67E22)' }}>
-                ✨ Deep Reading (Pro)
-              </button>
-            </div>
-          ) : (
-            <p className="text-textSub text-xs"><Link href="/pricing" className="text-gold underline">Upgrade to Pro</Link> for Deep Readings</p>
-          )}
+        <div className="flex gap-6 mb-8">
+          {[0, 1, 2].map((i) => (
+            <button key={i} onClick={() => drawCard(false)}
+              className="tarot-card w-24 h-40 md:w-32 md:h-52 rounded-xl cursor-pointer transition-all hover:scale-105"
+              style={{ background: 'linear-gradient(135deg, #1A1A2E, #2D1B69)', border: '2px solid #9B59B6' }}>
+              <div className="w-full h-full flex items-center justify-center text-4xl">✦</div>
+            </button>
+          ))}
         </div>
       )}
 
@@ -104,26 +90,63 @@ export default function TarotPage() {
       )}
 
       {state === 'done' && result && (
-        <div className="max-w-lg w-full rounded-2xl p-8 text-left"
-          style={{ backgroundColor: '#1A1A2E', border: '1px solid rgba(155,89,182,0.4)' }}>
-          <div className="text-center mb-6">
-            <div className="text-5xl mb-3">🃏</div>
-            <h2 className="font-cinzel text-2xl font-bold text-gold">{result.card.name}</h2>
-            <span className="text-textSub text-sm">{result.card.isReversed ? '(Reversed)' : '(Upright)'}</span>
-            {result.isDeep && <div className="mt-2 text-xs text-gold">✨ Deep Reading</div>}
+        <div className="max-w-lg w-full space-y-4">
+          {/* Result Card */}
+          <div className="rounded-2xl p-8 text-left"
+            style={{ backgroundColor: '#1A1A2E', border: '1px solid rgba(155,89,182,0.4)' }}>
+            <div className="text-center mb-6">
+              <div className="text-5xl mb-3">🃏</div>
+              <h2 className="font-cinzel text-2xl font-bold text-gold">{result.card.name}</h2>
+              <span className="text-textSub text-sm">{result.card.isReversed ? 'Reversed' : 'Upright'}</span>
+              {result.isDeep && (
+                <div className="mt-2">
+                  <span className="text-xs px-3 py-1 rounded-full text-gold"
+                    style={{ border: '1px solid rgba(243,156,18,0.4)', backgroundColor: 'rgba(243,156,18,0.1)' }}>
+                    ✨ Deep Reading
+                  </span>
+                </div>
+              )}
+            </div>
+            <p className="text-textMain leading-relaxed whitespace-pre-line">{result.reading}</p>
+            {saved && <p className="text-green-400 text-sm text-center mt-4">✓ Reading saved to your history</p>}
           </div>
-          <p className="text-textMain leading-relaxed whitespace-pre-line mb-4">{result.reading}</p>
-          {saved && <p className="text-green-400 text-sm text-center mb-4">✓ Reading saved to your history</p>}
+
+          {/* Deep Reading Upsell */}
+          {!result.isDeep && (
+            <div className="rounded-xl p-4 text-center"
+              style={{ background: 'linear-gradient(135deg, rgba(243,156,18,0.1), rgba(155,89,182,0.1))', border: '1px solid rgba(243,156,18,0.3)' }}>
+              <p className="text-sm text-textSub mb-3">
+                Want a <strong className="text-textMain">comprehensive analysis</strong> covering love, career, shadow work & personal growth? Deep Reading unlocks the full wisdom of this card.
+              </p>
+              {session ? (
+                <button onClick={() => drawCard(true)}
+                  className="px-6 py-2 rounded-full text-sm font-semibold text-white transition-all hover:opacity-80"
+                  style={{ background: 'linear-gradient(135deg, #F39C12, #E67E22)' }}>
+                  ✨ Get Deep Reading (Pro)
+                </button>
+              ) : (
+                <Link href="/pricing"
+                  className="inline-block px-6 py-2 rounded-full text-sm font-semibold text-white"
+                  style={{ background: 'linear-gradient(135deg, #F39C12, #E67E22)' }}>
+                  Upgrade to Pro →
+                </Link>
+              )}
+            </div>
+          )}
+
+          {/* Warnings */}
           {result.deepRemaining !== undefined && result.deepRemaining <= 2 && (
-            <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3 mb-4 text-sm text-yellow-200">
+            <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3 text-sm text-yellow-200">
               ⚡ {result.deepRemaining} deep readings left today
             </div>
           )}
           {result.remaining <= 1 && !session && (
-            <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3 mb-4 text-sm text-yellow-200">
+            <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3 text-sm text-yellow-200">
               📌 You have <strong>{result.remaining}</strong> free reading left today. <button onClick={() => signIn('google')} className="underline">Sign in</button> for 3 total.
             </div>
           )}
+
+          {/* Action Button */}
           <button onClick={() => { setState('idle'); setResult(null); setSaved(false); setError(null) }}
             className="w-full py-3 rounded-full text-sm font-semibold transition-all hover:opacity-80"
             style={{ background: 'linear-gradient(135deg, #9B59B6, #6C3483)', color: 'white' }}>
