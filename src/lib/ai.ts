@@ -13,9 +13,10 @@ export async function generateTarotReading(cardName: string, isReversed: boolean
     ? `You are a master tarot reader. A user drew the ${cardName} card (${position}). Write a deep reading in exactly 4 short paragraphs (total under 200 words): 1) Card energy & symbolism, 2) Love & relationships, 3) Career & purpose, 4) A closing affirmation. No asterisks or markdown. Be mystical and personal.`
     : `You are a wise tarot reader. A user drew the ${cardName} card (${position}). Write a reading in 2-3 sentences (under 80 words): key energy, message, and affirmation. No asterisks or special formatting. Be warm and mystical.`
 
-  const response = await ai.run('@cf/meta/llama-3.1-8b-instruct', {
+  const model = deep ? '@cf/meta/llama-3.3-70b-instruct-fp8-fast' : '@cf/meta/llama-3.1-8b-instruct'
+  const response = await ai.run(model, {
     messages: [{ role: 'user', content: prompt }],
-    max_tokens: 512
+    max_tokens: deep ? 800 : 300
   })
 
   return response.response || 'The cards speak of transformation and new beginnings.'
@@ -34,9 +35,10 @@ export async function generateYesNoReading(question: string, cardName: string, i
     ? `You are a master tarot reader. User asked: "${question}". They drew ${cardName} (${isReversed ? 'REVERSED' : 'UPRIGHT'}). Answer: ${answer}. Write 3 short paragraphs (under 150 words total): 1) Why the answer is ${answer}, 2) Hidden energies at play, 3) Empowering advice. No asterisks or markdown.`
     : `User asked: "${question}". They drew ${cardName} (${isReversed ? 'REVERSED' : 'UPRIGHT'}). Answer: ${answer}. Write 2 sentences of explanation and advice (under 60 words). No special symbols.`
 
-  const response = await ai.run('@cf/meta/llama-3.1-8b-instruct', {
+  const model = deep ? '@cf/meta/llama-3.3-70b-instruct-fp8-fast' : '@cf/meta/llama-3.1-8b-instruct'
+  const response = await ai.run(model, {
     messages: [{ role: 'user', content: prompt }],
-    max_tokens: 400
+    max_tokens: deep ? 600 : 200
   })
 
   return response.response || `${answer}. The cards have spoken.`
@@ -58,9 +60,10 @@ export async function generateHoroscope(sign: string, date: string, deep = false
     ? `Generate a deep horoscope for ${sign} (${date}). Return only valid JSON: {"love":{"text":"...","stars":1-5},"career":{"text":"...","stars":1-5},"money":{"text":"...","stars":1-5}}. Each text 50-70 words with insights and advice. No asterisks or markdown.`
     : `Generate today's horoscope for ${sign} (${date}). Return only valid JSON: {"love":{"text":"...","stars":1-5},"career":{"text":"...","stars":1-5},"money":{"text":"...","stars":1-5}}. Each text under 35 words, natural writing.`
 
-  const response = await ai.run('@cf/meta/llama-3.1-8b-instruct', {
+  const model = deep ? '@cf/meta/llama-3.3-70b-instruct-fp8-fast' : '@cf/meta/llama-3.1-8b-instruct'
+  const response = await ai.run(model, {
     messages: [{ role: 'user', content: prompt }],
-    max_tokens: 600
+    max_tokens: deep ? 800 : 400
   })
 
   return response.response || '{}'
