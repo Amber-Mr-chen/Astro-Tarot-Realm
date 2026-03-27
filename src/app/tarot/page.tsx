@@ -90,7 +90,7 @@ export default function TarotPage() {
       )}
 
       {state === 'done' && result && (
-        <div className="max-w-lg w-full space-y-4">
+        <div className="max-w-3xl w-full space-y-4">
           {/* Result Card */}
           <div className="rounded-2xl p-8 text-left"
             style={{ backgroundColor: '#1A1A2E', border: '1px solid rgba(155,89,182,0.4)' }}>

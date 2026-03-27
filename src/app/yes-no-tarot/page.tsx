@@ -116,7 +116,7 @@ export default function YesNoPage() {
 
       {/* Result */}
       {state === 'done' && result && (
-        <div className="max-w-lg w-full space-y-4">
+        <div className="max-w-3xl w-full space-y-4">
 
           {/* Answer Card */}
           <div className="rounded-2xl p-8 text-left"

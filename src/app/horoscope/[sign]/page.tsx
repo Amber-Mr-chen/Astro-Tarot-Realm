@@ -73,7 +73,7 @@ export default function SignPage() {
   }
 
   return (
-    <main className="min-h-screen px-6 py-16 max-w-3xl mx-auto">
+    <main className="min-h-screen px-6 py-16 max-w-4xl mx-auto">
       <div className="text-center mb-10">
         <div className="text-6xl mb-4">{signData.emoji}</div>
         <h1 className="font-cinzel text-4xl font-bold text-textMain mb-2">
