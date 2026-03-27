@@ -37,7 +37,14 @@ export default function SignPage() {
         body: JSON.stringify({ sign }),
       })
       const data = await res.json()
-      setReading(data.reading)
+      
+      if (data.horoscope) {
+        // 格式化为可读文本
+        const formatted = `💕 Love & Relationships (${data.horoscope.love.stars}★)\n${data.horoscope.love.text}\n\n💼 Career & Goals (${data.horoscope.career.stars}★)\n${data.horoscope.career.text}\n\n💰 Money & Finances (${data.horoscope.money.stars}★)\n${data.horoscope.money.text}`
+        setReading(formatted)
+      } else {
+        setReading('Failed to load reading. Please try again.')
+      }
     } catch {
       setReading('Failed to load reading. Please try again.')
     }
