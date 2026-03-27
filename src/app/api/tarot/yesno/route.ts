@@ -97,19 +97,20 @@ export async function POST(req: NextRequest) {
       }, { status: 200 })
     }
 
-    // AI semantic analysis for implicit crisis expressions
-    const ctx = await import('@opennextjs/cloudflare').then(m => m.getCloudflareContext({ async: true }))
-    const ai = (ctx.env as any).AI
-    if (ai) {
-      try {
-        const semanticCheck = await ai.run('@cf/meta/llama-3.1-8b-instruct', {
-          messages: [{
-            role: 'user',
-            content: `Analyze ONLY for severe suicidal ideation or self-harm intent. Ignore casual questions about daily activities. Reply ONLY "CRISIS" if the person expresses desire to die, self-harm, or believes they shouldn't exist. Reply "SAFE" for everything else. Question: "${question}"`
-          }],
-          max_tokens: 10
-        })
-        if (semanticCheck.response?.toUpperCase().includes('CRISIS')) {
+    // AI semantic analysis ONLY if keyword check passed (as safety net)
+    if (!hasKeyword) {
+      const ctx = await import('@opennextjs/cloudflare').then(m => m.getCloudflareContext({ async: true }))
+      const ai = (ctx.env as any).AI
+      if (ai) {
+        try {
+          const semanticCheck = await ai.run('@cf/meta/llama-3.1-8b-instruct', {
+            messages: [{
+              role: 'user',
+              content: `Analyze ONLY for severe suicidal ideation or self-harm intent. Ignore casual questions about daily activities. Reply ONLY "CRISIS" if the person expresses desire to die, self-harm, or believes they shouldn't exist. Reply "SAFE" for everything else. Question: "${question}"`
+            }],
+            max_tokens: 5
+          })
+          if (semanticCheck.response?.toUpperCase().includes('CRISIS')) {
           const hopeCards = [
             { name: 'The Star', meaning: 'hope and healing' },
             { name: 'The Sun', meaning: 'life force and warmth' },
@@ -131,9 +132,10 @@ export async function POST(req: NextRequest) {
             deepRemaining: 999,
             isDeep: deep
           }, { status: 200 })
+          }
+        } catch {
+          // If AI check fails, continue with normal flow
         }
-      } catch {
-        // If AI check fails, continue with normal flow
       }
     }
 
