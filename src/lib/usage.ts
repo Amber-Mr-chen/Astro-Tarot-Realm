@@ -50,6 +50,11 @@ export async function checkUsageLimit(email: string | null, ip: string): Promise
     }
   }
 
+  // Admin override for testing
+  if (email === 'wanglilong616@gmail.com') {
+    return { allowed: true, remaining: 999, plan: 'pro', deepRemaining: 999 }
+  }
+
   // Logged in user
   try {
     const user = await db.prepare(
