@@ -15,6 +15,24 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Question is required' }, { status: 400 })
     }
 
+    // Crisis detection - block harmful questions
+    const crisisKeywords = [
+      'suicide', 'kill myself', 'end my life', 'self harm', 'hurt myself',
+      '自杀', '自残', '去死', '不想活', '结束生命', '伤害自己'
+    ]
+    const questionLower = question.toLowerCase()
+    const isCrisis = crisisKeywords.some(kw => questionLower.includes(kw.toLowerCase()))
+
+    if (isCrisis) {
+      return NextResponse.json({
+        error: 'crisis_detected',
+        message: 'We care about you. If you\'re in crisis, please reach out: National Suicide Prevention Lifeline (US): 988 | Crisis Text Line: Text HOME to 741741 | International: findahelpline.com',
+        card: { name: 'The Star', isReversed: false },
+        reading: 'You are not alone. This moment of darkness will pass. There is hope, healing, and help available. Please reach out to someone you trust or contact a crisis helpline. Your life has value and meaning.',
+        answer: 'Reach Out for Help'
+      }, { status: 200 })
+    }
+
     const usage = await checkUsageLimit(email, ip)
 
     // Check deep reading limit
