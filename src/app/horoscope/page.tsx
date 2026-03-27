@@ -113,6 +113,21 @@ export default function HoroscopePage() {
         ))}
       </div>
 
+      {/* Quick links to individual sign pages */}
+      <div className="rounded-xl p-4 mb-8 text-center text-sm"
+        style={{ backgroundColor: 'rgba(155,89,182,0.05)', border: '1px solid rgba(155,89,182,0.2)' }}>
+        <p className="text-textSub mb-3">Or visit your sign's dedicated page:</p>
+        <div className="flex flex-wrap justify-center gap-2">
+          {ZODIAC_SIGNS.map((z) => (
+            <Link key={z.name} href={`/horoscope/${z.name.toLowerCase()}`}
+              className="px-3 py-1 rounded-full text-xs transition-all hover:bg-primary/20"
+              style={{ border: '1px solid rgba(155,89,182,0.3)', color: '#9B59B6' }}>
+              {z.emoji} {z.name}
+            </Link>
+          ))}
+        </div>
+      </div>
+
       {state === 'loading' && (
         <div className="text-center text-primary text-lg animate-pulse">Reading the stars for {selected}...</div>
       )}
