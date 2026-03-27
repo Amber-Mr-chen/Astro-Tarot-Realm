@@ -30,12 +30,14 @@ export async function POST(req: NextRequest) {
       // 3. Existence negation
       'shouldn\'t exist', 'shouldn\'t be alive', 'mistake to be born', 'wish i wasn\'t born',
       'shouldn\'t have been born', 'regret being born', 'never should have existed',
+      'shouldn\'t have come', 'shouldn\'t be in this world',
       '不该存在', '不该活着', '出生就是错误', '不该出生', '后悔出生', '不该被生下来',
+      '不该来到', '不该来到这个世上', '不该来到世上', '不该来这个世界',
       
       // 4. Despair expressions
       'no hope', 'give up on life', 'can\'t go on', 'no point in living',
-      'life not worth', 'nothing to live for', 'no reason to continue',
-      '失去希望', '放弃生命', '活不下去', '活着没意义', '没有理由继续',
+      'life not worth', 'nothing to live for', 'no reason to continue', 'lost hope',
+      '失去希望', '失去了希望', '放弃生命', '活不下去', '活着没意义', '没有理由继续',
       
       // 5. Disappearance wishes
       'disappear forever', 'cease to exist', 'fade away', 'be gone', 'vanish',
