@@ -107,7 +107,11 @@ export default function TarotPage() {
                 </div>
               )}
             </div>
-            <p className="text-textMain leading-relaxed whitespace-pre-line">{result.reading}</p>
+            <div className="text-textMain leading-relaxed space-y-3">
+              {result.reading.split('\n').filter(Boolean).map((para, i) => (
+                <p key={i}>{para}</p>
+              ))}
+            </div>
             {saved && <p className="text-green-400 text-sm text-center mt-4">✓ Reading saved to your history</p>}
           </div>
 
