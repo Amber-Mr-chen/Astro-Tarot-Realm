@@ -170,58 +170,59 @@ export default function TarotPage() {
           )}
 
           {/* Deep Reading - Structured */}
-          {result.isDeep && result.deepReading && (() => {
-            const dr = result.deepReading!
-            return (
-              <div className="space-y-3">
-                {/* Symbol */}
-                <div className="rounded-2xl p-5" style={{ backgroundColor: '#1A1A2E', border: '1px solid rgba(155,89,182,0.3)' }}>
-                  <h3 className="font-cinzel text-sm font-bold text-gold mb-2 uppercase tracking-wider">✦ Card Energy</h3>
-                  <p className="text-textMain leading-relaxed">{dr.symbol}</p>
-                </div>
+          {result.isDeep && result.deepReading && (
+            <div className="space-y-3">
+              <div className="rounded-2xl p-5" style={{ backgroundColor: '#1A1A2E', border: '1px solid rgba(155,89,182,0.3)' }}>
+                <h3 className="font-cinzel text-sm font-bold text-gold mb-2 uppercase tracking-wider">✦ Card Energy</h3>
+                <p className="text-textMain leading-relaxed">{result.deepReading.symbol}</p>
+              </div>
 
-                {/* Timeline */}
-                <div className="rounded-2xl p-5" style={{ backgroundColor: '#1A1A2E', border: '1px solid rgba(155,89,182,0.3)' }}>
-                  <h3 className="font-cinzel text-sm font-bold text-gold mb-3 uppercase tracking-wider">⏳ Past · Present · Future</h3>
-                  <div className="space-y-3">
-                    <div><span className="text-xs text-textSub uppercase tracking-wider">Past</span><p className="text-textMain leading-relaxed mt-1">{dr.timeline.past}</p></div>
-                    <div><span className="text-xs text-textSub uppercase tracking-wider">Present</span><p className="text-textMain leading-relaxed mt-1">{dr.timeline.present}</p></div>
-                    <div><span className="text-xs text-textSub uppercase tracking-wider">Future</span><p className="text-textMain leading-relaxed mt-1">{dr.timeline.future}</p></div>
+              <div className="rounded-2xl p-5" style={{ backgroundColor: '#1A1A2E', border: '1px solid rgba(155,89,182,0.3)' }}>
+                <h3 className="font-cinzel text-sm font-bold text-gold mb-3 uppercase tracking-wider">⏳ Past · Present · Future</h3>
+                <div className="space-y-3">
+                  <div>
+                    <span className="text-xs text-textSub uppercase tracking-wider">Past</span>
+                    <p className="text-textMain leading-relaxed mt-1">{result.deepReading.timeline?.past}</p>
                   </div>
-                </div>
-
-                {/* Love & Career */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <div className="rounded-2xl p-5" style={{ backgroundColor: '#1A1A2E', border: '1px solid rgba(155,89,182,0.3)' }}>
-                    <h3 className="font-cinzel text-sm font-bold text-gold mb-2 uppercase tracking-wider">💕 Love</h3>
-                    <p className="text-textMain leading-relaxed">{dr.love}</p>
+                  <div>
+                    <span className="text-xs text-textSub uppercase tracking-wider">Present</span>
+                    <p className="text-textMain leading-relaxed mt-1">{result.deepReading.timeline?.present}</p>
                   </div>
-                  <div className="rounded-2xl p-5" style={{ backgroundColor: '#1A1A2E', border: '1px solid rgba(155,89,182,0.3)' }}>
-                    <h3 className="font-cinzel text-sm font-bold text-gold mb-2 uppercase tracking-wider">💼 Career</h3>
-                    <p className="text-textMain leading-relaxed">{dr.career}</p>
-                  </div>
-                </div>
-
-                {/* Growth */}
-                <div className="rounded-2xl p-5" style={{ backgroundColor: '#1A1A2E', border: '1px solid rgba(155,89,182,0.3)' }}>
-                  <h3 className="font-cinzel text-sm font-bold text-gold mb-2 uppercase tracking-wider">🌱 Inner Growth</h3>
-                  <p className="text-textMain leading-relaxed">{dr.growth}</p>
-                </div>
-
-                {/* Action & Reflection */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <div className="rounded-2xl p-5" style={{ background: 'linear-gradient(135deg, rgba(243,156,18,0.08), rgba(155,89,182,0.08))', border: '1px solid rgba(243,156,18,0.3)' }}>
-                    <h3 className="font-cinzel text-sm font-bold text-gold mb-2 uppercase tracking-wider">⚡ Today's Action</h3>
-                    <p className="text-textMain leading-relaxed">{dr.action}</p>
-                  </div>
-                  <div className="rounded-2xl p-5" style={{ background: 'linear-gradient(135deg, rgba(155,89,182,0.08), rgba(108,52,131,0.08))', border: '1px solid rgba(155,89,182,0.3)' }}>
-                    <h3 className="font-cinzel text-sm font-bold text-primary mb-2 uppercase tracking-wider">🔮 Reflect On This</h3>
-                    <p className="text-textMain leading-relaxed italic">"{dr.reflection}"</p>
+                  <div>
+                    <span className="text-xs text-textSub uppercase tracking-wider">Future</span>
+                    <p className="text-textMain leading-relaxed mt-1">{result.deepReading.timeline?.future}</p>
                   </div>
                 </div>
               </div>
-            )
-          })()}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="rounded-2xl p-5" style={{ backgroundColor: '#1A1A2E', border: '1px solid rgba(155,89,182,0.3)' }}>
+                  <h3 className="font-cinzel text-sm font-bold text-gold mb-2 uppercase tracking-wider">💕 Love</h3>
+                  <p className="text-textMain leading-relaxed">{result.deepReading.love}</p>
+                </div>
+                <div className="rounded-2xl p-5" style={{ backgroundColor: '#1A1A2E', border: '1px solid rgba(155,89,182,0.3)' }}>
+                  <h3 className="font-cinzel text-sm font-bold text-gold mb-2 uppercase tracking-wider">💼 Career</h3>
+                  <p className="text-textMain leading-relaxed">{result.deepReading.career}</p>
+                </div>
+              </div>
+
+              <div className="rounded-2xl p-5" style={{ backgroundColor: '#1A1A2E', border: '1px solid rgba(155,89,182,0.3)' }}>
+                <h3 className="font-cinzel text-sm font-bold text-gold mb-2 uppercase tracking-wider">🌱 Inner Growth</h3>
+                <p className="text-textMain leading-relaxed">{result.deepReading.growth}</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="rounded-2xl p-5" style={{ background: 'linear-gradient(135deg, rgba(243,156,18,0.08), rgba(155,89,182,0.08))', border: '1px solid rgba(243,156,18,0.3)' }}>
+                  <h3 className="font-cinzel text-sm font-bold text-gold mb-2 uppercase tracking-wider">⚡ Today's Action</h3>
+                  <p className="text-textMain leading-relaxed">{result.deepReading.action}</p>
+                </div>
+                <div className="rounded-2xl p-5" style={{ background: 'linear-gradient(135deg, rgba(155,89,182,0.08), rgba(108,52,131,0.08))', border: '1px solid rgba(155,89,182,0.3)' }}>
+                  <h3 className="font-cinzel text-sm font-bold text-primary mb-2 uppercase tracking-wider">🔮 Reflect On This</h3>
+                  <p className="text-textMain leading-relaxed italic">&ldquo;{result.deepReading.reflection}&rdquo;</p>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Fallback if deepReading JSON parse failed */}
           {result.isDeep && !result.deepReading && result.reading && (
