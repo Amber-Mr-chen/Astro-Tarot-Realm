@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
     const email = token?.email as string | null
     const ip = req.headers.get('cf-connecting-ip') || req.headers.get('x-forwarded-for') || 'unknown'
 
-    const { deep } = await req.json()
+    const { deep, card: passedCard } = await req.json()
     const usage = await checkUsageLimit(email, ip)
 
     // Check deep reading limit for Pro users
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
       }, { status: 403 })
     }
 
-    const card = drawRandomCard()
+    const card = (passedCard && passedCard.name) ? passedCard : drawRandomCard()
     const raw = await generateTarotReading(card.name, card.isReversed, deep)
 
     await incrementUsage(email, ip, deep)

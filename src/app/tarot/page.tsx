@@ -78,7 +78,7 @@ export default function TarotPage() {
   const [error, setError] = useState<string | null>(null)
   const [saved, setSaved] = useState(false)
 
-  async function drawCard(deep = false) {
+  async function drawCard(deep = false, existingCard?: { name: string; isReversed: boolean }) {
     setState('flipping')
     setSaved(false)
     setError(null)
@@ -88,7 +88,7 @@ export default function TarotPage() {
     const res = await fetch('/api/tarot', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ deep })
+      body: JSON.stringify({ deep, card: existingCard ?? null })
     })
     const data = await res.json()
 
@@ -226,7 +226,7 @@ export default function TarotPage() {
                 Want the full picture? <strong className="text-textMain">Deep Reading</strong> reveals past-present-future, love, career, inner growth, today's action & a reflection question.
               </p>
               {session ? (
-                <button onClick={() => drawCard(true)}
+                <button onClick={() => drawCard(true, result.card)}
                   className="px-6 py-2 rounded-full text-sm font-semibold text-white hover:opacity-80"
                   style={{ background: 'linear-gradient(135deg, #F39C12, #E67E22)' }}>
                   ✨ Get Deep Reading (Pro)
