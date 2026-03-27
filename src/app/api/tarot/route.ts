@@ -10,9 +10,19 @@ export async function POST(req: NextRequest) {
     const email = token?.email as string | null
     const ip = req.headers.get('cf-connecting-ip') || req.headers.get('x-forwarded-for') || 'unknown'
 
+    const { deep } = await req.json()
     const usage = await checkUsageLimit(email, ip)
 
-    if (!usage.allowed) {
+    // Check deep reading limit for Pro users
+    if (deep && usage.plan === 'pro' && (usage.deepRemaining ?? 0) <= 0) {
+      return NextResponse.json({
+        error: 'deep_limit_reached',
+        message: 'Daily deep reading limit reached (10/day for Pro)',
+      }, { status: 429 })
+    }
+
+    // Check standard reading limit
+    if (!deep && !usage.allowed) {
       return NextResponse.json({
         error: 'limit_reached',
         plan: usage.plan,
@@ -22,12 +32,26 @@ export async function POST(req: NextRequest) {
       }, { status: 429 })
     }
 
+    // Only Pro users can request deep readings
+    if (deep && usage.plan !== 'pro') {
+      return NextResponse.json({
+        error: 'pro_required',
+        message: 'Deep readings are exclusive to Pro members',
+      }, { status: 403 })
+    }
+
     const card = drawRandomCard()
-    const reading = await generateTarotReading(card.name, card.isReversed)
+    const reading = await generateTarotReading(card.name, card.isReversed, deep)
 
-    await incrementUsage(email, ip)
+    await incrementUsage(email, ip, deep)
 
-    return NextResponse.json({ card, reading, remaining: usage.remaining - 1 })
+    return NextResponse.json({ 
+      card, 
+      reading, 
+      remaining: usage.remaining - 1,
+      deepRemaining: deep ? (usage.deepRemaining ?? 0) - 1 : usage.deepRemaining,
+      isDeep: deep
+    })
   } catch (e) {
     return NextResponse.json({ error: 'Failed to generate reading' }, { status: 500 })
   }
