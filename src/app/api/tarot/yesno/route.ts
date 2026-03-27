@@ -15,20 +15,57 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Question is required' }, { status: 400 })
     }
 
-    // Crisis detection - comprehensive patterns for suicidal ideation
+    // Comprehensive crisis detection - covers direct and implicit suicidal ideation
     const crisisPatterns = [
-      // Direct expressions
+      // 1. Direct suicidal intent
       'suicide', 'kill myself', 'end my life', 'self harm', 'hurt myself', 'take my life',
-      '自杀', '自残', '去死', '不想活', '结束生命', '伤害自己',
-      // Indirect/implicit expressions
-      'should i die', 'better off dead', 'no reason to live', 'life not worth',
-      'give up on life', 'end it all', 'no hope', 'worthless', 'shouldn\'t exist',
-      'not belong', 'shouldn\'t be here', 'world without me', 'disappear forever',
-      '失去希望', '没有价值', '不该存在', '不该来到', '活着没意义', '不属于这里',
-      // Family/birth-related despair
-      'birth was a mistake', 'shouldn\'t have been born', 'wish i wasn\'t born',
-      'regret being born', 'mistake to be born', 'never should have existed',
-      '出生就是错误', '不该出生', '后悔出生', '不该被生下来', '来到世上是错误'
+      'commit suicide', 'suicidal', 'end myself',
+      '自杀', '自残', '去死', '不想活', '结束生命', '伤害自己', '自我了断',
+      
+      // 2. Self-worth negation
+      'worthless', 'no value', 'burden to', 'waste of space', 'useless person',
+      'nobody cares', 'better off without me', 'don\'t deserve',
+      '没有价值', '是个负担', '没用的人', '没人在乎', '不配活着',
+      
+      // 3. Existence negation
+      'shouldn\'t exist', 'shouldn\'t be alive', 'mistake to be born', 'wish i wasn\'t born',
+      'shouldn\'t have been born', 'regret being born', 'never should have existed',
+      '不该存在', '不该活着', '出生就是错误', '不该出生', '后悔出生', '不该被生下来',
+      
+      // 4. Despair expressions
+      'no hope', 'give up on life', 'can\'t go on', 'no point in living',
+      'life not worth', 'nothing to live for', 'no reason to continue',
+      '失去希望', '放弃生命', '活不下去', '活着没意义', '没有理由继续',
+      
+      // 5. Disappearance wishes
+      'disappear forever', 'cease to exist', 'fade away', 'be gone', 'vanish',
+      'stop existing', 'no longer be here',
+      '永远消失', '不复存在', '消失不见', '不在这里',
+      
+      // 6. Family trauma / rejection
+      'unloved', 'unwanted', 'rejected by', 'abandoned', 'nobody wants me',
+      'parents don\'t love', 'family hates me', 'not loved',
+      '不被爱', '不被需要', '被抛弃', '没人要我', '父母不爱我', '家人讨厌我',
+      
+      // 7. Pain escape
+      'escape the pain', 'make it stop', 'end the suffering', 'stop hurting',
+      'can\'t take it anymore', 'too much pain',
+      '逃离痛苦', '让痛苦停止', '结束痛苦', '承受不了', '太痛苦了',
+      
+      // 8. Comparative despair
+      'better off dead', 'world better without me', 'everyone better if i',
+      'should i just die', 'easier if i wasn\'t here',
+      '死了更好', '世界没有我更好', '我死了大家更好', '是不是该死',
+      
+      // 9. Exhaustion / giving up
+      'too tired to live', 'can\'t do this anymore', 'done with life',
+      'exhausted from living', 'no energy to continue',
+      '活着太累', '做不下去了', '厌倦生活', '没力气继续',
+      
+      // 10. Implicit help-seeking
+      'is there a way out', 'how to stop feeling', 'make the thoughts stop',
+      'end this pain', 'way to not wake up',
+      '有没有出路', '怎么停止这种感觉', '让想法停止', '不想醒来'
     ]
     const questionLower = question.toLowerCase()
     const isCrisis = crisisPatterns.some(pattern => questionLower.includes(pattern.toLowerCase()))
