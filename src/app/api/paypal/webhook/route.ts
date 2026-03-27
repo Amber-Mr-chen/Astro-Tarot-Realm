@@ -87,15 +87,32 @@ export async function POST(req: NextRequest) {
         )
         const order = result[0]?.results?.[0]
         if (order?.email) {
-          await d1Query(
-            'UPDATE users SET plan = ?, plan_expires_at = ? WHERE email = ?',
-            ['free', null, order.email]
+          // 检查是否已经退款过
+          const userResult = await d1Query(
+            'SELECT refund_used FROM users WHERE email = ?',
+            [order.email]
           )
-          await d1Query(
-            'UPDATE pending_orders SET status = ? WHERE order_id = ?',
-            ['refunded', orderId]
-          )
-          console.log('[Webhook] User downgraded due to refund:', order.email)
+          const user = userResult[0]?.results?.[0]
+          
+          if (user?.refund_used === 1) {
+            // 已经退过一次，记录但不降级（需要人工处理）
+            console.warn('[Webhook] Duplicate refund attempt:', order.email)
+            await d1Query(
+              'UPDATE pending_orders SET status = ? WHERE order_id = ?',
+              ['refund_disputed', orderId]
+            )
+          } else {
+            // 第一次退款，正常处理
+            await d1Query(
+              'UPDATE users SET plan = ?, plan_expires_at = ?, refund_used = 1 WHERE email = ?',
+              ['free', null, order.email]
+            )
+            await d1Query(
+              'UPDATE pending_orders SET status = ? WHERE order_id = ?',
+              ['refunded', orderId]
+            )
+            console.log('[Webhook] User downgraded due to refund:', order.email)
+          }
         }
       }
       return NextResponse.json({ ok: true })

@@ -265,6 +265,23 @@ export default function PricingPage() {
           ))}
         </div>
       </div>
+
+      {/* Guarantee & Legal */}
+      <div className="text-center mt-12 space-y-3">
+        <div className="flex items-center justify-center gap-2 text-textSub text-sm">
+          <span>🔒</span>
+          <span>Secure payment via PayPal</span>
+          <span>·</span>
+          <span>🛡️</span>
+          <span>7-day money-back guarantee (first purchase only)</span>
+        </div>
+        <p className="text-textSub text-xs">
+          By purchasing, you agree to our{' '}
+          <a href="/terms" className="text-primary hover:underline">Terms of Service</a>
+          {' '}and{' '}
+          <a href="/privacy" className="text-primary hover:underline">Privacy Policy</a>
+        </p>
+      </div>
     </main>
   )
 }

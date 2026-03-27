@@ -35,6 +35,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </div>
           </nav>
           {children}
+          <footer className="border-t border-purple-900/30 mt-16 py-8 px-6">
+            <div className="max-w-6xl mx-auto text-center text-textSub text-sm space-y-3">
+              <div className="flex justify-center gap-6">
+                <a href="/terms" className="hover:text-gold transition-colors">Terms of Service</a>
+                <a href="/privacy" className="hover:text-gold transition-colors">Privacy Policy</a>
+                <a href="mailto:support@tarotrealm.xyz" className="hover:text-gold transition-colors">Contact</a>
+              </div>
+              <p className="text-xs">© 2026 TarotRealm. For entertainment purposes only.</p>
+            </div>
+          </footer>
         </AuthProvider>
       </body>
     </html>
