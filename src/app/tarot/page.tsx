@@ -52,7 +52,7 @@ export default function TarotPage() {
   }
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center px-6 py-16 text-center">
+    <main className="min-h-screen flex flex-col items-center px-6 py-16 text-center" style={{ justifyContent: 'flex-start', paddingTop: '4rem' }}>
       <div className="text-gold text-sm tracking-[0.3em] uppercase font-cinzel mb-4">✦ Daily Reading ✦</div>
       <h1 className="font-cinzel text-4xl md:text-5xl font-bold text-textMain mb-4">Daily Tarot</h1>
       <p className="text-textSub mb-12 max-w-md">Focus your mind, take a breath, and draw your card for today.</p>
