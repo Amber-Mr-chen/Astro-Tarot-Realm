@@ -20,7 +20,7 @@ export default function YesNoPage() {
   const [error, setError] = useState<string | null>(null)
   const [saved, setSaved] = useState(false)
 
-  async function ask(deep = false) {
+  async function ask(deep = false, existingCard?: { name: string; isReversed: boolean }) {
     if (!question.trim()) return
     setState('loading')
     setSaved(false)
@@ -28,7 +28,7 @@ export default function YesNoPage() {
     const res = await fetch('/api/tarot/yesno', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ question, deep }),
+      body: JSON.stringify({ question, deep, card: existingCard ?? null }),
     })
     const data = await res.json()
 
@@ -149,7 +149,7 @@ export default function YesNoPage() {
                 Want to know <strong className="text-textMain">why</strong> and <strong className="text-textMain">what to do next</strong>? Deep Reading reveals hidden energies and detailed guidance.
               </p>
               {session ? (
-                <button onClick={() => ask(true)}
+                <button onClick={() => ask(true, result.card)}
                   className="px-6 py-2 rounded-full text-sm font-semibold text-white transition-all hover:opacity-80"
                   style={{ background: 'linear-gradient(135deg, #F39C12, #E67E22)' }}>
                   ✨ Get Deep Reading (Pro)

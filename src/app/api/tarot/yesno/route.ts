@@ -10,26 +10,32 @@ export async function POST(req: NextRequest) {
     const email = token?.email as string | null
     const ip = req.headers.get('cf-connecting-ip') || req.headers.get('x-forwarded-for') || 'unknown'
 
-    const { question, deep } = await req.json()
+    const { question, deep, card: passedCard } = await req.json()
     if (!question?.trim()) {
       return NextResponse.json({ error: 'Question is required' }, { status: 400 })
     }
 
-    // Crisis detection - block harmful questions
-    const crisisKeywords = [
-      'suicide', 'kill myself', 'end my life', 'self harm', 'hurt myself',
-      '自杀', '自残', '去死', '不想活', '结束生命', '伤害自己'
+    // Crisis detection - block harmful questions with expanded patterns
+    const crisisPatterns = [
+      // Direct expressions
+      'suicide', 'kill myself', 'end my life', 'self harm', 'hurt myself', 'take my life',
+      '自杀', '自残', '去死', '不想活', '结束生命', '伤害自己',
+      // Indirect/implicit expressions
+      'should i die', 'better off dead', 'no reason to live', 'life not worth',
+      'give up on life', 'end it all', 'no hope', 'worthless', 'shouldn\'t exist',
+      'not belong', 'shouldn\'t be here', 'world without me', 'disappear forever',
+      '失去希望', '没有价值', '不该存在', '不该来到', '活着没意义', '不属于这里'
     ]
     const questionLower = question.toLowerCase()
-    const isCrisis = crisisKeywords.some(kw => questionLower.includes(kw.toLowerCase()))
+    const isCrisis = crisisPatterns.some(pattern => questionLower.includes(pattern.toLowerCase()))
 
     if (isCrisis) {
       return NextResponse.json({
-        error: 'crisis_detected',
-        message: 'We care about you. If you\'re in crisis, please reach out: National Suicide Prevention Lifeline (US): 988 | Crisis Text Line: Text HOME to 741741 | International: findahelpline.com',
         card: { name: 'The Star', isReversed: false },
-        reading: 'You are not alone. This moment of darkness will pass. There is hope, healing, and help available. Please reach out to someone you trust or contact a crisis helpline. Your life has value and meaning.',
-        answer: 'Reach Out for Help'
+        reading: 'Your life has immense value. This pain you feel is temporary, but your life is precious. Please reach out for support - you deserve help and healing. Crisis resources: National Suicide Prevention Lifeline (US): 988 | Crisis Text Line: Text HOME to 741741 | International: findahelpline.com',
+        answer: 'You Matter',
+        remaining: 999,
+        isDeep: false
       }, { status: 200 })
     }
 
@@ -62,7 +68,7 @@ export async function POST(req: NextRequest) {
       }, { status: 403 })
     }
 
-    const card = drawRandomCard()
+    const card = (passedCard && passedCard.name) ? passedCard : drawRandomCard()
     const reading = await generateYesNoReading(question, card.name, card.isReversed, deep)
     await incrementUsage(email, ip, deep)
     return NextResponse.json({ 
