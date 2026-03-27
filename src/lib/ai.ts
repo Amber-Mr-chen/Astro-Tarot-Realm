@@ -10,11 +10,12 @@ export async function generateTarotReading(cardName: string, isReversed: boolean
   }
 
   const prompt = deep
-    ? `You are a master tarot reader with decades of experience. A user drew the ${cardName} card (${position}) for their daily reading. Provide a comprehensive deep reading (250-350 words) covering: 1) Card symbolism and energy, 2) Love & relationships, 3) Career & life purpose, 4) Personal growth & shadow work, 5) A powerful affirmation. Write in flowing paragraphs without using asterisks, underscores, or markdown formatting. Be mystical, insightful, and deeply personal.`
-    : `You are a wise tarot reader. A user drew the ${cardName} card (${position}) for their daily reading. Provide a personalized reading (under 150 words): overall energy, key message, and an affirmation. Write naturally without asterisks or special formatting. Be warm and mystical.`
+    ? `You are a master tarot reader. A user drew the ${cardName} card (${position}). Write a deep reading in exactly 4 short paragraphs (total under 200 words): 1) Card energy & symbolism, 2) Love & relationships, 3) Career & purpose, 4) A closing affirmation. No asterisks or markdown. Be mystical and personal.`
+    : `You are a wise tarot reader. A user drew the ${cardName} card (${position}). Write a reading in 2-3 sentences (under 80 words): key energy, message, and affirmation. No asterisks or special formatting. Be warm and mystical.`
 
   const response = await ai.run('@cf/meta/llama-3.1-8b-instruct', {
-    messages: [{ role: 'user', content: prompt }]
+    messages: [{ role: 'user', content: prompt }],
+    max_tokens: 512
   })
 
   return response.response || 'The cards speak of transformation and new beginnings.'
@@ -30,11 +31,12 @@ export async function generateYesNoReading(question: string, cardName: string, i
   }
 
   const prompt = deep
-    ? `You are a master tarot reader. User asked: "${question}". They drew ${cardName} (${isReversed ? 'REVERSED' : 'UPRIGHT'}). The answer is: ${answer}. Provide a deep analysis (150-200 words) covering: 1) Why the cards say ${answer}, 2) Hidden factors or energies at play, 3) What to watch out for, 4) Empowering advice for moving forward. Write in flowing natural paragraphs without asterisks, underscores, or markdown formatting.`
-    : `User asked: "${question}". They drew ${cardName} (${isReversed ? 'REVERSED' : 'UPRIGHT'}). Answer is: ${answer}. Give a 2-sentence natural explanation and advice (under 60 words). No special formatting or symbols.`
+    ? `You are a master tarot reader. User asked: "${question}". They drew ${cardName} (${isReversed ? 'REVERSED' : 'UPRIGHT'}). Answer: ${answer}. Write 3 short paragraphs (under 150 words total): 1) Why the answer is ${answer}, 2) Hidden energies at play, 3) Empowering advice. No asterisks or markdown.`
+    : `User asked: "${question}". They drew ${cardName} (${isReversed ? 'REVERSED' : 'UPRIGHT'}). Answer: ${answer}. Write 2 sentences of explanation and advice (under 60 words). No special symbols.`
 
   const response = await ai.run('@cf/meta/llama-3.1-8b-instruct', {
-    messages: [{ role: 'user', content: prompt }]
+    messages: [{ role: 'user', content: prompt }],
+    max_tokens: 400
   })
 
   return response.response || `${answer}. The cards have spoken.`
@@ -53,11 +55,12 @@ export async function generateHoroscope(sign: string, date: string, deep = false
   }
 
   const prompt = deep
-    ? `Generate a comprehensive deep horoscope for ${sign} (${date}). Return JSON: {"love":{"text":"...","stars":1-5},"career":{"text":"...","stars":1-5},"money":{"text":"...","stars":1-5}}. Each text should be 80-120 words with detailed insights, planetary influences, and actionable advice. Write naturally without asterisks, underscores, or markdown formatting.`
-    : `Generate today's horoscope for ${sign} (${date}). Return JSON: {"love":{"text":"...","stars":1-5},"career":{"text":"...","stars":1-5},"money":{"text":"...","stars":1-5}}. Each text under 40 words, natural writing without special symbols.`
+    ? `Generate a deep horoscope for ${sign} (${date}). Return only valid JSON: {"love":{"text":"...","stars":1-5},"career":{"text":"...","stars":1-5},"money":{"text":"...","stars":1-5}}. Each text 50-70 words with insights and advice. No asterisks or markdown.`
+    : `Generate today's horoscope for ${sign} (${date}). Return only valid JSON: {"love":{"text":"...","stars":1-5},"career":{"text":"...","stars":1-5},"money":{"text":"...","stars":1-5}}. Each text under 35 words, natural writing.`
 
   const response = await ai.run('@cf/meta/llama-3.1-8b-instruct', {
-    messages: [{ role: 'user', content: prompt }]
+    messages: [{ role: 'user', content: prompt }],
+    max_tokens: 600
   })
 
   return response.response || '{}'
