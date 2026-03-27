@@ -46,17 +46,23 @@ export async function POST(req: NextRequest) {
     await incrementUsage(email, ip, deep)
 
     if (deep) {
-      // Parse "|||" separated plain text sections
-      const parts = raw.split('|||').map((s: string) => s.trim())
-      const get = (i: number) => parts[i] || ''
+      // Parse labeled sections: "LABEL: text" format
+      function extractSection(text: string, label: string): string {
+        const regex = new RegExp(`${label}:\\s*([\\s\\S]*?)(?=\\n[A-Z]+:|$)`, 'i')
+        const match = text.match(regex)
+        return match ? match[1].trim() : ''
+      }
       const deepReading = {
-        symbol: get(0),
-        timeline: { past: get(1), present: get(2), future: get(3) },
-        love: get(4),
-        career: get(5),
-        growth: get(6),
-        action: get(7),
-        reflection: get(8)
+        symbol: extractSection(raw, 'ENERGY'),
+        timeline: {
+          past: extractSection(raw, 'PAST'),
+          present: extractSection(raw, 'PRESENT'),
+          future: extractSection(raw, 'FUTURE'),
+        },
+        love: extractSection(raw, 'LOVE'),
+        career: extractSection(raw, 'CAREER'),
+        growth: extractSection(raw, 'GROWTH'),
+        action: extractSection(raw, 'ACTION'),
       }
       return NextResponse.json({ 
         card, 
