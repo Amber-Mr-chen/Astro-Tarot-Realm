@@ -137,7 +137,11 @@ export default function YesNoPage() {
                 </div>
               )}
             </div>
-            <div className="text-textMain leading-relaxed whitespace-pre-line">{result.reading}</div>
+            <div className="text-textMain leading-relaxed whitespace-pre-line space-y-4">
+              {result.reading.split('\n\n').filter(Boolean).map((para, i) => (
+                <p key={i}>{para}</p>
+              ))}
+            </div>
             {saved && <p className="text-green-400 text-sm text-center mt-4">✓ Reading saved to your history</p>}
           </div>
 

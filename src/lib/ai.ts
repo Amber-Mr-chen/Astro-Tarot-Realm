@@ -55,7 +55,7 @@ Write naturally, avoid phrases like "dear seeker", "the universe", "cosmic wisdo
   const model = deep ? '@cf/meta/llama-3.3-70b-instruct-fp8-fast' : '@cf/meta/llama-3.1-8b-instruct'
   const response = await ai.run(model, {
     messages: [{ role: 'user', content: prompt }],
-    max_tokens: deep ? 600 : 200
+    max_tokens: deep ? 700 : 200
   })
 
   return response.response || `${answer}. The cards have spoken.`
