@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getToken } from 'next-auth/jwt'
 
-const PAYPAL_API = 'https://api-m.sandbox.paypal.com'
+const PAYPAL_API = 'https://api-m.paypal.com'
 
 // Cloudflare D1 REST API - works without getCloudflareContext
 const CF_ACCOUNT_ID = 'ba1d688671ae99c51095e2ad24945f77'

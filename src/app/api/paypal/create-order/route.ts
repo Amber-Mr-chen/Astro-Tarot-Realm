@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getToken } from 'next-auth/jwt'
 
-const PAYPAL_API = 'https://api-m.sandbox.paypal.com'
+const PAYPAL_API = 'https://api-m.paypal.com'
 const CF_ACCOUNT_ID = 'ba1d688671ae99c51095e2ad24945f77'
 const CF_D1_DB_ID = 'a7d11bd2-73e7-4ea1-870f-62af80838d74'
 
