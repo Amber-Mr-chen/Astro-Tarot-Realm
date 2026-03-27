@@ -74,12 +74,21 @@ export async function POST(req: NextRequest) {
 
     // If keyword detected, immediately return crisis response
     if (hasKeyword) {
+      const hopeCards = [
+        { name: 'The Star', meaning: 'hope and healing' },
+        { name: 'The Sun', meaning: 'life force and warmth' },
+        { name: 'The World', meaning: 'wholeness and belonging' },
+        { name: 'Strength', meaning: 'inner courage' },
+        { name: 'Temperance', meaning: 'balance and recovery' }
+      ]
+      const selectedCard = hopeCards[Math.floor(Math.random() * hopeCards.length)]
+      
       const crisisReading = deep
-        ? 'Your life has profound value and meaning. The pain you\'re experiencing right now is real, but it is not permanent. You deserve support, compassion, and healing. Please reach out to someone who can help - a trusted friend, family member, therapist, or crisis counselor. You are not alone in this darkness, and there is hope for brighter days ahead. Crisis resources are available 24/7: National Suicide Prevention Lifeline (US): 988 | Crisis Text Line: Text HOME to 741741 | International: findahelpline.com. Your story is not over yet.'
-        : 'Your life has immense value. This pain you feel is temporary, but your life is precious. Please reach out for support - you deserve help and healing. Crisis resources: National Suicide Prevention Lifeline (US): 988 | Crisis Text Line: Text HOME to 741741 | International: findahelpline.com'
+        ? `I hear your pain, and it's real. Right now feels overwhelming, but this moment is not your forever. You have inherent worth that exists independent of anyone else's love or recognition. Here are three things you can do today: 1) Reach out to one person you trust, even just to say "I'm struggling", 2) Take one small step toward self-care - a walk, a meal, rest, 3) Contact a crisis counselor who can provide immediate support. Resources available 24/7: National Suicide Prevention Lifeline (US): 988 | Crisis Text Line: Text HOME to 741741 | International: findahelpline.com. One year from now, you will be grateful you reached out today. Your story is still being written.`
+        : `Your life has immense value. This pain you feel is temporary, but your life is precious. Please reach out for support - you deserve help and healing. Crisis resources: National Suicide Prevention Lifeline (US): 988 | Crisis Text Line: Text HOME to 741741 | International: findahelpline.com`
       
       return NextResponse.json({
-        card: { name: 'The Star', isReversed: false },
+        card: { name: selectedCard.name, isReversed: false },
         reading: crisisReading,
         answer: 'You Matter',
         remaining: 999,
@@ -101,12 +110,21 @@ export async function POST(req: NextRequest) {
           max_tokens: 10
         })
         if (semanticCheck.response?.toUpperCase().includes('CRISIS')) {
+          const hopeCards = [
+            { name: 'The Star', meaning: 'hope and healing' },
+            { name: 'The Sun', meaning: 'life force and warmth' },
+            { name: 'The World', meaning: 'wholeness and belonging' },
+            { name: 'Strength', meaning: 'inner courage' },
+            { name: 'Temperance', meaning: 'balance and recovery' }
+          ]
+          const selectedCard = hopeCards[Math.floor(Math.random() * hopeCards.length)]
+          
           const crisisReading = deep
-            ? 'Your life has profound value and meaning. The pain you\'re experiencing right now is real, but it is not permanent. You deserve support, compassion, and healing. Please reach out to someone who can help - a trusted friend, family member, therapist, or crisis counselor. You are not alone in this darkness, and there is hope for brighter days ahead. Crisis resources are available 24/7: National Suicide Prevention Lifeline (US): 988 | Crisis Text Line: Text HOME to 741741 | International: findahelpline.com. Your story is not over yet.'
-            : 'Your life has immense value. This pain you feel is temporary, but your life is precious. Please reach out for support - you deserve help and healing. Crisis resources: National Suicide Prevention Lifeline (US): 988 | Crisis Text Line: Text HOME to 741741 | International: findahelpline.com'
+            ? `I hear your pain, and it's real. Right now feels overwhelming, but this moment is not your forever. You have inherent worth that exists independent of anyone else's love or recognition. Here are three things you can do today: 1) Reach out to one person you trust, even just to say "I'm struggling", 2) Take one small step toward self-care - a walk, a meal, rest, 3) Contact a crisis counselor who can provide immediate support. Resources available 24/7: National Suicide Prevention Lifeline (US): 988 | Crisis Text Line: Text HOME to 741741 | International: findahelpline.com. One year from now, you will be grateful you reached out today. Your story is still being written.`
+            : `Your life has immense value. This pain you feel is temporary, but your life is precious. Please reach out for support - you deserve help and healing. Crisis resources: National Suicide Prevention Lifeline (US): 988 | Crisis Text Line: Text HOME to 741741 | International: findahelpline.com`
           
           return NextResponse.json({
-            card: { name: 'The Star', isReversed: false },
+            card: { name: selectedCard.name, isReversed: false },
             reading: crisisReading,
             answer: 'You Matter',
             remaining: 999,
