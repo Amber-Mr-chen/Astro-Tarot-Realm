@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
         { name: 'Temperance', meaning: 'balance and recovery' }
       ]
       // Use question hash to consistently select same card for same question
-      const hash = question.split('').reduce((acc: number, char) => acc + char.charCodeAt(0), 0)
+      const hash = question.split('').reduce((acc: number, char: string) => acc + char.charCodeAt(0), 0)
       const selectedCard = hopeCards[hash % hopeCards.length]
       
       const crisisReading = deep
@@ -120,7 +120,7 @@ export async function POST(req: NextRequest) {
               { name: 'Strength', meaning: 'inner courage' },
               { name: 'Temperance', meaning: 'balance and recovery' }
             ]
-            const hash = question.split('').reduce((acc: number, char) => acc + char.charCodeAt(0), 0)
+            const hash = question.split('').reduce((acc: number, char: string) => acc + char.charCodeAt(0), 0)
             const selectedCard = hopeCards[hash % hopeCards.length]
           
           const crisisReading = deep
