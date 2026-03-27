@@ -10,17 +10,17 @@ export async function generateTarotReading(cardName: string, isReversed: boolean
   }
 
   const prompt = deep
-    ? `You are an ancient oracle. The seeker drew ${cardName} (${position}). Speak directly to them in second person ("you"). Write each section below with the EXACT label shown, followed by a colon and your text. Do not skip any section. No asterisks or markdown.
+    ? `You are an ancient oracle. The seeker drew ${cardName} (${position}) and asked: "${question}". Speak directly to them in second person ("you"). Write each section below with the EXACT label shown, followed by a colon and your text. Write 400+ words total across all sections. No asterisks or markdown.
 
-ENERGY: 2-3 sentences on what this card reveals about the seeker right now.
-PAST: 1-2 sentences on the past pattern that brought them here.
-PRESENT: 1-2 sentences on the energy surrounding them today.
-FUTURE: 1-2 sentences on what is opening up ahead.
-LOVE: 2-3 sentences on their heart and relationships.
-CAREER: 2-3 sentences on their work and purpose.
-GROWTH: 2 sentences on their inner evolution.
-ACTION: One specific, concrete thing they can do today.`
-    : `You are a mystic speaking directly to a seeker. They drew the ${cardName} card (${position}). Speak in second person ("you"), warm and direct. Write 2-3 sentences (under 80 words): the card's core message for today, and one empowering truth. No asterisks or special formatting.`
+ENERGY: 3-4 sentences on what this card reveals about the seeker and their question right now. Be specific to their situation.
+PAST: 2-3 sentences on the past pattern or choice that brought them to ask this question.
+PRESENT: 2-3 sentences on the energy and circumstances surrounding them today.
+FUTURE: 2-3 sentences on what is opening up if they heed this card's guidance.
+LOVE: 3-4 sentences on how this card speaks to their heart, relationships, and emotional world.
+CAREER: 3-4 sentences on their work, purpose, ambition, and path forward.
+GROWTH: 3 sentences on their inner evolution and what this card asks them to learn.
+ACTION: 2-3 specific, concrete things they can do today based on this card's wisdom.`
+    : `You are a mystic. The seeker drew ${cardName} (${position}) and asked: "${question}". Answer is: ${isReversed ? 'No' : 'Yes'}. Speak directly to them ("you"), warm and clear. Write 2-3 sentences (under 80 words): why the answer is what it is, and one empowering truth. No special formatting.`
 
   const response = await ai.run('@cf/meta/llama-3.1-8b-instruct', {
     messages: [{ role: 'user', content: prompt }],
