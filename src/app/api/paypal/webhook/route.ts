@@ -77,6 +77,30 @@ export async function POST(req: NextRequest) {
 
     console.log('[Webhook] Event:', event.event_type, event.id)
 
+    // 处理退款事件，自动降级账户
+    if (event.event_type === 'PAYMENT.CAPTURE.REFUNDED') {
+      const orderId = event.resource?.supplementary_data?.related_ids?.order_id
+      if (orderId) {
+        const result = await d1Query(
+          'SELECT email FROM pending_orders WHERE order_id = ?',
+          [orderId]
+        )
+        const order = result[0]?.results?.[0]
+        if (order?.email) {
+          await d1Query(
+            'UPDATE users SET plan = ?, plan_expires_at = ? WHERE email = ?',
+            ['free', null, order.email]
+          )
+          await d1Query(
+            'UPDATE pending_orders SET status = ? WHERE order_id = ?',
+            ['refunded', orderId]
+          )
+          console.log('[Webhook] User downgraded due to refund:', order.email)
+        }
+      }
+      return NextResponse.json({ ok: true })
+    }
+
     // 处理支付完成事件
     if (event.event_type === 'PAYMENT.CAPTURE.COMPLETED') {
       const orderId = event.resource?.supplementary_data?.related_ids?.order_id
