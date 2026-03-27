@@ -5,7 +5,7 @@ import BackButton from './back-button'
 import AuthButton from './auth-button'
 
 export const metadata: Metadata = {
-  title: 'Free AI Tarot Reading & Astrology | AstraTarot',
+  title: 'Free AI Tarot Reading & Astrology | TarotRealm',
   description: 'Get your free AI-powered tarot card reading and daily horoscope. Personalized astrology readings in seconds. No signup required.',
 }
 
@@ -19,7 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <div className="flex items-center gap-3">
                 <BackButton />
                 <a href="/" className="font-cinzel text-lg md:text-xl font-bold text-gold tracking-widest">
-                  ✦ AstraTarot
+                  ✦ TarotRealm
                 </a>
               </div>
               <div className="flex items-center gap-3 md:gap-5">

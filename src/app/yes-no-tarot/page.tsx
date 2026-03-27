@@ -47,7 +47,7 @@ export default function YesNoPage() {
     }
   }
 
-  const shareText = result ? `I asked the tarot: "${question}" — The answer is ${result.answer}! ✨ Try it at AstraTarot` : ''
+  const shareText = result ? `I asked the tarot: "${question}" — The answer is ${result.answer}! ✨ Try it at TarotRealm` : ''
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center px-6 py-16 text-center">
