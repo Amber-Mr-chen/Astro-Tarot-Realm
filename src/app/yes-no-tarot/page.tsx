@@ -137,7 +137,7 @@ export default function YesNoPage() {
                 </div>
               )}
             </div>
-            <p className="text-textMain leading-relaxed">{result.reading}</p>
+            <div className="text-textMain leading-relaxed whitespace-pre-line">{result.reading}</div>
             {saved && <p className="text-green-400 text-sm text-center mt-4">✓ Reading saved to your history</p>}
           </div>
 
