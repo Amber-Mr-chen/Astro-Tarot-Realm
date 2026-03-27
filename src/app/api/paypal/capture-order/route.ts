@@ -64,13 +64,32 @@ export async function POST(req: NextRequest) {
     const captureData = await capture.json()
 
     if (captureData.status === 'COMPLETED') {
-      const expiresAt = plan === 'monthly'
-        ? Date.now() + 30 * 24 * 60 * 60 * 1000
-        : Date.now() + 365 * 24 * 60 * 60 * 1000
+      // 先查询当前用户的到期时间
+      const userResult = await d1Query(
+        'SELECT plan, plan_expires_at FROM users WHERE email = ?',
+        [token.email]
+      )
+      
+      const currentUser = userResult[0]?.results?.[0]
+      const currentExpiry = currentUser?.plan_expires_at || 0
+      const isPro = currentUser?.plan === 'pro'
+      
+      // 计算新的到期时间
+      const addDays = plan === 'monthly' ? 30 : 365
+      const addMs = addDays * 24 * 60 * 60 * 1000
+      
+      let newExpiresAt
+      if (isPro && currentExpiry > Date.now()) {
+        // 已经是Pro且未过期，从原到期时间叠加
+        newExpiresAt = currentExpiry + addMs
+      } else {
+        // Free用户或已过期，从现在开始算
+        newExpiresAt = Date.now() + addMs
+      }
 
       await d1Query(
         'UPDATE users SET plan = ?, plan_expires_at = ? WHERE email = ?',
-        ['pro', expiresAt, token.email]
+        ['pro', newExpiresAt, token.email]
       )
 
       return NextResponse.json({ success: true })
