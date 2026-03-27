@@ -41,16 +41,34 @@ export async function POST(req: NextRequest) {
     }
 
     const card = drawRandomCard()
-    const reading = await generateTarotReading(card.name, card.isReversed, deep)
+    const raw = await generateTarotReading(card.name, card.isReversed, deep)
 
     await incrementUsage(email, ip, deep)
 
+    if (deep) {
+      try {
+        const jsonMatch = raw.match(/\{[\s\S]*\}/)
+        const deepReading = jsonMatch ? JSON.parse(jsonMatch[0]) : null
+        return NextResponse.json({ 
+          card, 
+          reading: null,
+          deepReading,
+          remaining: usage.remaining - 1,
+          deepRemaining: (usage.deepRemaining ?? 0) - 1,
+          isDeep: true
+        })
+      } catch {
+        // fallback to plain text if JSON parse fails
+        return NextResponse.json({ card, reading: raw, remaining: usage.remaining - 1, isDeep: true })
+      }
+    }
+
     return NextResponse.json({ 
       card, 
-      reading, 
+      reading: raw, 
       remaining: usage.remaining - 1,
-      deepRemaining: deep ? (usage.deepRemaining ?? 0) - 1 : usage.deepRemaining,
-      isDeep: deep
+      deepRemaining: usage.deepRemaining,
+      isDeep: false
     })
   } catch (e) {
     return NextResponse.json({ error: 'Failed to generate reading' }, { status: 500 })

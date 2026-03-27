@@ -10,15 +10,32 @@ export async function generateTarotReading(cardName: string, isReversed: boolean
   }
 
   const prompt = deep
-    ? `You are a master tarot reader. A user drew the ${cardName} card (${position}). Write a deep reading in exactly 4 short paragraphs (total under 200 words): 1) Card energy & symbolism, 2) Love & relationships, 3) Career & purpose, 4) A closing affirmation. No asterisks or markdown. Be mystical and personal.`
-    : `You are a wise tarot reader. A user drew the ${cardName} card (${position}). Write a reading in 2-3 sentences (under 80 words): key energy, message, and affirmation. No asterisks or special formatting. Be warm and mystical.`
+    ? `You are an ancient oracle speaking directly to a seeker. They drew the ${cardName} card (${position}). Speak in second person ("you"), poetic but clear. Return ONLY valid JSON (no extra text):
+{
+  "symbol": "2-3 sentences on the card's core energy and what it reveals about the seeker right now",
+  "timeline": {
+    "past": "1-2 sentences — what past pattern or choice led them here",
+    "present": "1-2 sentences — the energy surrounding them today",
+    "future": "1-2 sentences — what is opening up if they heed this card"
+  },
+  "love": "2-3 sentences on relationships and heart matters",
+  "career": "2-3 sentences on work, purpose, and ambition",
+  "growth": "2-3 sentences on inner work and personal evolution",
+  "action": "One specific, concrete thing they can do today",
+  "reflection": "One powerful question for them to sit with"
+}`
+    : `You are a mystic speaking directly to a seeker. They drew the ${cardName} card (${position}). Speak in second person ("you"), warm and direct. Write 2-3 sentences (under 80 words): the card's core message for today, and one empowering truth. No asterisks or markdown.`
 
   const model = deep ? '@cf/meta/llama-3.3-70b-instruct-fp8-fast' : '@cf/meta/llama-3.1-8b-instruct'
   const response = await ai.run(model, {
     messages: [{ role: 'user', content: prompt }],
-    max_tokens: deep ? 800 : 300
+    max_tokens: deep ? 1000 : 300
   })
 
+  if (deep) {
+    // Return raw response for structured parsing in API
+    return response.response || '{}'
+  }
   return response.response || 'The cards speak of transformation and new beginnings.'
 }
 
