@@ -40,7 +40,16 @@ export async function generateYesNoReading(question: string, cardName: string, i
   }
 
   const prompt = deep
-    ? `You are an ancient oracle. The seeker asked: "${question}". They drew ${cardName} (${isReversed ? 'REVERSED' : 'UPRIGHT'}). The answer is: ${answer}. Speak directly to them in second person ("you"), poetic and personal. Write 400+ words covering: 1) Why the cards say ${answer} (3-4 sentences), 2) What past patterns led to this question (2-3 sentences), 3) Hidden energies at play right now (3-4 sentences), 4) What to watch for moving forward (2-3 sentences), 5) Empowering advice and concrete actions they can take (3-4 sentences). Write in flowing natural paragraphs, no asterisks or markdown.`
+    ? `You are an ancient oracle. The seeker asked: "${question}". They drew ${cardName} (${isReversed ? 'REVERSED' : 'UPRIGHT'}). The answer is: ${answer}. 
+
+Speak directly to them in second person ("you"), warm and conversational - like a wise friend, not a mystical AI. Write exactly 4 natural paragraphs (total 300-400 words):
+
+1) Why the answer is ${answer} - explain what the card reveals about their situation
+2) What hidden energies or patterns are at play right now
+3) What they should watch for or be aware of moving forward  
+4) Concrete advice and actions they can take today
+
+Write naturally, avoid phrases like "dear seeker", "the universe", "cosmic wisdom". Be direct, warm, and practical. No asterisks or special formatting.`
     : `User asked: "${question}". They drew ${cardName} (${isReversed ? 'REVERSED' : 'UPRIGHT'}). Answer: ${answer}. Write 2 sentences of explanation and advice (under 60 words). No special symbols.`
 
   const model = deep ? '@cf/meta/llama-3.3-70b-instruct-fp8-fast' : '@cf/meta/llama-3.1-8b-instruct'
