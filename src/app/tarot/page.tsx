@@ -143,9 +143,9 @@ export default function TarotPage() {
                 </div>
               )}
             </div>
-            <div className="text-textMain leading-relaxed space-y-3">
+            <div className="text-textMain leading-relaxed space-y-3 max-h-none overflow-visible">
               {result.reading.split('\n').filter(Boolean).map((para, i) => (
-                <p key={i}>{para}</p>
+                <p key={i} className="break-words">{para}</p>
               ))}
             </div>
             {saved && <p className="text-green-400 text-sm text-center mt-4">✓ Reading saved to your history</p>}

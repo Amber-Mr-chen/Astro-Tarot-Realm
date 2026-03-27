@@ -50,7 +50,7 @@ export default function PrivacyPage() {
           <ul className="list-disc list-inside space-y-1 ml-2">
             <li><strong className="text-textMain">Google OAuth:</strong> For authentication</li>
             <li><strong className="text-textMain">PayPal:</strong> For payment processing</li>
-            <li><strong className="text-textMain">Cloudflare:</strong> For hosting and AI services</li>
+            <li><strong className="text-textMain">Cloudflare:</strong> For hosting and services</li>
           </ul>
           <p className="mt-3">These services have their own privacy policies. We do not share your data with any other third parties.</p>
         </section>

@@ -40,7 +40,7 @@ const plans = [
       '3 readings per day',
       'All reading types (Tarot, Yes/No, Horoscope)',
       '7-day reading history',
-      'Standard AI readings',
+      'Standard readings',
       '❌ No deep readings',
     ],
   },
@@ -56,7 +56,7 @@ const plans = [
       'Unlimited readings per day',
       'All reading types',
       'Full history (forever)',
-      'Standard AI readings',
+      'Standard readings',
       '✨ 10 deep readings per day',
       'Priority support',
     ],
@@ -82,7 +82,7 @@ const plans = [
 const faqs = [
   {
     q: 'What is a Deep Reading?',
-    a: 'A Deep Reading uses our advanced AI model to give you a much more detailed, personalized analysis — including past influences, present energies, and future guidance. Pro users get 10 deep readings per day.',
+    a: 'A Deep Reading uses our advanced system to give you a much more detailed, personalized analysis — including past influences, present energies, and future guidance. Pro users get 10 deep readings per day.',
   },
   {
     q: 'What happens when I reach my daily limit?',
@@ -195,7 +195,7 @@ export default function PricingPage() {
         <div className="text-3xl mb-2">✨</div>
         <h2 className="font-cinzel text-xl font-bold text-gold mb-2">What is a Deep Reading?</h2>
         <p className="text-textSub max-w-xl mx-auto text-sm leading-relaxed">
-          Deep Readings use our most advanced AI for a comprehensive analysis — covering past influences, present energies, and future guidance. Far more detailed than standard readings. <strong className="text-textMain">Exclusive to Pro members (10/day).</strong>
+          Deep Readings use our most advanced system for a comprehensive analysis — covering past influences, present energies, and future guidance. Far more detailed than standard readings. <strong className="text-textMain">Exclusive to Pro members (10/day).</strong>
         </p>
       </div>
 

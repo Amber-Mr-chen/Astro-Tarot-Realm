@@ -64,7 +64,7 @@ export default function HoroscopePage() {
       <div className="text-center mb-8">
         <div className="text-gold text-sm tracking-[0.3em] uppercase font-cinzel mb-4">✦ Daily Forecast ✦</div>
         <h1 className="font-cinzel text-4xl md:text-5xl font-bold text-textMain mb-4">Daily Horoscope</h1>
-        <p className="text-textSub max-w-md mx-auto">Select your zodiac sign for your personalized AI-powered daily forecast.</p>
+        <p className="text-textSub max-w-md mx-auto">Select your zodiac sign for your personalized daily forecast.</p>
       </div>
 
       {/* Upgrade hint for free users */}

@@ -26,14 +26,14 @@ export default function Home() {
     <main className="min-h-screen flex flex-col items-center justify-center px-6 py-20 text-center">
       {/* Hero */}
       <div className="mb-4 text-gold text-sm tracking-[0.3em] uppercase font-cinzel">
-        ✦ AI-Powered Divination ✦
+        ✦ Mystical Divination ✦
       </div>
-      <h1 className="font-cinzel text-5xl md:text-7xl font-bold text-textMain mb-6 leading-tight">
-        Your Free AI<br />
+      <h1 className="font-cinzel text-4xl md:text-6xl font-bold text-textMain mb-6 leading-tight">
+        Your Free<br />
         <span style={{ color: '#9B59B6' }}>Tarot & Astrology</span>
       </h1>
       <p className="text-textSub text-lg max-w-xl mb-12">
-        Personalized tarot readings and daily horoscopes powered by AI.
+        Personalized tarot readings and daily horoscopes.
         No signup required. Discover what the universe has in store for you.
       </p>
 
@@ -59,7 +59,7 @@ export default function Home() {
       {/* Feature Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl w-full">
         {[
-          { icon: '🃏', title: 'Daily Tarot', desc: 'Draw a card each day and receive a personalized AI reading to guide your journey.' },
+          { icon: '🃏', title: 'Daily Tarot', desc: 'Draw a card each day and receive a personalized reading to guide your journey.' },
           { icon: '✨', title: 'Yes or No', desc: 'Ask any question and get an instant answer from the cards with detailed guidance.' },
           { icon: '♈', title: 'Horoscope', desc: 'Get your daily love, career, and money forecast based on your zodiac sign.' },
         ].map((f) => (

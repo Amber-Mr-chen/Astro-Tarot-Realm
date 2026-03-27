@@ -5,8 +5,8 @@ import BackButton from './back-button'
 import AuthButton from './auth-button'
 
 export const metadata: Metadata = {
-  title: 'Free AI Tarot Reading & Astrology | TarotRealm',
-  description: 'Get your free AI-powered tarot card reading and daily horoscope. Personalized astrology readings in seconds. No signup required.',
+  title: 'Free Tarot Reading & Astrology | TarotRealm',
+  description: 'Get your free tarot card reading and daily horoscope. Personalized astrology readings in seconds. No signup required.',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
