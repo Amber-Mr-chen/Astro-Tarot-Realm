@@ -49,7 +49,7 @@ function DeepReadingView({ dr }: { dr: DeepReading }) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <div className="rounded-2xl p-5" style={{ backgroundColor: '#1A1A2E', border: '1px solid rgba(155,89,182,0.3)' }}>
-          <h3 className="font-cinzel text-sm font-bold text-gold mb-2 uppercase tracking-wider">💕 Love</h3>
+          <h3 className="font-cinzel text-sm font-bold text-gold mb-2 uppercase tracking-wider">💕 Love & Relationships</h3>
           <p className="text-textMain leading-relaxed">{String(dr.love ?? '')}</p>
         </div>
         <div className="rounded-2xl p-5" style={{ backgroundColor: '#1A1A2E', border: '1px solid rgba(155,89,182,0.3)' }}>
@@ -63,11 +63,9 @@ function DeepReadingView({ dr }: { dr: DeepReading }) {
         <p className="text-textMain leading-relaxed">{String(dr.growth ?? '')}</p>
       </div>
 
-      <div className="flex justify-end">
-        <div className="rounded-2xl p-5 w-full md:w-1/2" style={{ background: 'linear-gradient(135deg, rgba(243,156,18,0.08), rgba(155,89,182,0.08))', border: '1px solid rgba(243,156,18,0.3)' }}>
-          <h3 className="font-cinzel text-sm font-bold text-gold mb-2 uppercase tracking-wider">⚡ Today's Action</h3>
-          <p className="text-textMain leading-relaxed">{String(dr.action ?? '')}</p>
-        </div>
+      <div className="rounded-2xl p-5" style={{ background: 'linear-gradient(135deg, rgba(243,156,18,0.08), rgba(155,89,182,0.08))', border: '1px solid rgba(243,156,18,0.3)' }}>
+        <h3 className="font-cinzel text-sm font-bold text-gold mb-2 uppercase tracking-wider">⚡ Today's Action</h3>
+        <p className="text-textMain leading-relaxed">{String(dr.action ?? '')}</p>
       </div>
     </div>
   )
