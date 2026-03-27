@@ -46,21 +46,42 @@ export async function POST(req: NextRequest) {
     await incrementUsage(email, ip, deep)
 
     if (deep) {
+      let deepReading = null
       try {
+        // Try to extract JSON from response - model sometimes wraps it in text
         const jsonMatch = raw.match(/\{[\s\S]*\}/)
-        const deepReading = jsonMatch ? JSON.parse(jsonMatch[0]) : null
-        return NextResponse.json({ 
-          card, 
-          reading: null,
-          deepReading,
-          remaining: usage.remaining - 1,
-          deepRemaining: (usage.deepRemaining ?? 0) - 1,
-          isDeep: true
-        })
+        if (jsonMatch) {
+          const parsed = JSON.parse(jsonMatch[0])
+          // Validate required fields exist
+          if (parsed.symbol && parsed.timeline && parsed.love && parsed.career && parsed.growth && parsed.action && parsed.reflection) {
+            deepReading = parsed
+          }
+        }
       } catch {
-        // fallback to plain text if JSON parse fails
-        return NextResponse.json({ card, reading: raw, remaining: usage.remaining - 1, isDeep: true })
+        deepReading = null
       }
+
+      // If JSON parse failed, build a structured object from plain text
+      if (!deepReading) {
+        deepReading = {
+          symbol: raw || 'The card speaks of transformation.',
+          timeline: { past: 'Patterns from your past have shaped this moment.', present: 'Right now, this card calls for your attention.', future: 'Trust the path unfolding before you.' },
+          love: 'Be open and honest in your connections.',
+          career: 'Focus on what truly matters to your purpose.',
+          growth: 'This is a time for inner reflection and growth.',
+          action: 'Take one small step toward your intention today.',
+          reflection: 'What is this card asking you to release?'
+        }
+      }
+
+      return NextResponse.json({ 
+        card, 
+        reading: null,
+        deepReading,
+        remaining: usage.remaining - 1,
+        deepRemaining: (usage.deepRemaining ?? 0) - 1,
+        isDeep: true
+      })
     }
 
     return NextResponse.json({ 

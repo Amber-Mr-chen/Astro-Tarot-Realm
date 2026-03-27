@@ -170,7 +170,7 @@ export default function TarotPage() {
           )}
 
           {/* Deep Reading - Structured */}
-          {result.isDeep && result.deepReading && (
+          {result.isDeep && result.deepReading && result.deepReading.symbol && (
             <div className="space-y-3">
               <div className="rounded-2xl p-5" style={{ backgroundColor: '#1A1A2E', border: '1px solid rgba(155,89,182,0.3)' }}>
                 <h3 className="font-cinzel text-sm font-bold text-gold mb-2 uppercase tracking-wider">✦ Card Energy</h3>
