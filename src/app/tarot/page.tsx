@@ -6,18 +6,23 @@ import Link from 'next/link'
 export default function TarotPage() {
   const { data: session } = useSession()
   const [state, setState] = useState<'idle' | 'loading' | 'done'>('idle')
-  const [result, setResult] = useState<{ card: { name: string; isReversed: boolean }; reading: string; remaining: number } | null>(null)
+  const [result, setResult] = useState<{ card: { name: string; isReversed: boolean }; reading: string; remaining: number; deepRemaining?: number; isDeep?: boolean } | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [saved, setSaved] = useState(false)
+  const [userPlan, setUserPlan] = useState<string>('free')
 
-  async function drawCard() {
+  async function drawCard(deep = false) {
     setState('loading')
     setSaved(false)
     setError(null)
-    const res = await fetch('/api/tarot', { method: 'POST' })
+    const res = await fetch('/api/tarot', { 
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ deep })
+    })
     const data = await res.json()
 
-    if (res.status === 429) {
+    if (res.status === 429 || res.status === 403) {
       setError(data.message)
       setState('idle')
       return
@@ -32,7 +37,7 @@ export default function TarotPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: session.user.email,
-          type: 'tarot',
+          type: deep ? 'tarot-deep' : 'tarot',
           question: null,
           result: `${data.card.name} ${data.card.isReversed ? '(Reversed)' : '(Upright)'}\n\n${data.reading}`
         })
@@ -69,14 +74,28 @@ export default function TarotPage() {
       )}
 
       {state === 'idle' && !error && (
-        <div className="flex gap-6 mb-8">
-          {[0, 1, 2].map((i) => (
-            <button key={i} onClick={drawCard}
-              className="tarot-card w-24 h-40 md:w-32 md:h-52 rounded-xl cursor-pointer transition-all hover:scale-105"
-              style={{ background: 'linear-gradient(135deg, #1A1A2E, #2D1B69)', border: '2px solid #9B59B6' }}>
-              <div className="w-full h-full flex items-center justify-center text-4xl">✦</div>
-            </button>
-          ))}
+        <div className="flex flex-col items-center gap-6 mb-8">
+          <div className="flex gap-6">
+            {[0, 1, 2].map((i) => (
+              <button key={i} onClick={() => drawCard(false)}
+                className="tarot-card w-24 h-40 md:w-32 md:h-52 rounded-xl cursor-pointer transition-all hover:scale-105"
+                style={{ background: 'linear-gradient(135deg, #1A1A2E, #2D1B69)', border: '2px solid #9B59B6' }}>
+                <div className="w-full h-full flex items-center justify-center text-4xl">✦</div>
+              </button>
+            ))}
+          </div>
+          {session ? (
+            <div className="text-center">
+              <p className="text-textSub text-xs mb-2">Pro members:</p>
+              <button onClick={() => drawCard(true)}
+                className="px-6 py-2 rounded-full text-sm font-semibold text-white transition-all hover:opacity-80"
+                style={{ background: 'linear-gradient(135deg, #F39C12, #E67E22)' }}>
+                ✨ Deep Reading (Pro)
+              </button>
+            </div>
+          ) : (
+            <p className="text-textSub text-xs"><Link href="/pricing" className="text-gold underline">Upgrade to Pro</Link> for Deep Readings</p>
+          )}
         </div>
       )}
 
@@ -91,9 +110,15 @@ export default function TarotPage() {
             <div className="text-5xl mb-3">🃏</div>
             <h2 className="font-cinzel text-2xl font-bold text-gold">{result.card.name}</h2>
             <span className="text-textSub text-sm">{result.card.isReversed ? '(Reversed)' : '(Upright)'}</span>
+            {result.isDeep && <div className="mt-2 text-xs text-gold">✨ Deep Reading</div>}
           </div>
           <p className="text-textMain leading-relaxed whitespace-pre-line mb-4">{result.reading}</p>
           {saved && <p className="text-green-400 text-sm text-center mb-4">✓ Reading saved to your history</p>}
+          {result.deepRemaining !== undefined && result.deepRemaining <= 2 && (
+            <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3 mb-4 text-sm text-yellow-200">
+              ⚡ {result.deepRemaining} deep readings left today
+            </div>
+          )}
           {result.remaining <= 1 && !session && (
             <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3 mb-4 text-sm text-yellow-200">
               📌 You have <strong>{result.remaining}</strong> free reading left today. <button onClick={() => signIn('google')} className="underline">Sign in</button> for 3 total.
