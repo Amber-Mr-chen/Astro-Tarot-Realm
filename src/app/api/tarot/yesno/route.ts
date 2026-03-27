@@ -70,9 +70,10 @@ export async function POST(req: NextRequest) {
       '有没有出路', '怎么停止这种感觉', '让想法停止', '不想醒来'
     ]
     const questionLower = question.toLowerCase()
-    const isCrisis = crisisPatterns.some(pattern => questionLower.includes(pattern.toLowerCase()))
+    const hasKeyword = crisisPatterns.some(pattern => questionLower.includes(pattern.toLowerCase()))
 
-    if (isCrisis) {
+    // If keyword detected, immediately return crisis response
+    if (hasKeyword) {
       const crisisReading = deep
         ? 'Your life has profound value and meaning. The pain you\'re experiencing right now is real, but it is not permanent. You deserve support, compassion, and healing. Please reach out to someone who can help - a trusted friend, family member, therapist, or crisis counselor. You are not alone in this darkness, and there is hope for brighter days ahead. Crisis resources are available 24/7: National Suicide Prevention Lifeline (US): 988 | Crisis Text Line: Text HOME to 741741 | International: findahelpline.com. Your story is not over yet.'
         : 'Your life has immense value. This pain you feel is temporary, but your life is precious. Please reach out for support - you deserve help and healing. Crisis resources: National Suicide Prevention Lifeline (US): 988 | Crisis Text Line: Text HOME to 741741 | International: findahelpline.com'
@@ -85,6 +86,37 @@ export async function POST(req: NextRequest) {
         deepRemaining: 999,
         isDeep: deep
       }, { status: 200 })
+    }
+
+    // AI semantic analysis for implicit crisis expressions
+    const ctx = await import('@opennextjs/cloudflare').then(m => m.getCloudflareContext({ async: true }))
+    const ai = (ctx.env as any).AI
+    if (ai) {
+      try {
+        const semanticCheck = await ai.run('@cf/meta/llama-3.1-8b-instruct', {
+          messages: [{
+            role: 'user',
+            content: `Analyze this question for suicidal ideation or severe depression. Reply ONLY "CRISIS" or "SAFE". Question: "${question}"`
+          }],
+          max_tokens: 10
+        })
+        if (semanticCheck.response?.toUpperCase().includes('CRISIS')) {
+          const crisisReading = deep
+            ? 'Your life has profound value and meaning. The pain you\'re experiencing right now is real, but it is not permanent. You deserve support, compassion, and healing. Please reach out to someone who can help - a trusted friend, family member, therapist, or crisis counselor. You are not alone in this darkness, and there is hope for brighter days ahead. Crisis resources are available 24/7: National Suicide Prevention Lifeline (US): 988 | Crisis Text Line: Text HOME to 741741 | International: findahelpline.com. Your story is not over yet.'
+            : 'Your life has immense value. This pain you feel is temporary, but your life is precious. Please reach out for support - you deserve help and healing. Crisis resources: National Suicide Prevention Lifeline (US): 988 | Crisis Text Line: Text HOME to 741741 | International: findahelpline.com'
+          
+          return NextResponse.json({
+            card: { name: 'The Star', isReversed: false },
+            reading: crisisReading,
+            answer: 'You Matter',
+            remaining: 999,
+            deepRemaining: 999,
+            isDeep: deep
+          }, { status: 200 })
+        }
+      } catch {
+        // If AI check fails, continue with normal flow
+      }
     }
 
     const usage = await checkUsageLimit(email, ip)
