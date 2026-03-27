@@ -92,6 +92,12 @@ export async function POST(req: NextRequest) {
         ['pro', newExpiresAt, token.email]
       )
 
+      // 标记订单已完成
+      await d1Query(
+        'UPDATE pending_orders SET status = ?, completed_at = ? WHERE order_id = ?',
+        ['completed', Date.now(), orderID]
+      )
+
       return NextResponse.json({ success: true })
     }
 
