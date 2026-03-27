@@ -10,17 +10,17 @@ export async function generateTarotReading(cardName: string, isReversed: boolean
   }
 
   const prompt = deep
-    ? `You are an ancient oracle. The seeker drew ${cardName} (${position}) and asked: "${question}". Speak directly to them in second person ("you"). Write each section below with the EXACT label shown, followed by a colon and your text. Write 400+ words total across all sections. No asterisks or markdown.
+    ? `You are an ancient oracle. The seeker drew ${cardName} (${position}). Speak directly to them in second person ("you"). Write each section below with the EXACT label shown, followed by a colon and your text. Write 400+ words total across all sections. No asterisks or markdown.
 
-ENERGY: 3-4 sentences on what this card reveals about the seeker and their question right now. Be specific to their situation.
-PAST: 2-3 sentences on the past pattern or choice that brought them to ask this question.
-PRESENT: 2-3 sentences on the energy and circumstances surrounding them today.
-FUTURE: 2-3 sentences on what is opening up if they heed this card's guidance.
-LOVE: 3-4 sentences on how this card speaks to their heart, relationships, and emotional world.
-CAREER: 3-4 sentences on their work, purpose, ambition, and path forward.
-GROWTH: 3 sentences on their inner evolution and what this card asks them to learn.
-ACTION: 2-3 specific, concrete things they can do today based on this card's wisdom.`
-    : `You are a mystic. The seeker drew ${cardName} (${position}) and asked: "${question}". Answer is: ${isReversed ? 'No' : 'Yes'}. Speak directly to them ("you"), warm and clear. Write 2-3 sentences (under 80 words): why the answer is what it is, and one empowering truth. No special formatting.`
+ENERGY: 3-4 sentences on what this card reveals about the seeker right now.
+PAST: 2-3 sentences on the past pattern that brought them here.
+PRESENT: 2-3 sentences on the energy surrounding them today.
+FUTURE: 2-3 sentences on what is opening up ahead.
+LOVE: 3-4 sentences on their heart and relationships.
+CAREER: 3-4 sentences on their work and purpose.
+GROWTH: 3 sentences on their inner evolution.
+ACTION: 2-3 specific, concrete things they can do today.`
+    : `You are a mystic. The seeker drew ${cardName} (${position}). Speak directly to them ("you"), warm and clear. Write 2-3 sentences (under 80 words): the card's core message for today, and one empowering truth. No special formatting.`
 
   const response = await ai.run('@cf/meta/llama-3.1-8b-instruct', {
     messages: [{ role: 'user', content: prompt }],
@@ -40,7 +40,7 @@ export async function generateYesNoReading(question: string, cardName: string, i
   }
 
   const prompt = deep
-    ? `You are a master tarot reader. User asked: "${question}". They drew ${cardName} (${isReversed ? 'REVERSED' : 'UPRIGHT'}). Answer: ${answer}. Write 3 short paragraphs (under 150 words total): 1) Why the answer is ${answer}, 2) Hidden energies at play, 3) Empowering advice. No asterisks or markdown.`
+    ? `You are an ancient oracle. The seeker asked: "${question}". They drew ${cardName} (${isReversed ? 'REVERSED' : 'UPRIGHT'}). The answer is: ${answer}. Speak directly to them in second person ("you"), poetic and personal. Write 400+ words covering: 1) Why the cards say ${answer} (3-4 sentences), 2) What past patterns led to this question (2-3 sentences), 3) Hidden energies at play right now (3-4 sentences), 4) What to watch for moving forward (2-3 sentences), 5) Empowering advice and concrete actions they can take (3-4 sentences). Write in flowing natural paragraphs, no asterisks or markdown.`
     : `User asked: "${question}". They drew ${cardName} (${isReversed ? 'REVERSED' : 'UPRIGHT'}). Answer: ${answer}. Write 2 sentences of explanation and advice (under 60 words). No special symbols.`
 
   const model = deep ? '@cf/meta/llama-3.3-70b-instruct-fp8-fast' : '@cf/meta/llama-3.1-8b-instruct'
