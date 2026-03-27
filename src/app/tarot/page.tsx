@@ -5,16 +5,21 @@ import Link from 'next/link'
 
 export default function TarotPage() {
   const { data: session } = useSession()
-  const [state, setState] = useState<'idle' | 'loading' | 'done'>('idle')
+  const [state, setState] = useState<'idle' | 'flipping' | 'loading' | 'done'>('idle')
   const [result, setResult] = useState<{ card: { name: string; isReversed: boolean }; reading: string; remaining: number; deepRemaining?: number; isDeep?: boolean } | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [saved, setSaved] = useState(false)
   const [userPlan, setUserPlan] = useState<string>('free')
 
   async function drawCard(deep = false) {
-    setState('loading')
+    setState('flipping')
     setSaved(false)
     setError(null)
+    
+    // Wait for flip animation
+    await new Promise(resolve => setTimeout(resolve, 1500))
+    
+    setState('loading')
     const res = await fetch('/api/tarot', { 
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -74,14 +79,45 @@ export default function TarotPage() {
       )}
 
       {state === 'idle' && !error && (
-        <div className="flex gap-6 mb-8">
-          {[0, 1, 2].map((i) => (
-            <button key={i} onClick={() => drawCard(false)}
-              className="tarot-card w-24 h-40 md:w-32 md:h-52 rounded-xl cursor-pointer transition-all hover:scale-105"
-              style={{ background: 'linear-gradient(135deg, #1A1A2E, #2D1B69)', border: '2px solid #9B59B6' }}>
-              <div className="w-full h-full flex items-center justify-center text-4xl">✦</div>
-            </button>
-          ))}
+        <div className="flex flex-col items-center gap-6 mb-8">
+          <p className="text-textSub text-sm">Choose a card — focus your energy and let the universe guide you</p>
+          <div className="flex gap-6">
+            {[0, 1, 2].map((i) => (
+              <button key={i} onClick={() => drawCard(false)}
+                className="group w-28 h-44 md:w-36 md:h-56 rounded-xl cursor-pointer transition-all duration-300 hover:scale-110 hover:-translate-y-2"
+                style={{ background: 'linear-gradient(135deg, #1A1A2E, #2D1B69)', border: '2px solid #9B59B6', boxShadow: '0 0 20px rgba(155,89,182,0.3)' }}>
+                <div className="w-full h-full flex flex-col items-center justify-center gap-2">
+                  <div className="text-4xl group-hover:scale-110 transition-transform">✦</div>
+                  <div className="text-xs text-textSub font-cinzel tracking-wider">TAROT</div>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Flip Animation */}
+      {state === 'flipping' && (
+        <div className="flex flex-col items-center mb-8">
+          <style>{`
+            @keyframes cardFlip {
+              0% { transform: rotateY(0deg) scale(1); }
+              50% { transform: rotateY(90deg) scale(1.2); }
+              100% { transform: rotateY(0deg) scale(1.3); }
+            }
+            @keyframes glow {
+              0%, 100% { box-shadow: 0 0 20px rgba(155,89,182,0.4); }
+              50% { box-shadow: 0 0 60px rgba(155,89,182,0.9), 0 0 100px rgba(243,156,18,0.4); }
+            }
+            .flip-card {
+              animation: cardFlip 1.2s ease-in-out forwards, glow 1.5s ease-in-out infinite;
+            }
+          `}</style>
+          <div className="flip-card w-36 h-56 rounded-xl flex items-center justify-center text-7xl"
+            style={{ background: 'linear-gradient(135deg, #9B59B6, #6C3483)', border: '3px solid #F39C12' }}>
+            🃏
+          </div>
+          <p className="text-gold text-lg mt-6 animate-pulse">Your card is revealing itself...</p>
         </div>
       )}
 
