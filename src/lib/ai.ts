@@ -10,33 +10,25 @@ export async function generateTarotReading(cardName: string, isReversed: boolean
   }
 
   const prompt = deep
-    ? `You are an ancient oracle speaking directly to a seeker. They drew the ${cardName} card (${position}). Speak in second person ("you"), poetic but clear. Return ONLY valid JSON (no extra text):
-{
-  "symbol": "2-3 sentences on the card's core energy and what it reveals about the seeker right now",
-  "timeline": {
-    "past": "1-2 sentences — what past pattern or choice led them here",
-    "present": "1-2 sentences — the energy surrounding them today",
-    "future": "1-2 sentences — what is opening up if they heed this card"
-  },
-  "love": "2-3 sentences on relationships and heart matters",
-  "career": "2-3 sentences on work, purpose, and ambition",
-  "growth": "2-3 sentences on inner work and personal evolution",
-  "action": "One specific, concrete thing they can do today",
-  "reflection": "One powerful question for them to sit with"
-}`
-    : `You are a mystic speaking directly to a seeker. They drew the ${cardName} card (${position}). Speak in second person ("you"), warm and direct. Write 2-3 sentences (under 80 words): the card's core message for today, and one empowering truth. No asterisks or markdown.`
+    ? `You are an ancient oracle speaking directly to a seeker. They drew the ${cardName} card (${position}). Speak in second person ("you"), poetic and personal. Write exactly 7 sections separated by "|||" in this exact order, each section is plain text only, no labels, no asterisks, no markdown:
+1. Card energy (2-3 sentences about what this card reveals right now)
+2. Past (1-2 sentences on what pattern brought them here)
+3. Present (1-2 sentences on today's energy)
+4. Future (1-2 sentences on what is opening up)
+5. Love (2-3 sentences on heart and relationships)
+6. Career (2-3 sentences on work and purpose)
+7. Growth (2 sentences on inner evolution)
+8. Action (one specific concrete thing to do today)
+9. Reflection (one powerful question to sit with, no quotes)
+Separate each section with ||| only. No other separators.`
+    : `You are a mystic speaking directly to a seeker. They drew the ${cardName} card (${position}). Speak in second person ("you"), warm and direct. Write 2-3 sentences (under 80 words): the card's core message for today, and one empowering truth. No asterisks or special formatting.`
 
-  const model = deep ? '@cf/meta/llama-3.3-70b-instruct-fp8-fast' : '@cf/meta/llama-3.1-8b-instruct'
-  const response = await ai.run(model, {
+  const response = await ai.run('@cf/meta/llama-3.1-8b-instruct', {
     messages: [{ role: 'user', content: prompt }],
-    max_tokens: deep ? 1000 : 300
+    max_tokens: deep ? 800 : 300
   })
 
-  if (deep) {
-    // Return raw response for structured parsing in API
-    return response.response || '{}'
-  }
-  return response.response || 'The cards speak of transformation and new beginnings.'
+  return response.response || (deep ? '|||'.repeat(8) : 'The cards speak of transformation and new beginnings.')
 }
 
 export async function generateYesNoReading(question: string, cardName: string, isReversed: boolean, deep = false): Promise<string> {

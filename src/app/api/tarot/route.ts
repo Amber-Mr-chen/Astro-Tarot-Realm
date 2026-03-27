@@ -46,34 +46,18 @@ export async function POST(req: NextRequest) {
     await incrementUsage(email, ip, deep)
 
     if (deep) {
-      let deepReading = null
-      try {
-        // Try to extract JSON from response - model sometimes wraps it in text
-        const jsonMatch = raw.match(/\{[\s\S]*\}/)
-        if (jsonMatch) {
-          const parsed = JSON.parse(jsonMatch[0])
-          // Validate required fields exist
-          if (parsed.symbol && parsed.timeline && parsed.love && parsed.career && parsed.growth && parsed.action && parsed.reflection) {
-            deepReading = parsed
-          }
-        }
-      } catch {
-        deepReading = null
+      // Parse "|||" separated plain text sections
+      const parts = raw.split('|||').map((s: string) => s.trim())
+      const get = (i: number) => parts[i] || ''
+      const deepReading = {
+        symbol: get(0),
+        timeline: { past: get(1), present: get(2), future: get(3) },
+        love: get(4),
+        career: get(5),
+        growth: get(6),
+        action: get(7),
+        reflection: get(8)
       }
-
-      // If JSON parse failed, build a structured object from plain text
-      if (!deepReading) {
-        deepReading = {
-          symbol: raw || 'The card speaks of transformation.',
-          timeline: { past: 'Patterns from your past have shaped this moment.', present: 'Right now, this card calls for your attention.', future: 'Trust the path unfolding before you.' },
-          love: 'Be open and honest in your connections.',
-          career: 'Focus on what truly matters to your purpose.',
-          growth: 'This is a time for inner reflection and growth.',
-          action: 'Take one small step toward your intention today.',
-          reflection: 'What is this card asking you to release?'
-        }
-      }
-
       return NextResponse.json({ 
         card, 
         reading: null,
