@@ -72,9 +72,17 @@ export default function SignPage() {
           </button>
         </div>
       ) : (
-        <div className="rounded-2xl p-6 leading-relaxed text-textSub whitespace-pre-line"
-          style={{ backgroundColor: '#1A1A2E', border: '1px solid rgba(155,89,182,0.3)' }}>
-          {reading}
+        <div className="space-y-4">
+          {reading.split('\n\n').map((section, i) => (
+            <div key={i} className="rounded-2xl p-6 leading-relaxed text-textSub"
+              style={{ backgroundColor: '#1A1A2E', border: '1px solid rgba(155,89,182,0.3)' }}>
+              {section.split('\n').map((line, j) => (
+                <p key={j} className={j === 0 ? 'font-semibold text-textMain mb-2' : ''}>
+                  {line}
+                </p>
+              ))}
+            </div>
+          ))}
         </div>
       )}
 
