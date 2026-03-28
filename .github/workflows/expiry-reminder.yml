@@ -1,0 +1,22 @@
+name: Daily Expiry Reminder
+
+on:
+  schedule:
+    # Run daily at 02:00 UTC (Beijing 10:00)
+    - cron: '0 2 * * *'
+  workflow_dispatch: # Allow manual trigger for testing
+
+jobs:
+  send-reminders:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger expiry reminder
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "x-cron-secret: tarotrealm-cron-2026" \
+            "https://tarotrealm.xyz/api/cron/expiry")
+          echo "Response code: $response"
+          if [ "$response" != "200" ]; then
+            echo "Failed with status $response"
+            exit 1
+          fi
