@@ -13,5 +13,19 @@ export const metadata: Metadata = {
 }
 
 export default function HoroscopeLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Free Daily Horoscope — TarotRealm',
+    url: 'https://tarotrealm.xyz/horoscope',
+    applicationCategory: 'EntertainmentApplication',
+    description: 'Read your free daily horoscope for love, career, and money. All 12 zodiac signs updated daily.',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  }
+  return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      {children}
+    </>
+  )
 }

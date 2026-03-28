@@ -34,6 +34,39 @@ export async function generateMetadata({ params }: { params: Promise<{ sign: str
   }
 }
 
-export default function SignLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>
+export default async function SignLayout({ children, params }: { children: React.ReactNode; params: Promise<{ sign: string }> }) {
+  const { sign } = await params
+  const data = SIGN_META[sign.toLowerCase()]
+  if (!data) return <>{children}</>
+
+  const { name, dates, element } = data
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: `What is the ${name} horoscope for today?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: `${name} (${dates}) is a ${element} sign. Get your free daily ${name} horoscope on TarotRealm for love, career, and money insights updated every day.`,
+        },
+      },
+      {
+        '@type': 'Question',
+        name: `What element is ${name}?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: `${name} is a ${element} sign, born between ${dates}.`,
+        },
+      },
+    ],
+  }
+
+  return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      {children}
+    </>
+  )
 }

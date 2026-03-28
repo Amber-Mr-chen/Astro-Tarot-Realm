@@ -13,5 +13,19 @@ export const metadata: Metadata = {
 }
 
 export default function TarotLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Free Tarot Card Reading — TarotRealm',
+    url: 'https://tarotrealm.xyz/tarot',
+    applicationCategory: 'EntertainmentApplication',
+    description: 'Draw a free tarot card and get an instant personalized reading for love, career, and life guidance.',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  }
+  return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      {children}
+    </>
+  )
 }

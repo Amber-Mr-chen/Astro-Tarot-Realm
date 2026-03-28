@@ -22,8 +22,27 @@ export const metadata: Metadata = {
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const websiteSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'TarotRealm',
+    url: 'https://tarotrealm.xyz',
+    description: 'Free tarot readings, daily horoscopes, birth charts, and zodiac compatibility.',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: 'https://tarotrealm.xyz/horoscope/{search_term_string}',
+      'query-input': 'required name=search_term_string',
+    },
+  }
+
   return (
     <html lang="en">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+        />
+      </head>
       <body className="min-h-screen" style={{ backgroundColor: '#0D0D1A' }}>
         <AuthProvider>
           <nav className="border-b border-purple-900/30 px-4 md:px-6 py-4">

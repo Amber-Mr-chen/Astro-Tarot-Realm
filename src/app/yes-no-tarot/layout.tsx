@@ -13,5 +13,19 @@ export const metadata: Metadata = {
 }
 
 export default function YesNoLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Yes or No Tarot Reading — TarotRealm',
+    url: 'https://tarotrealm.xyz/yes-no-tarot',
+    applicationCategory: 'EntertainmentApplication',
+    description: 'Get an instant Yes or No answer from the tarot cards. Free reading for love, decisions, and life questions.',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  }
+  return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      {children}
+    </>
+  )
 }

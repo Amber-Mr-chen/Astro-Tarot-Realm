@@ -13,5 +13,19 @@ export const metadata: Metadata = {
 }
 
 export default function BirthChartLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Free Birth Chart Reading — TarotRealm',
+    url: 'https://tarotrealm.xyz/birth-chart',
+    applicationCategory: 'EntertainmentApplication',
+    description: 'Discover your Sun, Moon, and Rising signs with a free personalized birth chart reading.',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  }
+  return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      {children}
+    </>
+  )
 }

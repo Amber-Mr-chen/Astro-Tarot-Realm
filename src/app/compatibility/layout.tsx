@@ -13,5 +13,19 @@ export const metadata: Metadata = {
 }
 
 export default function CompatibilityLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Free Zodiac Compatibility Test — TarotRealm',
+    url: 'https://tarotrealm.xyz/compatibility',
+    applicationCategory: 'EntertainmentApplication',
+    description: 'Discover the cosmic chemistry between any two zodiac signs. Love, friendship, and work compatibility.',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  }
+  return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      {children}
+    </>
+  )
 }
