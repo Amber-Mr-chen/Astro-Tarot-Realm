@@ -4,6 +4,7 @@ import AuthProvider from './providers'
 import BackButton from './back-button'
 import AuthButton from './auth-button'
 import MobileNav from './mobile-nav'
+import FeedbackWidget from './feedback-widget'
 
 export const metadata: Metadata = {
   title: 'Free Tarot Reading & Daily Horoscope | TarotRealm',
@@ -71,6 +72,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </div>
           </nav>
           {children}
+          <FeedbackWidget />
           <footer className="border-t border-purple-900/30 mt-16 py-8 px-6">
             <div className="max-w-6xl mx-auto text-center text-textSub text-sm space-y-3">
               <div className="flex justify-center gap-6">
