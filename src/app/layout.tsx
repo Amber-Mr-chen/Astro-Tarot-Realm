@@ -3,6 +3,7 @@ import './globals.css'
 import AuthProvider from './providers'
 import BackButton from './back-button'
 import AuthButton from './auth-button'
+import MobileNav from './mobile-nav'
 
 export const metadata: Metadata = {
   title: 'Free Tarot Reading & Daily Horoscope | TarotRealm',
@@ -34,15 +35,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 </a>
               </div>
               <div className="flex items-center gap-3 md:gap-5">
-                <div className="flex gap-3 md:gap-4 text-xs md:text-sm text-textSub">
+                {/* Desktop nav links */}
+                <div className="hidden md:flex gap-4 text-sm text-textSub">
                   <a href="/tarot" className="hover:text-gold transition-colors">Tarot</a>
-                  <a href="/yes-no-tarot" className="hover:text-gold transition-colors hidden sm:inline">Yes/No</a>
-                  <a href="/horoscope" className="hover:text-gold transition-colors hidden sm:inline">Horoscope</a>
-                  <a href="/birth-chart" className="hover:text-gold transition-colors hidden md:inline">Birth Chart</a>
-                  <a href="/compatibility" className="hover:text-gold transition-colors hidden md:inline">Compatibility</a>
-                  <a href="/history" className="hover:text-gold transition-colors hidden md:inline">History</a>
+                  <a href="/yes-no-tarot" className="hover:text-gold transition-colors">Yes/No</a>
+                  <a href="/horoscope" className="hover:text-gold transition-colors">Horoscope</a>
+                  <a href="/birth-chart" className="hover:text-gold transition-colors">Birth Chart</a>
+                  <a href="/compatibility" className="hover:text-gold transition-colors">Compatibility</a>
+                  <a href="/history" className="hover:text-gold transition-colors">History</a>
                   <a href="/pricing" className="hover:text-gold transition-colors" style={{ color: '#F39C12' }}>Pro ✨</a>
                 </div>
+                {/* Mobile hamburger menu */}
+                <MobileNav />
                 <AuthButton />
               </div>
             </div>
