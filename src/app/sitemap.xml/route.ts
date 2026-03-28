@@ -11,13 +11,14 @@ export async function GET() {
   const today = new Date().toISOString().split('T')[0]
 
   const staticPages = [
-    { url: '/',           priority: '1.0', changefreq: 'daily' },
-    { url: '/tarot',      priority: '0.9', changefreq: 'daily' },
+    { url: '/',             priority: '1.0', changefreq: 'daily' },
+    { url: '/tarot',        priority: '0.9', changefreq: 'daily' },
     { url: '/yes-no-tarot', priority: '0.9', changefreq: 'daily' },
-    { url: '/horoscope',  priority: '0.9', changefreq: 'daily' },
-    { url: '/pricing',    priority: '0.7', changefreq: 'monthly' },
-    { url: '/terms',      priority: '0.3', changefreq: 'monthly' },
-    { url: '/privacy',    priority: '0.3', changefreq: 'monthly' },
+    { url: '/horoscope',    priority: '0.9', changefreq: 'daily' },
+    { url: '/birth-chart',  priority: '0.8', changefreq: 'weekly' },
+    { url: '/pricing',      priority: '0.7', changefreq: 'monthly' },
+    { url: '/terms',        priority: '0.3', changefreq: 'monthly' },
+    { url: '/privacy',      priority: '0.3', changefreq: 'monthly' },
   ]
 
   const signPages = ZODIAC_SIGNS.map(sign => ({

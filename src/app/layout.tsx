@@ -38,6 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   <a href="/tarot" className="hover:text-gold transition-colors">Tarot</a>
                   <a href="/yes-no-tarot" className="hover:text-gold transition-colors hidden sm:inline">Yes/No</a>
                   <a href="/horoscope" className="hover:text-gold transition-colors hidden sm:inline">Horoscope</a>
+                  <a href="/birth-chart" className="hover:text-gold transition-colors hidden md:inline">Birth Chart</a>
                   <a href="/history" className="hover:text-gold transition-colors hidden md:inline">History</a>
                   <a href="/pricing" className="hover:text-gold transition-colors" style={{ color: '#F39C12' }}>Pro ✨</a>
                 </div>
