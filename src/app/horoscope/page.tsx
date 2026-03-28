@@ -58,7 +58,7 @@ export default function HoroscopePage() {
     }
 
     if (res.status === 500 || !data.horoscope) {
-      setError('Something went wrong. Please try again.')
+      setError(`Error: ${data.detail || data.error || 'Something went wrong. Please try again.'}`)
       if (!deep) setState('idle')
       return
     }

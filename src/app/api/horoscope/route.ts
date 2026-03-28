@@ -98,7 +98,8 @@ export async function POST(req: NextRequest) {
       plan: usage.plan,
       isDeep: deep
     })
-  } catch (e) {
-    return NextResponse.json({ error: 'Failed to generate horoscope' }, { status: 500 })
+  } catch (e: any) {
+    console.error('[horoscope] error:', e?.message ?? e)
+    return NextResponse.json({ error: 'Failed to generate horoscope', detail: e?.message ?? String(e) }, { status: 500 })
   }
 }
