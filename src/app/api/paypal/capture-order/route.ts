@@ -88,7 +88,7 @@ export async function POST(req: NextRequest) {
       }
 
       await d1Query(
-        'UPDATE users SET plan = ?, plan_expires_at = ? WHERE email = ?',
+        'UPDATE users SET plan = ?, plan_expires_at = ?, expiry_reminder_sent = 0 WHERE email = ?',
         ['pro', newExpiresAt, token.email]
       )
 
