@@ -87,6 +87,7 @@ function ReadingCard({ reading }: { reading: Reading }) {
   return (
     <div
       className="rounded-2xl p-5 transition-all"
+      translate="no"
       style={{
         backgroundColor: '#1A1A2E',
         border: '1px solid rgba(155,89,182,0.25)',
