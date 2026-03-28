@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useSession, signIn } from 'next-auth/react'
 import { ZODIAC_SIGNS } from '@/lib/tarot'
 import Link from 'next/link'
@@ -15,7 +15,7 @@ function Stars({ count }: { count: number }) {
 }
 
 export default function HoroscopePage() {
-  const { data: session, status } = useSession()
+  const { data: session } = useSession()
   const [selected, setSelected] = useState<string | null>(null)
   const [state, setState] = useState<'idle' | 'loading' | 'done'>('idle')
   const [horoscope, setHoroscope] = useState<Horoscope | null>(null)
@@ -25,19 +25,8 @@ export default function HoroscopePage() {
   const [remaining, setRemaining] = useState<number | null>(null)
   const [deepRemaining, setDeepRemaining] = useState<number | null>(null)
   const [deepLoading, setDeepLoading] = useState(false)
-  const [userPlan, setUserPlan] = useState<string>('free')
-
-  // Fetch user plan on mount, after session loads
-  useEffect(() => {
-    if (status === 'loading') return
-    fetch('/api/usage')
-      .then(r => r.json())
-      .then(data => {
-        setUserPlan(data.plan ?? 'free')
-        setDeepRemaining(data.deepRemaining ?? null)
-      })
-      .catch(() => {})
-  }, [status])
+  // plan comes from API response after first reading
+  const [userPlan, setUserPlan] = useState<string | null>(null)
 
   const isPro = userPlan === 'pro'
 
@@ -70,22 +59,67 @@ export default function HoroscopePage() {
 
     setHoroscope(data.horoscope)
     setRemaining(data.remaining ?? null)
-    if (data.deepRemaining !== undefined) setDeepRemaining(data.deepRemaining)
+    if (typeof data.deepRemaining === 'number') setDeepRemaining(data.deepRemaining)
+    if (data.plan) setUserPlan(data.plan)
     setIsDeep(deep)
     setState('done')
 
     if (session?.user?.email) {
-      const resultText = `Love: ${data.horoscope.love.stars}★ - ${data.horoscope.love.text}\n\nCareer: ${data.horoscope.career.stars}★ - ${data.horoscope.career.text}\n\nMoney: ${data.horoscope.money.stars}★ - ${data.horoscope.money.text}`
-      await fetch('/api/reading/save', {
+      const h = data.horoscope
+      const resultText = `Love: ${h.love.stars}★ - ${h.love.text}\n\nCareer: ${h.career.stars}★ - ${h.career.text}\n\nMoney: ${h.money.stars}★ - ${h.money.text}`
+      fetch('/api/reading/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: session.user.email, type: 'horoscope', question: sign, result: resultText })
-      })
-      setSaved(true)
+      }).then(() => setSaved(true))
     }
   }
 
   const selectedSign = ZODIAC_SIGNS.find(z => z.name === selected)
+
+  // Deep reading button content
+  function DeepReadingSection() {
+    if (!session) {
+      return (
+        <button onClick={() => signIn('google')}
+          className="px-6 py-2 rounded-full text-sm font-semibold text-white"
+          style={{ background: 'linear-gradient(135deg, #9B59B6, #6C3483)' }}>
+          Sign In to Continue
+        </button>
+      )
+    }
+
+    // userPlan is null before first reading — show upgrade prompt for non-pro hint
+    if (userPlan === null || !isPro) {
+      return (
+        <Link href="/pricing"
+          className="inline-block px-8 py-3 rounded-full text-sm font-semibold text-white transition-all hover:opacity-80"
+          style={{ background: 'linear-gradient(135deg, #F39C12, #E67E22)' }}>
+          Upgrade to Pro →
+        </Link>
+      )
+    }
+
+    // Pro user
+    if (deepRemaining !== null && deepRemaining <= 0) {
+      return <p className="text-textSub text-sm">You&apos;ve used all 10 deep readings today. Come back tomorrow!</p>
+    }
+
+    return (
+      <div>
+        <button
+          onClick={() => { if (selected) getHoroscope(selected, true) }}
+          disabled={deepLoading}
+          className="px-8 py-3 rounded-full text-sm font-semibold text-white transition-all hover:opacity-80 disabled:opacity-50"
+          style={{ background: 'linear-gradient(135deg, #F39C12, #E67E22)' }}>
+          {deepLoading ? 'Reading the stars...' : `✨ Get Deep Reading for ${selected}`}
+        </button>
+        {deepRemaining !== null && deepRemaining > 0 && (
+          <p className="text-textSub text-xs mt-2">{deepRemaining} deep readings remaining today</p>
+        )}
+      </div>
+    )
+  }
 
   return (
     <main className="min-h-screen px-6 py-16 max-w-4xl mx-auto">
@@ -95,18 +129,18 @@ export default function HoroscopePage() {
         <p className="text-textSub max-w-md mx-auto">Select your zodiac sign for your personalized daily forecast.</p>
       </div>
 
-      {/* Login / upgrade hint */}
+      {/* Banner */}
       {!session ? (
         <div className="rounded-xl p-3 mb-6 text-center text-sm"
           style={{ backgroundColor: 'rgba(155,89,182,0.1)', border: '1px solid rgba(155,89,182,0.3)' }}>
           ✨ <button onClick={() => signIn('google')} className="text-gold underline">Sign in</button> for 3 free readings/day · <Link href="/pricing" className="text-gold underline">Upgrade to Pro</Link> for unlimited + deep readings
         </div>
-      ) : !isPro ? (
+      ) : (
         <div className="rounded-xl p-3 mb-6 text-center text-sm"
           style={{ backgroundColor: 'rgba(243,156,18,0.08)', border: '1px solid rgba(243,156,18,0.2)' }}>
           🌟 Want deeper insights? <Link href="/pricing" className="text-gold underline">Upgrade to Pro</Link> to unlock Deep Readings (10/day)
         </div>
-      ) : null}
+      )}
 
       {/* Error */}
       {error && (
@@ -151,10 +185,12 @@ export default function HoroscopePage() {
                 style={{ color: isSelected ? '#fff' : z.color }}>
                 {z.name}
               </div>
-              <div className="text-lg relative z-10 mt-1" style={{ color: isSelected ? 'rgba(255,255,255,0.7)' : z.color + 'aa' }}>
+              <div className="text-lg relative z-10 mt-1"
+                style={{ color: isSelected ? 'rgba(255,255,255,0.7)' : z.color + 'aa' }}>
                 {z.symbol}
               </div>
-              <div className="text-xs mt-1 relative z-10" style={{ color: isSelected ? 'rgba(255,255,255,0.6)' : z.color + '88' }}>
+              <div className="text-xs mt-1 relative z-10"
+                style={{ color: isSelected ? 'rgba(255,255,255,0.6)' : z.color + '88' }}>
                 {z.dates}
               </div>
             </button>
@@ -164,14 +200,17 @@ export default function HoroscopePage() {
 
       {/* Loading */}
       {state === 'loading' && (
-        <div className="text-center text-primary text-lg animate-pulse py-8">Reading the stars for {selected}...</div>
+        <div className="text-center text-primary text-lg animate-pulse py-8">
+          Reading the stars for {selected}...
+        </div>
       )}
 
       {/* Results */}
       {state === 'done' && horoscope && (
         <div className="space-y-4">
-          <h2 className="font-cinzel text-2xl text-center mb-6" style={{ color: selectedSign?.color ?? '#F39C12' }}>
-            {selectedSign?.emoji} {selected} — Today's Reading
+          <h2 className="font-cinzel text-2xl text-center mb-6"
+            style={{ color: selectedSign?.color ?? '#F39C12' }}>
+            {selectedSign?.emoji} {selected} — Today&apos;s Reading
             {isDeep && <span className="text-xs ml-2 text-gold">✨ Deep</span>}
           </h2>
 
@@ -192,63 +231,28 @@ export default function HoroscopePage() {
 
           {saved && <p className="text-green-400 text-sm text-center">✓ Reading saved to your history</p>}
 
-          {/* Deep Reading upsell — shown after standard reading only */}
+          {/* Deep Reading upsell */}
           {!isDeep && (
             <div className="rounded-2xl p-6 text-center mt-4"
               style={{ background: 'linear-gradient(135deg, rgba(243,156,18,0.08), rgba(155,89,182,0.08))', border: '1px solid rgba(243,156,18,0.3)' }}>
               <div className="text-gold font-cinzel text-lg mb-2">✨ Unlock Your Deep Reading</div>
               <p className="text-textSub text-sm mb-4">
-                Detailed planetary insights, deeper love & career analysis — exclusively for Pro members.
+                Detailed planetary insights, deeper love &amp; career analysis — exclusively for Pro members.
               </p>
-
-              {/* Not logged in */}
-              {!session && (
-                <button onClick={() => signIn('google')}
-                  className="px-6 py-2 rounded-full text-sm font-semibold text-white"
-                  style={{ background: 'linear-gradient(135deg, #9B59B6, #6C3483)' }}>
-                  Sign In to Continue
-                </button>
-              )}
-
-              {/* Logged in, not Pro → show upgrade */}
-              {session && !isPro && (
-                <Link href="/pricing"
-                  className="inline-block px-8 py-3 rounded-full text-sm font-semibold text-white transition-all hover:opacity-80"
-                  style={{ background: 'linear-gradient(135deg, #F39C12, #E67E22)' }}>
-                  Upgrade to Pro →
-                </Link>
-              )}
-
-              {/* Pro user, quota available */}
-              {session && isPro && (deepRemaining === null || deepRemaining > 0) && (
-                <button
-                  onClick={() => selected && getHoroscope(selected, true)}
-                  disabled={deepLoading}
-                  className="px-8 py-3 rounded-full text-sm font-semibold text-white transition-all hover:opacity-80 disabled:opacity-50"
-                  style={{ background: 'linear-gradient(135deg, #F39C12, #E67E22)' }}>
-                  {deepLoading ? 'Reading the stars...' : `✨ Get Deep Reading for ${selected}`}
-                </button>
-              )}
-
-              {/* Pro user, quota exhausted */}
-              {session && isPro && deepRemaining !== null && deepRemaining <= 0 && (
-                <p className="text-textSub text-sm">You've used all 10 deep readings today. Come back tomorrow!</p>
-              )}
-
-              {session && isPro && deepRemaining !== null && deepRemaining > 0 && (
-                <p className="text-textSub text-xs mt-2">{deepRemaining} deep readings remaining today</p>
-              )}
+              <DeepReadingSection />
             </div>
           )}
 
           {/* Low usage warning */}
           {remaining !== null && remaining <= 1 && session && !isPro && (
             <div className="bg-purple-500/10 border border-purple-500/30 rounded-lg p-3 text-sm text-purple-200 text-center">
-              🌟 Only <strong>{remaining}</strong> reading left today. <Link href="/pricing" className="underline text-gold">Upgrade to Pro</Link> for unlimited reads.
+              🌟 Only <strong>{remaining}</strong> reading left today.{' '}
+              <Link href="/pricing" className="underline text-gold">Upgrade to Pro</Link> for unlimited reads.
             </div>
           )}
 
-          <button onClick={() => { setState('idle'); setSelected(null); setHoroscope(null); setSaved(false); setIsDeep(false) }}
+          <button
+            onClick={() => { setState('idle'); setSelected(null); setHoroscope(null); setSaved(false); setIsDeep(false) }}
             className="w-full mt-4 py-3 rounded-full text-sm font-semibold transition-all hover:opacity-80"
             style={{ background: 'linear-gradient(135deg, #9B59B6, #6C3483)', color: 'white' }}>
             Check Another Sign
