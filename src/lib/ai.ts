@@ -81,7 +81,7 @@ export async function generateHoroscope(sign: string, date: string, deep = false
   const model = deep ? '@cf/meta/llama-3.3-70b-instruct-fp8-fast' : '@cf/meta/llama-3.1-8b-instruct'
   const response = await ai.run(model, {
     messages: [{ role: 'user', content: prompt }],
-    max_tokens: deep ? 800 : 400
+    max_tokens: deep ? 1200 : 400
   })
 
   return String(response.response || '{}')
