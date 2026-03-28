@@ -102,8 +102,18 @@ export default function TarotPage() {
     setState('done')
 
     if (session?.user?.email) {
-      const saveText = deep
-        ? `${data.card?.name} ${data.card?.isReversed ? '(Reversed)' : '(Upright)'}\n\n${data.deepReading ?? data.reading ?? ''}`
+      const saveText = deep && data.deepReading
+        ? [
+            data.card?.name + ' ' + (data.card?.isReversed ? '(Reversed)' : '(Upright)'),
+            data.deepReading.symbol ? `ENERGY:\n${data.deepReading.symbol}` : '',
+            data.deepReading.timeline?.past ? `PAST:\n${data.deepReading.timeline.past}` : '',
+            data.deepReading.timeline?.present ? `PRESENT:\n${data.deepReading.timeline.present}` : '',
+            data.deepReading.timeline?.future ? `FUTURE:\n${data.deepReading.timeline.future}` : '',
+            data.deepReading.love ? `LOVE:\n${data.deepReading.love}` : '',
+            data.deepReading.career ? `CAREER:\n${data.deepReading.career}` : '',
+            data.deepReading.growth ? `GROWTH:\n${data.deepReading.growth}` : '',
+            data.deepReading.action ? `ACTION:\n${data.deepReading.action}` : '',
+          ].filter(Boolean).join('\n\n')
         : `${data.card?.name} ${data.card?.isReversed ? '(Reversed)' : '(Upright)'}\n\n${data.reading ?? ''}`
       await fetch('/api/reading/save', {
         method: 'POST',

@@ -64,12 +64,15 @@ function parseResult(type: string, result: string): { summary: string; full: str
     return { summary, full: result }
   }
 
-  // Tarot — "Card Name (Upright)\n\nReading text"
+  // Tarot — "Card Name (Upright)\n\nReading text" or deep with labeled sections
   const lines = result.split('\n').filter(Boolean)
   const cardLine = lines[0] ?? ''
   const body = lines.slice(1).join('\n').trim()
+  // Deep tarot has labeled sections (ENERGY:, PAST:, etc.) — show first section as summary
+  const firstSection = body.split('\n\n')[0] ?? ''
+  const summaryText = firstSection.length > 20 ? firstSection : body.slice(0, 200)
   return {
-    summary: `${cardLine}${body ? '\n' + body.slice(0, 150) : ''}`,
+    summary: `${cardLine}${summaryText ? '\n\n' + summaryText : ''}`,
     full: result
   }
 }
