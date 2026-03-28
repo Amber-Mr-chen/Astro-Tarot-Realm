@@ -9,19 +9,18 @@ export type UsageCheck = {
 
 export async function getDB() {
   try {
-    // Try sync first (works in production worker context)
-    const ctx = getCloudflareContext()
-    const db = (ctx?.env as any)?.DB
-    if (db) return db
-  } catch {
-    // fall through to async
-  }
-  try {
     const ctx = await getCloudflareContext({ async: true })
     const db = (ctx?.env as any)?.DB
     if (db) return db
   } catch {
     // fall through
+  }
+  try {
+    const ctx = getCloudflareContext()
+    const db = (ctx?.env as any)?.DB
+    if (db) return db
+  } catch {
+    // not available
   }
   return null
 }

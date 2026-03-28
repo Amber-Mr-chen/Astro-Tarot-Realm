@@ -117,21 +117,37 @@ export default function HoroscopePage() {
         </div>
       )}
 
-      {/* Zodiac grid — bigger, colorful, always visible */}
+      {/* Zodiac grid */}
       <div className="grid grid-cols-3 md:grid-cols-4 gap-4 mb-8">
         {ZODIAC_SIGNS.map((z) => {
           const isSelected = selected === z.name
           return (
             <button key={z.name} onClick={() => getHoroscope(z.name, false)}
-              className="rounded-2xl p-4 text-center transition-all hover:scale-105 hover:shadow-lg"
+              className="rounded-2xl p-5 text-center transition-all hover:scale-105 relative overflow-hidden"
               style={{
-                backgroundColor: isSelected ? z.color : z.bg,
-                border: `2px solid ${isSelected ? z.color : z.color + '55'}`,
-                boxShadow: isSelected ? `0 0 20px ${z.color}55` : 'none',
+                backgroundColor: isSelected ? z.color + 'cc' : z.bg,
+                border: `2px solid ${isSelected ? z.color : z.color + '66'}`,
+                boxShadow: isSelected ? `0 0 24px ${z.color}88` : `0 2px 12px ${z.color}22`,
               }}>
-              <div className="text-4xl mb-2" style={{ color: isSelected ? '#fff' : z.color }}>{z.emoji}</div>
-              <div className="font-cinzel font-bold text-sm" style={{ color: isSelected ? '#fff' : z.color }}>{z.name}</div>
-              <div className="text-xs mt-1 opacity-70" style={{ color: isSelected ? '#fff' : z.color }}>{z.dates}</div>
+              {/* Background symbol watermark */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none"
+                style={{ fontSize: '5rem', opacity: 0.07, color: z.color }}>
+                {z.symbol}
+              </div>
+              {/* Emoji */}
+              <div className="text-4xl mb-2 relative z-10">{z.emoji}</div>
+              {/* Name */}
+              <div className="font-cinzel font-bold text-sm relative z-10"
+                style={{ color: isSelected ? '#fff' : z.color }}>
+                {z.name}
+              </div>
+              {/* Symbol small */}
+              <div className="text-lg relative z-10 mt-1" style={{ color: isSelected ? 'rgba(255,255,255,0.7)' : z.color + 'aa' }}>
+                {z.symbol}
+              </div>
+              <div className="text-xs mt-1 relative z-10" style={{ color: isSelected ? 'rgba(255,255,255,0.6)' : z.color + '88' }}>
+                {z.dates}
+              </div>
             </button>
           )
         })}
