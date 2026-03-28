@@ -83,5 +83,5 @@ export async function generateHoroscope(sign: string, date: string, deep = false
     max_tokens: deep ? 800 : 400
   })
 
-  return response.response || '{}'
+  return String(response.response || '{}')
 }

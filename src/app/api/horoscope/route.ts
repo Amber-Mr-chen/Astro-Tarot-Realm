@@ -58,34 +58,27 @@ export async function POST(req: NextRequest) {
       })
     }
 
+    const fallback = {
+      love: { text: "The stars are aligning for your heart. Trust the process.", stars: 3 },
+      career: { text: "Focus on what matters most today. Progress is coming.", stars: 3 },
+      money: { text: "Be mindful of your spending. Stability is within reach.", stars: 3 }
+    }
+
     const raw = await generateHoroscope(sign, date, deep)
-    const jsonMatch = raw.match(/\{[\s\S]*\}/)
+    const rawStr = String(raw)
+    const jsonMatch = rawStr.match(/\{[\s\S]*\}/)
     if (!jsonMatch) {
-      // AI returned invalid JSON — return safe fallback
-      const fallback = {
-        love: { text: "The stars are aligning for your heart. Trust the process.", stars: 3 },
-        career: { text: "Focus on what matters most today. Progress is coming.", stars: 3 },
-        money: { text: "Be mindful of your spending. Stability is within reach.", stars: 3 }
-      }
       await incrementUsage(email, ip, deep)
-      return NextResponse.json({
-        horoscope: fallback,
-        remaining: usage.remaining - 1,
-        deepRemaining: deep ? (usage.deepRemaining ?? 0) - 1 : usage.deepRemaining,
-        plan: usage.plan,
-        isDeep: deep
-      })
+      return NextResponse.json({ horoscope: fallback, remaining: usage.remaining - 1, deepRemaining: deep ? (usage.deepRemaining ?? 0) - 1 : usage.deepRemaining, plan: usage.plan, isDeep: deep })
     }
 
     let horoscopeData
     try {
       horoscopeData = JSON.parse(jsonMatch[0])
-    } catch {
-      const fallback = {
-        love: { text: "The stars are aligning for your heart. Trust the process.", stars: 3 },
-        career: { text: "Focus on what matters most today. Progress is coming.", stars: 3 },
-        money: { text: "Be mindful of your spending. Stability is within reach.", stars: 3 }
+      if (!horoscopeData.love || !horoscopeData.career || !horoscopeData.money) {
+        horoscopeData = fallback
       }
+    } catch {
       horoscopeData = fallback
     }
 
