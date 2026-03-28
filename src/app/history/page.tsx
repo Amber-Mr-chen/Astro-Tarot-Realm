@@ -22,10 +22,12 @@ const TYPE_META: Record<string, { label: string; icon: string; color: string }> 
 
 // Parse result field into a clean display object
 function parseResult(type: string, result: string): { summary: string; full: string } {
+  const trimmed = result.trim()
+
   // Horoscope — stored as JSON
   if (type === 'horoscope') {
     try {
-      const parsed = JSON.parse(result)
+      const parsed = JSON.parse(trimmed)
       const parts: string[] = []
       for (const key of ['energy', 'love', 'career', 'money', 'advice']) {
         const val = parsed[key]
@@ -33,47 +35,48 @@ function parseResult(type: string, result: string): { summary: string; full: str
         else if (typeof val === 'string') parts.push(val)
       }
       const full = parts.join('\n\n')
-      return { summary: parts[0] ?? result, full: full || result }
+      return { summary: parts[0] ?? trimmed, full: full || trimmed }
     } catch {
-      return { summary: result.slice(0, 200), full: result }
+      return { summary: trimmed.slice(0, 200), full: trimmed }
     }
   }
 
   // Birth chart or compatibility — stored as JSON
   if (type === 'birth-chart' || type === 'compatibility') {
     try {
-      const parsed = JSON.parse(result)
+      const parsed = JSON.parse(trimmed)
       const parts: string[] = []
       for (const key of ['overall', 'identity', 'emotion', 'strength', 'love', 'career', 'purpose', 'challenge', 'advice']) {
         if (typeof parsed[key] === 'string') parts.push(parsed[key])
       }
       const full = parts.join('\n\n')
-      return { summary: parts[0] ?? result, full: full || result }
+      return { summary: parts[0] ?? trimmed, full: full || trimmed }
     } catch {
-      return { summary: result.slice(0, 200), full: result }
+      return { summary: trimmed.slice(0, 200), full: trimmed }
     }
   }
 
   // Yes/No — "Answer: Yes\nCard Name\n\nReading text"
   if (type === 'yes-no' || type === 'yes-no-deep') {
-    const lines = result.split('\n').filter(Boolean)
-    const answerLine = lines[0] ?? ''
-    const cardLine = lines[1] ?? ''
+    const lines = trimmed.split('\n').filter(Boolean)
+    const header = lines.slice(0, 2).join(' · ')
     const body = lines.slice(2).join('\n').trim()
-    const summary = `${answerLine} · ${cardLine}${body ? '\n' + body.slice(0, 150) : ''}`
-    return { summary, full: result }
+    return {
+      summary: header + (body ? '\n' + body.slice(0, 150) : ''),
+      full: trimmed,
+    }
   }
 
-  // Tarot — "Card Name (Upright)\n\nReading text" or deep with labeled sections
-  const lines = result.split('\n').filter(Boolean)
+  // Tarot (regular and deep) — first line is card name, rest is reading
+  // Deep tarot has labeled sections: ENERGY:\n...\n\nPAST:\n...
+  const lines = trimmed.split('\n').filter(Boolean)
   const cardLine = lines[0] ?? ''
-  const body = lines.slice(1).join('\n').trim()
-  // Deep tarot has labeled sections (ENERGY:, PAST:, etc.) — show first section as summary
-  const firstSection = body.split('\n\n')[0] ?? ''
-  const summaryText = firstSection.length > 20 ? firstSection : body.slice(0, 200)
+  const body = trimmed.slice(cardLine.length).trim()
+  // Summary = card name + first paragraph only (up to first double newline)
+  const firstPara = body.split('\n\n')[0]?.trim() ?? ''
   return {
-    summary: `${cardLine}${summaryText ? '\n\n' + summaryText : ''}`,
-    full: result
+    summary: cardLine + (firstPara ? '\n\n' + firstPara : ''),
+    full: trimmed,
   }
 }
 
@@ -81,7 +84,8 @@ function ReadingCard({ reading }: { reading: Reading }) {
   const [expanded, setExpanded] = useState(false)
   const meta = TYPE_META[reading.type] ?? { label: reading.type, icon: '📖', color: '#9B59B6' }
   const { summary, full } = parseResult(reading.type, reading.result)
-  const hasMore = full.length > summary.length + 10
+  // Has more if full content is meaningfully longer than summary (more than 50 chars difference)
+  const hasMore = full.trim().length > summary.trim().length + 50
 
   const date = new Date(reading.created_at).toLocaleDateString('en-US', {
     month: 'short', day: 'numeric', year: 'numeric'
