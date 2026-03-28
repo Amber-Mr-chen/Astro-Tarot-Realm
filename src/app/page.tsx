@@ -81,23 +81,12 @@ export default function Home() {
         <p className="text-textSub text-base md:text-lg max-w-xl mb-10">
           Personalized tarot readings, daily horoscopes, birth charts, and compatibility reports — all grounded in real astrological tradition. No signup required.
         </p>
-        <div className="flex flex-col sm:flex-row gap-3 flex-wrap justify-center">
-          <Link href="/tarot"
-            className="px-7 py-3.5 rounded-full font-semibold text-white transition-all hover:scale-105"
-            style={{ background: 'linear-gradient(135deg, #9B59B6, #6C3483)' }}>
-            🃏 Daily Tarot Reading
-          </Link>
-          <Link href="/yes-no-tarot"
-            className="px-7 py-3.5 rounded-full font-semibold transition-all hover:scale-105 border"
-            style={{ borderColor: '#F39C12', color: '#F39C12' }}>
-            ✨ Yes or No Tarot
-          </Link>
-          <Link href="/horoscope"
-            className="px-7 py-3.5 rounded-full font-semibold transition-all hover:scale-105 border"
-            style={{ borderColor: '#9B59B6', color: '#9B59B6' }}>
-            ⭐ Daily Horoscope
-          </Link>
-        </div>
+        <Link href="/tarot"
+          className="px-8 py-4 rounded-full font-semibold text-bg transition-all hover:scale-105 text-base"
+          style={{ background: 'linear-gradient(135deg, #C9A84C, #E8C96D)' }}>
+          ✦ Start Free Reading
+        </Link>
+        <p className="text-textSub text-xs mt-4">No signup required · All 5 features free to try</p>
       </section>
 
       {/* ── Feature Cards ── */}
@@ -159,29 +148,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── Bottom CTA ── */}
+      {/* ── Bottom note ── */}
       <section className="text-center pb-24">
-        <h2 className="font-cinzel text-2xl md:text-3xl font-bold text-textMain mb-3">
-          Ready to Begin?
-        </h2>
-        <p className="text-textSub text-sm mb-7">Choose a reading and let the stars speak</p>
-        <div className="flex flex-col sm:flex-row gap-3 justify-center flex-wrap">
-          <Link href="/tarot"
-            className="px-7 py-3.5 rounded-full font-semibold text-bg transition-all hover:scale-105"
-            style={{ background: 'linear-gradient(135deg, #C9A84C, #E8C96D)' }}>
-            🃏 Start Tarot Reading
-          </Link>
-          <Link href="/birth-chart"
-            className="px-7 py-3.5 rounded-full font-semibold transition-all hover:scale-105 border"
-            style={{ borderColor: '#C9A84C', color: '#C9A84C' }}>
-            🌌 Explore Your Birth Chart
-          </Link>
-          <Link href="/compatibility"
-            className="px-7 py-3.5 rounded-full font-semibold transition-all hover:scale-105 border"
-            style={{ borderColor: '#9B59B6', color: '#9B59B6' }}>
-            💫 Check Compatibility
-          </Link>
-        </div>
+        <p className="text-textSub text-xs">✦ All readings are free to try · Upgrade to Pro for unlimited access ✦</p>
       </section>
 
     </main>
