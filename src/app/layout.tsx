@@ -5,8 +5,28 @@ import BackButton from './back-button'
 import AuthButton from './auth-button'
 
 export const metadata: Metadata = {
-  title: 'Free Tarot Reading & Astrology | TarotRealm',
-  description: 'Get your free tarot card reading and daily horoscope. Personalized astrology readings in seconds. No signup required.',
+  title: 'Free Tarot Reading & Daily Horoscope | TarotRealm',
+  description: 'Get your free tarot card reading and daily horoscope. Yes/No tarot, daily astrology for all 12 zodiac signs. Personalized readings in seconds.',
+  keywords: 'free tarot reading, daily horoscope, yes no tarot, astrology, zodiac signs, tarot cards online',
+  metadataBase: new URL('https://tarotrealm.xyz'),
+  alternates: {
+    canonical: 'https://tarotrealm.xyz',
+  },
+  openGraph: {
+    title: 'Free Tarot Reading & Daily Horoscope | TarotRealm',
+    description: 'Get your free tarot card reading and daily horoscope. Personalized astrology readings in seconds.',
+    url: 'https://tarotrealm.xyz',
+    siteName: 'TarotRealm',
+    type: 'website',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
