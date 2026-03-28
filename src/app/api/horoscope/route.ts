@@ -7,14 +7,29 @@ import { getToken } from 'next-auth/jwt'
 const CACHE_VERSION = 'v2'
 const cache = new Map<string, string>()
 
-const deepFallback = {
-  energy: { text: "The cosmos are stirring with potent energy today. Pay attention to the subtle shifts happening around you — they carry important messages.", stars: 4 },
-  love: { text: "Your heart is more open than usual today. Whether single or partnered, meaningful connection is possible. Be honest about what you truly want from relationships right now.", stars: 4 },
-  career: { text: "Your instincts are sharp today. Trust your judgment on professional matters and don't second-guess yourself. A focused effort now can lead to real progress.", stars: 3 },
-  money: { text: "Exercise patience with financial decisions today. Review your budget carefully before committing to anything new. Stability comes from thoughtful, deliberate choices.", stars: 3 },
-  advice: { text: "Take time this morning to set a clear intention for the day. Small, conscious actions compound into significant results. Trust yourself and move forward with purpose.", stars: 5 },
-  lucky: { color: "Gold", number: 7, time: "Morning" }
+const SIGN_LUCKY: Record<string, { color: string; number: number; time: string }> = {
+  Aries:       { color: 'Red',    number: 9,  time: 'Morning' },
+  Taurus:      { color: 'Green',  number: 6,  time: 'Afternoon' },
+  Gemini:      { color: 'Yellow', number: 5,  time: 'Morning' },
+  Cancer:      { color: 'Silver', number: 2,  time: 'Evening' },
+  Leo:         { color: 'Gold',   number: 1,  time: 'Noon' },
+  Virgo:       { color: 'Navy',   number: 5,  time: 'Morning' },
+  Libra:       { color: 'Pink',   number: 6,  time: 'Afternoon' },
+  Scorpio:     { color: 'Crimson',number: 8,  time: 'Night' },
+  Sagittarius: { color: 'Purple', number: 3,  time: 'Afternoon' },
+  Capricorn:   { color: 'Brown',  number: 8,  time: 'Morning' },
+  Aquarius:    { color: 'Blue',   number: 4,  time: 'Evening' },
+  Pisces:      { color: 'Teal',   number: 7,  time: 'Evening' },
 }
+
+const deepFallback = (sign: string) => ({
+  energy: { text: "The cosmos are stirring with potent energy today. Pay attention to the subtle shifts happening around you — they carry important messages for you specifically.", stars: 4 },
+  love: { text: "Your heart is more open than usual today. Whether single or partnered, meaningful connection is possible. Be honest about what you truly want, and let your authentic self lead the way.", stars: 4 },
+  career: { text: "Your instincts are sharp today. Trust your judgment on professional matters and don't second-guess yourself. A focused effort now can lead to real, tangible progress by the week's end.", stars: 3 },
+  money: { text: "Exercise patience with financial decisions today. Review your budget carefully before committing to anything new. Stability comes from thoughtful, deliberate choices rather than impulsive moves.", stars: 3 },
+  advice: { text: "Take time this morning to set a clear intention for the day. Small, conscious actions compound into significant results over time. Trust yourself and move forward with quiet confidence.", stars: 5 },
+  lucky: SIGN_LUCKY[sign] ?? { color: 'Violet', number: 3, time: 'Afternoon' }
+})
 
 const standardFallback = {
   love: { text: "The stars favor connection today. Open your heart.", stars: 3 },
@@ -70,26 +85,29 @@ export async function POST(req: NextRequest) {
       cache.delete(cacheKey)
     }
 
+    const fallback = deepFallback(sign)
+
     const raw = await generateHoroscope(sign, date, deep)
     const rawStr = String(raw)
 
     // Extract JSON — find the outermost { }
     const start = rawStr.indexOf('{')
     const end = rawStr.lastIndexOf('}')
-    let horoscopeData: any = deep ? { ...deepFallback } : { ...standardFallback }
+    let horoscopeData: any = deep ? deepFallback(sign) : { ...standardFallback }
 
     if (start !== -1 && end !== -1 && end > start) {
       try {
         const parsed = JSON.parse(rawStr.slice(start, end + 1))
         if (deep) {
-          // Merge parsed fields with fallback for any missing
+          const fb = deepFallback(sign)
           horoscopeData = {
-            energy: parsed.energy?.text ? parsed.energy : deepFallback.energy,
-            love: parsed.love?.text ? parsed.love : deepFallback.love,
-            career: parsed.career?.text ? parsed.career : deepFallback.career,
-            money: parsed.money?.text ? parsed.money : deepFallback.money,
-            advice: parsed.advice?.text ? parsed.advice : deepFallback.advice,
-            lucky: parsed.lucky?.color ? parsed.lucky : deepFallback.lucky,
+            energy: parsed.energy?.text ? parsed.energy : fb.energy,
+            love: parsed.love?.text ? parsed.love : fb.love,
+            career: parsed.career?.text ? parsed.career : fb.career,
+            money: parsed.money?.text ? parsed.money : fb.money,
+            advice: parsed.advice?.text ? parsed.advice : fb.advice,
+            lucky: (parsed.lucky?.color && parsed.lucky?.color !== 'one lucky color' && parsed.lucky?.time !== 'best time of day')
+              ? parsed.lucky : fb.lucky,
           }
         } else {
           horoscopeData = {

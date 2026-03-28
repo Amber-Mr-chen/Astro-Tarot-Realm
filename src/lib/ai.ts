@@ -74,14 +74,16 @@ export async function generateHoroscope(sign: string, date: string, deep = false
   }
 
   const prompt = deep
-    ? `You are a master astrologer. Generate a deep horoscope for ${sign} on ${date}. Respond with ONLY valid JSON, no other text. Use this exact format:
-{"energy":{"text":"40-50 word reading about overall planetary energy and what it means for ${sign} today","stars":4},"love":{"text":"50-60 word reading about love relationships and emotional life","stars":4},"career":{"text":"50-60 word reading about work ambition and opportunities","stars":3},"money":{"text":"50-60 word reading about finances and material matters","stars":3},"advice":{"text":"40-50 word personalized action advice for today","stars":5},"lucky":{"color":"one lucky color","number":7,"time":"best time of day"}}`
-    : `You are an astrologer. Generate today's horoscope for ${sign} on ${date}. Respond with ONLY a JSON object, no other text, no markdown. Use this exact format: {"love":{"text":"20-30 word reading here","stars":4},"career":{"text":"20-30 word reading here","stars":3},"money":{"text":"20-30 word reading here","stars":4}}`
+    ? `You are a master astrologer giving a deep personal reading. Generate a horoscope for ${sign} on ${date}. Output ONLY a JSON object with no extra text before or after.
 
-  const model = deep ? '@cf/meta/llama-3.3-70b-instruct-fp8-fast' : '@cf/meta/llama-3.1-8b-instruct'
+Required JSON structure (replace all placeholder text with real content):
+{"energy":{"text":"Write 3 sentences about the overall cosmic energy for ${sign} today and how the planets are influencing their day.","stars":4},"love":{"text":"Write 3-4 sentences about ${sign}'s love life and emotional connections today. Be specific and personal.","stars":4},"career":{"text":"Write 3-4 sentences about ${sign}'s work, ambitions, and professional opportunities today. Give concrete guidance.","stars":3},"money":{"text":"Write 3-4 sentences about ${sign}'s finances and material situation today. Include practical advice.","stars":3},"advice":{"text":"Write 3 sentences of specific, actionable guidance for ${sign} to make the most of today's energy.","stars":5},"lucky":{"color":"Pick one lucky color specifically meaningful for ${sign}","number":3,"time":"morning or afternoon or evening"}}`
+    : `You are an astrologer. Write today's horoscope for ${sign} on ${date}. Output ONLY valid JSON, no extra text. Format: {"love":{"text":"2 sentence reading","stars":4},"career":{"text":"2 sentence reading","stars":3},"money":{"text":"2 sentence reading","stars":4}}`
+
+  const model = '@cf/meta/llama-3.1-8b-instruct'
   const response = await ai.run(model, {
     messages: [{ role: 'user', content: prompt }],
-    max_tokens: deep ? 1200 : 400
+    max_tokens: deep ? 1000 : 400
   })
 
   return String(response.response || '{}')
