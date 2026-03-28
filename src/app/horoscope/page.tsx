@@ -57,6 +57,12 @@ export default function HoroscopePage() {
       return
     }
 
+    if (res.status === 500 || !data.horoscope) {
+      setError('Something went wrong. Please try again.')
+      if (!deep) setState('idle')
+      return
+    }
+
     setHoroscope(data.horoscope)
     setRemaining(data.remaining ?? null)
     if (typeof data.deepRemaining === 'number') setDeepRemaining(data.deepRemaining)

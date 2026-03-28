@@ -74,8 +74,8 @@ export async function generateHoroscope(sign: string, date: string, deep = false
   }
 
   const prompt = deep
-    ? `Generate a deep horoscope for ${sign} (${date}). Return only valid JSON: {"love":{"text":"...","stars":1-5},"career":{"text":"...","stars":1-5},"money":{"text":"...","stars":1-5}}. Each text 50-70 words with insights and advice. No asterisks or markdown.`
-    : `Generate today's horoscope for ${sign} (${date}). Return only valid JSON: {"love":{"text":"...","stars":1-5},"career":{"text":"...","stars":1-5},"money":{"text":"...","stars":1-5}}. Each text under 35 words, natural writing.`
+    ? `You are an astrologer. Generate a deep horoscope reading for ${sign} on ${date}. Respond with ONLY a JSON object, no other text, no markdown, no explanation. Use this exact format: {"love":{"text":"50-60 word reading here","stars":4},"career":{"text":"50-60 word reading here","stars":3},"money":{"text":"50-60 word reading here","stars":4}}`
+    : `You are an astrologer. Generate today's horoscope for ${sign} on ${date}. Respond with ONLY a JSON object, no other text, no markdown. Use this exact format: {"love":{"text":"20-30 word reading here","stars":4},"career":{"text":"20-30 word reading here","stars":3},"money":{"text":"20-30 word reading here","stars":4}}`
 
   const model = deep ? '@cf/meta/llama-3.3-70b-instruct-fp8-fast' : '@cf/meta/llama-3.1-8b-instruct'
   const response = await ai.run(model, {
