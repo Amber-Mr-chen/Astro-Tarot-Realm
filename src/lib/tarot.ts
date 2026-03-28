@@ -23,18 +23,18 @@ export const TAROT_CARDS = [
 ]
 
 export const ZODIAC_SIGNS = [
-  { name: 'Aries', symbol: '♈', dates: 'Mar 21 - Apr 19', emoji: '🐏' },
-  { name: 'Taurus', symbol: '♉', dates: 'Apr 20 - May 20', emoji: '🐂' },
-  { name: 'Gemini', symbol: '♊', dates: 'May 21 - Jun 20', emoji: '👯' },
-  { name: 'Cancer', symbol: '♋', dates: 'Jun 21 - Jul 22', emoji: '🦀' },
-  { name: 'Leo', symbol: '♌', dates: 'Jul 23 - Aug 22', emoji: '🦁' },
-  { name: 'Virgo', symbol: '♍', dates: 'Aug 23 - Sep 22', emoji: '👧' },
-  { name: 'Libra', symbol: '♎', dates: 'Sep 23 - Oct 22', emoji: '⚖️' },
-  { name: 'Scorpio', symbol: '♏', dates: 'Oct 23 - Nov 21', emoji: '🦂' },
-  { name: 'Sagittarius', symbol: '♐', dates: 'Nov 22 - Dec 21', emoji: '🏹' },
-  { name: 'Capricorn', symbol: '♑', dates: 'Dec 22 - Jan 19', emoji: '🐐' },
-  { name: 'Aquarius', symbol: '♒', dates: 'Jan 20 - Feb 18', emoji: '🏺' },
-  { name: 'Pisces', symbol: '♓', dates: 'Feb 19 - Mar 20', emoji: '🐟' },
+  { name: 'Aries', symbol: '♈', dates: 'Mar 21 - Apr 19', emoji: '♈', color: '#E74C3C', bg: 'rgba(231,76,60,0.15)' },
+  { name: 'Taurus', symbol: '♉', dates: 'Apr 20 - May 20', emoji: '♉', color: '#27AE60', bg: 'rgba(39,174,96,0.15)' },
+  { name: 'Gemini', symbol: '♊', dates: 'May 21 - Jun 20', emoji: '♊', color: '#F1C40F', bg: 'rgba(241,196,15,0.15)' },
+  { name: 'Cancer', symbol: '♋', dates: 'Jun 21 - Jul 22', emoji: '♋', color: '#85C1E9', bg: 'rgba(133,193,233,0.15)' },
+  { name: 'Leo', symbol: '♌', dates: 'Jul 23 - Aug 22', emoji: '♌', color: '#F39C12', bg: 'rgba(243,156,18,0.15)' },
+  { name: 'Virgo', symbol: '♍', dates: 'Aug 23 - Sep 22', emoji: '♍', color: '#A9CCE3', bg: 'rgba(169,204,227,0.15)' },
+  { name: 'Libra', symbol: '♎', dates: 'Sep 23 - Oct 22', emoji: '♎', color: '#D7BDE2', bg: 'rgba(215,189,226,0.15)' },
+  { name: 'Scorpio', symbol: '♏', dates: 'Oct 23 - Nov 21', emoji: '♏', color: '#922B21', bg: 'rgba(146,43,33,0.2)' },
+  { name: 'Sagittarius', symbol: '♐', dates: 'Nov 22 - Dec 21', emoji: '♐', color: '#8E44AD', bg: 'rgba(142,68,173,0.15)' },
+  { name: 'Capricorn', symbol: '♑', dates: 'Dec 22 - Jan 19', emoji: '♑', color: '#707B7C', bg: 'rgba(112,123,124,0.2)' },
+  { name: 'Aquarius', symbol: '♒', dates: 'Jan 20 - Feb 18', emoji: '♒', color: '#5DADE2', bg: 'rgba(93,173,226,0.15)' },
+  { name: 'Pisces', symbol: '♓', dates: 'Feb 19 - Mar 20', emoji: '♓', color: '#76D7C4', bg: 'rgba(118,215,196,0.15)' },
 ]
 
 export function drawRandomCard(): { name: string; isReversed: boolean } {

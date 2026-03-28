@@ -48,11 +48,12 @@ export async function POST(req: NextRequest) {
 
     if (cache.has(cacheKey)) {
       await incrementUsage(email, ip, deep)
-      return NextResponse.json({ 
-        horoscope: JSON.parse(cache.get(cacheKey)!), 
-        cached: true, 
+      return NextResponse.json({
+        horoscope: JSON.parse(cache.get(cacheKey)!),
+        cached: true,
         remaining: usage.remaining - 1,
         deepRemaining: deep ? (usage.deepRemaining ?? 0) - 1 : usage.deepRemaining,
+        plan: usage.plan,
         isDeep: deep
       })
     }
@@ -63,10 +64,11 @@ export async function POST(req: NextRequest) {
 
     cache.set(cacheKey, jsonMatch[0])
     await incrementUsage(email, ip, deep)
-    return NextResponse.json({ 
-      horoscope: JSON.parse(jsonMatch[0]), 
+    return NextResponse.json({
+      horoscope: JSON.parse(jsonMatch[0]),
       remaining: usage.remaining - 1,
       deepRemaining: deep ? (usage.deepRemaining ?? 0) - 1 : usage.deepRemaining,
+      plan: usage.plan,
       isDeep: deep
     })
   } catch (e) {
