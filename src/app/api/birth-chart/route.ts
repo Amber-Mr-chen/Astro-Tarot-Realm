@@ -52,7 +52,15 @@ ${isPro
       const start = raw.indexOf('{')
       const end = raw.lastIndexOf('}')
       if (start !== -1 && end > start) {
-        try { reading = JSON.parse(raw.slice(start, end + 1)) } catch { /* use fallback */ }
+        try {
+          const parsed = JSON.parse(raw.slice(start, end + 1))
+          // Ensure all values are strings, not nested objects
+          for (const k of ['identity','emotion','rising','purpose','challenge','advice']) {
+            if (parsed[k]) {
+              reading[k] = typeof parsed[k] === 'string' ? parsed[k] : JSON.stringify(parsed[k])
+            }
+          }
+        } catch { /* use fallback */ }
       }
     }
 

@@ -196,7 +196,7 @@ export default function BirthChartPage() {
               ].filter(s => result.reading[s.key]).map(({ key, icon, title }) => (
                 <div key={key} className="border-t border-purple-900/30 pt-4 first:border-0 first:pt-0">
                   <h3 className="text-gold font-semibold mb-2">{icon} {title}</h3>
-                  <p className="text-textMain text-sm leading-relaxed">{result.reading[key]}</p>
+                  <p className="text-textMain text-sm leading-relaxed">{String(result.reading[key])}</p>
                 </div>
               ))}
             </div>
