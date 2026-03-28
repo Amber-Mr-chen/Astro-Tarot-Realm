@@ -3,38 +3,64 @@ import { generateHoroscope } from '@/lib/ai'
 import { checkUsageLimit, incrementUsage } from '@/lib/usage'
 import { getToken } from 'next-auth/jwt'
 
-// v2 = new 6-field deep format; bump version to bust cache
-const CACHE_VERSION = 'v2'
+const CACHE_VERSION = 'v3'
 const cache = new Map<string, string>()
 
-const SIGN_LUCKY: Record<string, { color: string; number: number; time: string }> = {
-  Aries:       { color: 'Red',    number: 9,  time: 'Morning' },
-  Taurus:      { color: 'Green',  number: 6,  time: 'Afternoon' },
-  Gemini:      { color: 'Yellow', number: 5,  time: 'Morning' },
-  Cancer:      { color: 'Silver', number: 2,  time: 'Evening' },
-  Leo:         { color: 'Gold',   number: 1,  time: 'Noon' },
-  Virgo:       { color: 'Navy',   number: 5,  time: 'Morning' },
-  Libra:       { color: 'Pink',   number: 6,  time: 'Afternoon' },
-  Scorpio:     { color: 'Crimson',number: 8,  time: 'Night' },
-  Sagittarius: { color: 'Purple', number: 3,  time: 'Afternoon' },
-  Capricorn:   { color: 'Brown',  number: 8,  time: 'Morning' },
-  Aquarius:    { color: 'Blue',   number: 4,  time: 'Evening' },
-  Pisces:      { color: 'Teal',   number: 7,  time: 'Evening' },
+// Zodiac traits used in prompts for authentic readings
+const SIGN_TRAITS: Record<string, { element: string; ruler: string; quality: string; traits: string }> = {
+  Aries:       { element: 'Fire',  ruler: 'Mars',    quality: 'Cardinal', traits: 'bold, pioneering, energetic, impulsive' },
+  Taurus:      { element: 'Earth', ruler: 'Venus',   quality: 'Fixed',    traits: 'patient, reliable, sensual, stubborn' },
+  Gemini:      { element: 'Air',   ruler: 'Mercury', quality: 'Mutable',  traits: 'curious, adaptable, witty, restless' },
+  Cancer:      { element: 'Water', ruler: 'Moon',    quality: 'Cardinal', traits: 'nurturing, intuitive, emotional, protective' },
+  Leo:         { element: 'Fire',  ruler: 'Sun',     quality: 'Fixed',    traits: 'confident, creative, generous, dramatic' },
+  Virgo:       { element: 'Earth', ruler: 'Mercury', quality: 'Mutable',  traits: 'analytical, precise, helpful, critical' },
+  Libra:       { element: 'Air',   ruler: 'Venus',   quality: 'Cardinal', traits: 'diplomatic, fair, social, indecisive' },
+  Scorpio:     { element: 'Water', ruler: 'Pluto',   quality: 'Fixed',    traits: 'intense, perceptive, secretive, transformative' },
+  Sagittarius: { element: 'Fire',  ruler: 'Jupiter', quality: 'Mutable',  traits: 'optimistic, adventurous, philosophical, blunt' },
+  Capricorn:   { element: 'Earth', ruler: 'Saturn',  quality: 'Cardinal', traits: 'disciplined, ambitious, patient, reserved' },
+  Aquarius:    { element: 'Air',   ruler: 'Uranus',  quality: 'Fixed',    traits: 'innovative, independent, humanitarian, detached' },
+  Pisces:      { element: 'Water', ruler: 'Neptune', quality: 'Mutable',  traits: 'empathetic, dreamy, artistic, escapist' },
 }
 
-const deepFallback = (sign: string) => ({
-  energy: { text: "The cosmos are stirring with potent energy today. Pay attention to the subtle shifts happening around you — they carry important messages for you specifically.", stars: 4 },
-  love: { text: "Your heart is more open than usual today. Whether single or partnered, meaningful connection is possible. Be honest about what you truly want, and let your authentic self lead the way.", stars: 4 },
-  career: { text: "Your instincts are sharp today. Trust your judgment on professional matters and don't second-guess yourself. A focused effort now can lead to real, tangible progress by the week's end.", stars: 3 },
-  money: { text: "Exercise patience with financial decisions today. Review your budget carefully before committing to anything new. Stability comes from thoughtful, deliberate choices rather than impulsive moves.", stars: 3 },
-  advice: { text: "Take time this morning to set a clear intention for the day. Small, conscious actions compound into significant results over time. Trust yourself and move forward with quiet confidence.", stars: 5 },
-  lucky: SIGN_LUCKY[sign] ?? { color: 'Violet', number: 3, time: 'Afternoon' }
-})
+// Lucky pools per element — deterministic selection by date hash
+const LUCKY_POOLS: Record<string, { colors: string[]; numbers: number[]; times: string[] }> = {
+  Fire:  { colors: ['Red', 'Orange', 'Gold', 'Crimson', 'Amber'],   numbers: [1,3,9],   times: ['Early morning', 'Noon', 'Sunset'] },
+  Earth: { colors: ['Green', 'Brown', 'Olive', 'Tan', 'Forest'],    numbers: [2,4,8],   times: ['Morning', 'Late afternoon', 'Dusk'] },
+  Air:   { colors: ['Yellow', 'Sky Blue', 'Lavender', 'White', 'Pale Gold'], numbers: [3,5,7], times: ['Morning', 'Midday', 'Early evening'] },
+  Water: { colors: ['Teal', 'Silver', 'Indigo', 'Sea Green', 'Pearl'], numbers: [2,7,11], times: ['Dawn', 'Evening', 'Night'] },
+}
+
+function computeLucky(sign: string, date: string): { color: string; number: number; time: string } {
+  const traits = SIGN_TRAITS[sign]
+  if (!traits) return { color: 'Violet', number: 7, time: 'Evening' }
+  const pool = LUCKY_POOLS[traits.element]
+
+  // Hash date string to a stable number
+  const hash = date.split('').reduce((acc: number, c: string) => acc + c.charCodeAt(0), 0)
+
+  const color  = pool.colors [hash % pool.colors.length]
+  const number = pool.numbers[(hash + sign.length) % pool.numbers.length]
+  const time   = pool.times  [(hash + sign.charCodeAt(0)) % pool.times.length]
+
+  return { color, number, time }
+}
+
+const deepFallback = (sign: string, date: string) => {
+  const t = SIGN_TRAITS[sign] ?? { element: '', ruler: 'the stars', traits: 'unique' }
+  return {
+    energy: { text: `As a ${sign}, your ${t.element} energy is heightened today. ${t.ruler} is influencing your path, bringing a surge of ${t.traits.split(',')[0]} energy. Pay attention to the subtle cosmic shifts — they carry messages tailored specifically for you.`, stars: 4 },
+    love:   { text: `Your ${t.element} nature makes you ${t.traits.split(',')[2]?.trim() ?? 'perceptive'} in love today. Whether you're single or partnered, meaningful connection is within reach. Be honest about what you truly want, and let your authentic ${sign} self lead the way forward.`, stars: 4 },
+    career: { text: `${t.ruler} sharpens your instincts at work today. Trust your ${sign} judgment on professional matters. A focused, ${t.quality} effort now can lead to real, tangible progress — don't second-guess yourself when opportunities arise.`, stars: 3 },
+    money:  { text: `Your ${t.element} sign benefits from careful deliberation with finances today. Review your budget before committing to anything new. ${sign}'s ${t.quality} quality helps you build stability through thoughtful, patient choices rather than impulsive moves.`, stars: 3 },
+    advice: { text: `Set a clear intention that aligns with your ${sign} nature this morning. Your ${t.traits.split(',')[0]?.trim() ?? 'natural'} energy is your greatest asset today. Small, conscious actions compound into significant results — move forward with the quiet confidence only ${sign} can master.`, stars: 5 },
+    lucky:  computeLucky(sign, date),
+  }
+}
 
 const standardFallback = {
-  love: { text: "The stars favor connection today. Open your heart.", stars: 3 },
-  career: { text: "Focus brings results. Trust your instincts.", stars: 3 },
-  money: { text: "Be thoughtful with finances. Stability ahead.", stars: 3 }
+  love:   { text: 'The stars favor connection today. Open your heart.', stars: 3 },
+  career: { text: 'Focus brings results. Trust your instincts.', stars: 3 },
+  money:  { text: 'Be thoughtful with finances. Stability ahead.', stars: 3 },
 }
 
 export async function POST(req: NextRequest) {
@@ -51,14 +77,12 @@ export async function POST(req: NextRequest) {
     if (deep && usage.plan === 'pro' && (usage.deepRemaining ?? 0) <= 0) {
       return NextResponse.json({ error: 'deep_limit_reached', message: 'Daily deep reading limit reached (10/day for Pro)' }, { status: 429 })
     }
-
     if (!deep && !usage.allowed) {
       return NextResponse.json({
         error: 'limit_reached', plan: usage.plan,
         message: usage.plan === 'guest' ? 'Sign in to get 3 free readings per day' : 'Daily limit reached. Upgrade to Pro for unlimited readings',
       }, { status: 429 })
     }
-
     if (deep && usage.plan !== 'pro') {
       return NextResponse.json({ error: 'pro_required', message: 'Deep readings are exclusive to Pro members' }, { status: 403 })
     }
@@ -66,7 +90,7 @@ export async function POST(req: NextRequest) {
     const date = new Date().toISOString().split('T')[0]
     const cacheKey = `${CACHE_VERSION}-${sign}-${date}${deep ? '-deep' : ''}`
 
-    // Check cache — validate it has required fields for deep
+    // Cache hit — validate structure
     if (cache.has(cacheKey)) {
       const cached = JSON.parse(cache.get(cacheKey)!)
       const valid = deep
@@ -78,42 +102,41 @@ export async function POST(req: NextRequest) {
           horoscope: cached, cached: true,
           remaining: usage.remaining - 1,
           deepRemaining: deep ? (usage.deepRemaining ?? 0) - 1 : usage.deepRemaining,
-          plan: usage.plan, isDeep: deep
+          plan: usage.plan, isDeep: deep,
         })
       }
-      // Invalid cache — delete and regenerate
       cache.delete(cacheKey)
     }
 
-    const fallback = deepFallback(sign)
+    // Compute lucky deterministically — never from AI
+    const luckyToday = computeLucky(sign, date)
+    const fb = deepFallback(sign, date)
 
     const raw = await generateHoroscope(sign, date, deep)
     const rawStr = String(raw)
 
-    // Extract JSON — find the outermost { }
     const start = rawStr.indexOf('{')
     const end = rawStr.lastIndexOf('}')
-    let horoscopeData: any = deep ? deepFallback(sign) : { ...standardFallback }
+    let horoscopeData: any = deep ? fb : { ...standardFallback }
 
     if (start !== -1 && end !== -1 && end > start) {
       try {
         const parsed = JSON.parse(rawStr.slice(start, end + 1))
         if (deep) {
-          const fb = deepFallback(sign)
           horoscopeData = {
-            energy: parsed.energy?.text ? parsed.energy : fb.energy,
-            love: parsed.love?.text ? parsed.love : fb.love,
-            career: parsed.career?.text ? parsed.career : fb.career,
-            money: parsed.money?.text ? parsed.money : fb.money,
-            advice: parsed.advice?.text ? parsed.advice : fb.advice,
-            lucky: (parsed.lucky?.color && parsed.lucky?.color !== 'one lucky color' && parsed.lucky?.time !== 'best time of day')
-              ? parsed.lucky : fb.lucky,
+            energy: parsed.energy?.text?.length > 20 ? parsed.energy : fb.energy,
+            love:   parsed.love?.text?.length   > 20 ? parsed.love   : fb.love,
+            career: parsed.career?.text?.length > 20 ? parsed.career : fb.career,
+            money:  parsed.money?.text?.length  > 20 ? parsed.money  : fb.money,
+            advice: parsed.advice?.text?.length > 20 ? parsed.advice : fb.advice,
+            // Always use deterministic lucky — never trust AI for this
+            lucky: luckyToday,
           }
         } else {
           horoscopeData = {
-            love: parsed.love?.text ? parsed.love : standardFallback.love,
-            career: parsed.career?.text ? parsed.career : standardFallback.career,
-            money: parsed.money?.text ? parsed.money : standardFallback.money,
+            love:   parsed.love?.text?.length   > 5 ? parsed.love   : standardFallback.love,
+            career: parsed.career?.text?.length > 5 ? parsed.career : standardFallback.career,
+            money:  parsed.money?.text?.length  > 5 ? parsed.money  : standardFallback.money,
           }
         }
       } catch {
@@ -127,7 +150,7 @@ export async function POST(req: NextRequest) {
       horoscope: horoscopeData,
       remaining: usage.remaining - 1,
       deepRemaining: deep ? (usage.deepRemaining ?? 0) - 1 : usage.deepRemaining,
-      plan: usage.plan, isDeep: deep
+      plan: usage.plan, isDeep: deep,
     })
   } catch (e: any) {
     console.error('[horoscope] error:', e?.message ?? e)

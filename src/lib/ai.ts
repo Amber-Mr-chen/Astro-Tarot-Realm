@@ -73,12 +73,28 @@ export async function generateHoroscope(sign: string, date: string, deep = false
     })
   }
 
-  const prompt = deep
-    ? `You are a master astrologer giving a deep personal reading. Generate a horoscope for ${sign} on ${date}. Output ONLY a JSON object with no extra text before or after.
+  const traits = {
+    Aries: 'Fire sign ruled by Mars, Cardinal quality, traits: bold, pioneering, energetic',
+    Taurus: 'Earth sign ruled by Venus, Fixed quality, traits: patient, reliable, sensual',
+    Gemini: 'Air sign ruled by Mercury, Mutable quality, traits: curious, adaptable, witty',
+    Cancer: 'Water sign ruled by Moon, Cardinal quality, traits: nurturing, intuitive, emotional',
+    Leo: 'Fire sign ruled by Sun, Fixed quality, traits: confident, creative, generous',
+    Virgo: 'Earth sign ruled by Mercury, Mutable quality, traits: analytical, precise, helpful',
+    Libra: 'Air sign ruled by Venus, Cardinal quality, traits: diplomatic, fair, social',
+    Scorpio: 'Water sign ruled by Pluto, Fixed quality, traits: intense, perceptive, transformative',
+    Sagittarius: 'Fire sign ruled by Jupiter, Mutable quality, traits: optimistic, adventurous, philosophical',
+    Capricorn: 'Earth sign ruled by Saturn, Cardinal quality, traits: disciplined, ambitious, patient',
+    Aquarius: 'Air sign ruled by Uranus, Fixed quality, traits: innovative, independent, humanitarian',
+    Pisces: 'Water sign ruled by Neptune, Mutable quality, traits: empathetic, dreamy, artistic',
+  } as Record<string, string>
 
-Required JSON structure (replace all placeholder text with real content):
-{"energy":{"text":"Write 3 sentences about the overall cosmic energy for ${sign} today and how the planets are influencing their day.","stars":4},"love":{"text":"Write 3-4 sentences about ${sign}'s love life and emotional connections today. Be specific and personal.","stars":4},"career":{"text":"Write 3-4 sentences about ${sign}'s work, ambitions, and professional opportunities today. Give concrete guidance.","stars":3},"money":{"text":"Write 3-4 sentences about ${sign}'s finances and material situation today. Include practical advice.","stars":3},"advice":{"text":"Write 3 sentences of specific, actionable guidance for ${sign} to make the most of today's energy.","stars":5},"lucky":{"color":"Pick one lucky color specifically meaningful for ${sign}","number":3,"time":"morning or afternoon or evening"}}`
-    : `You are an astrologer. Write today's horoscope for ${sign} on ${date}. Output ONLY valid JSON, no extra text. Format: {"love":{"text":"2 sentence reading","stars":4},"career":{"text":"2 sentence reading","stars":3},"money":{"text":"2 sentence reading","stars":4}}`
+  const signInfo = traits[sign] ?? sign
+
+  const prompt = deep
+    ? `You are a master astrologer. ${sign} is a ${signInfo}. Write a deep personal horoscope for ${sign} on ${date}. Output ONLY valid JSON with no extra text before or after. Each text field must be 3-4 full sentences, personal and specific to ${sign}'s nature.
+
+JSON format: {"energy":{"text":"3-4 sentences about today's cosmic energy for ${sign}","stars":4},"love":{"text":"3-4 sentences about ${sign}'s love and relationships today","stars":4},"career":{"text":"3-4 sentences about ${sign}'s work and career today","stars":3},"money":{"text":"3-4 sentences about ${sign}'s finances today","stars":3},"advice":{"text":"3-4 sentences of specific actionable advice for ${sign} today","stars":5}}`
+    : `You are an astrologer. Write today's horoscope for ${sign} (${signInfo}) on ${date}. Output ONLY valid JSON, no extra text. Format: {"love":{"text":"2 sentences specific to ${sign}","stars":4},"career":{"text":"2 sentences specific to ${sign}","stars":3},"money":{"text":"2 sentences specific to ${sign}","stars":4}}`
 
   const model = '@cf/meta/llama-3.1-8b-instruct'
   const response = await ai.run(model, {
