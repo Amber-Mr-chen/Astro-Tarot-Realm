@@ -9,9 +9,7 @@ export const metadata: Metadata = {
   description: 'Get your free tarot card reading and daily horoscope. Yes/No tarot, daily astrology for all 12 zodiac signs. Personalized readings in seconds.',
   keywords: 'free tarot reading, daily horoscope, yes no tarot, astrology, zodiac signs, tarot cards online',
   metadataBase: new URL('https://tarotrealm.xyz'),
-  alternates: {
-    canonical: 'https://tarotrealm.xyz',
-  },
+  alternates: { canonical: 'https://tarotrealm.xyz' },
   openGraph: {
     title: 'Free Tarot Reading & Daily Horoscope | TarotRealm',
     description: 'Get your free tarot card reading and daily horoscope. Personalized astrology readings in seconds.',
@@ -19,14 +17,7 @@ export const metadata: Metadata = {
     siteName: 'TarotRealm',
     type: 'website',
   },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-    },
-  },
+  robots: { index: true, follow: true },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
