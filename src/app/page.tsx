@@ -70,23 +70,17 @@ export default function Home() {
     <main className="min-h-screen px-4 md:px-6">
 
       {/* ── Hero ── */}
-      <section className="flex flex-col items-center justify-center text-center py-20 md:py-28 max-w-3xl mx-auto">
-        <div className="mb-4 text-gold text-xs tracking-[0.35em] uppercase font-cinzel">
+      <section className="flex flex-col items-center justify-center text-center py-8 md:py-12 max-w-3xl mx-auto">
+        <div className="mb-3 text-gold text-xs tracking-[0.35em] uppercase font-cinzel">
           ✦ Mystical Divination ✦
         </div>
-        <h1 className="font-cinzel text-4xl md:text-6xl font-bold text-textMain mb-5 leading-tight">
+        <h1 className="font-cinzel text-3xl md:text-4xl font-bold text-textMain mb-4 leading-tight">
           Your Free<br />
           <span style={{ color: '#9B59B6' }}>Tarot &amp; Astrology</span>
         </h1>
-        <p className="text-textSub text-base md:text-lg max-w-xl mb-10">
-          Personalized tarot readings, daily horoscopes, birth charts, and compatibility reports — all grounded in real astrological tradition. No signup required.
+        <p className="text-textSub text-sm md:text-base max-w-lg mb-2">
+          Tarot readings, horoscopes, birth charts, and compatibility — grounded in real astrological tradition. No signup required.
         </p>
-        <Link href="/tarot"
-          className="px-8 py-4 rounded-full font-semibold text-bg transition-all hover:scale-105 text-base"
-          style={{ background: 'linear-gradient(135deg, #C9A84C, #E8C96D)' }}>
-          ✦ Start Free Reading
-        </Link>
-        <p className="text-textSub text-xs mt-4">No signup required · All 5 features free to try</p>
       </section>
 
       {/* ── Feature Cards ── */}
