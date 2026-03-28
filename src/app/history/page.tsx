@@ -45,12 +45,21 @@ function parseResult(type: string, result: string): { summary: string; full: str
   if (type === 'birth-chart' || type === 'compatibility') {
     try {
       const parsed = JSON.parse(trimmed)
+      // Compatibility stores {scores, reading: {...}}, birth-chart stores reading directly
+      const readingObj = parsed.reading ?? parsed
       const parts: string[] = []
       for (const key of ['overall', 'identity', 'emotion', 'strength', 'love', 'career', 'purpose', 'challenge', 'advice']) {
-        if (typeof parsed[key] === 'string') parts.push(parsed[key])
+        if (typeof readingObj[key] === 'string') parts.push(readingObj[key])
       }
-      const full = parts.join('\n\n')
-      return { summary: parts[0] ?? trimmed, full: full || trimmed }
+      // For compatibility, prepend score info as context
+      const scoreHeader = parsed.scores
+        ? `Overall ${parsed.scores.overall}% · Love ${parsed.scores.love}% · Friendship ${parsed.scores.friendship}% · Work ${parsed.scores.work}%`
+        : ''
+      const full = [scoreHeader, ...parts].filter(Boolean).join('\n\n')
+      const summary = scoreHeader
+        ? `${scoreHeader}\n\n${parts[0] ?? ''}`
+        : (parts[0] ?? trimmed)
+      return { summary, full: full || trimmed }
     } catch {
       return { summary: trimmed.slice(0, 200), full: trimmed }
     }

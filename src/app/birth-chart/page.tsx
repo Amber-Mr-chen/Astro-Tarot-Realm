@@ -87,7 +87,22 @@ export default function BirthChartPage() {
         setError(data.message || 'Something went wrong')
         return
       }
-      setResult({ ...data, sunSign, moonSign, risingSign })
+      const fullResult = { ...data, sunSign, moonSign, risingSign }
+      setResult(fullResult)
+
+      // Save to history if logged in
+      if (session?.user?.email && data.reading) {
+        fetch('/api/reading/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: session.user.email,
+            type: 'birth-chart',
+            question: [sunSign, moonSign, risingSign].filter(Boolean).join(' + '),
+            result: JSON.stringify(data.reading),
+          }),
+        }).catch(() => {})
+      }
     } catch {
       setError('Network error. Please try again.')
     } finally {

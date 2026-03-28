@@ -92,6 +92,20 @@ export default function CompatibilityPage() {
         return
       }
       setResult(data)
+
+      // Save to history if logged in
+      if (session?.user?.email && data.reading) {
+        fetch('/api/reading/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: session.user.email,
+            type: 'compatibility',
+            question: `${signA} + ${signB}`,
+            result: JSON.stringify({ scores: data.scores, reading: data.reading }),
+          }),
+        }).catch(() => {})
+      }
     } catch {
       setError('Network error. Please try again.')
     } finally {
