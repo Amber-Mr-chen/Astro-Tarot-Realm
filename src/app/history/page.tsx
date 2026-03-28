@@ -10,10 +10,125 @@ type Reading = {
   created_at: number
 }
 
-const typeLabel: Record<string, string> = {
-  tarot: '🃏 Daily Tarot',
-  'yes-no': '✨ Yes or No',
-  horoscope: '⭐ Horoscope',
+const TYPE_META: Record<string, { label: string; icon: string; color: string }> = {
+  'tarot':         { label: 'Daily Tarot',       icon: '🃏', color: '#C9A84C' },
+  'tarot-deep':    { label: 'Deep Tarot',         icon: '🔮', color: '#A855F7' },
+  'yes-no':        { label: 'Yes or No',          icon: '✨', color: '#F39C12' },
+  'yes-no-deep':   { label: 'Yes or No (Deep)',   icon: '✨', color: '#E67E22' },
+  'horoscope':     { label: 'Horoscope',          icon: '⭐', color: '#9B59B6' },
+  'birth-chart':   { label: 'Birth Chart',        icon: '🌌', color: '#3B82F6' },
+  'compatibility': { label: 'Compatibility',      icon: '💫', color: '#EC4899' },
+}
+
+// Parse result field into a clean display object
+function parseResult(type: string, result: string): { summary: string; full: string } {
+  // Horoscope — stored as JSON
+  if (type === 'horoscope') {
+    try {
+      const parsed = JSON.parse(result)
+      const parts: string[] = []
+      for (const key of ['energy', 'love', 'career', 'money', 'advice']) {
+        const val = parsed[key]
+        if (val?.text) parts.push(val.text)
+        else if (typeof val === 'string') parts.push(val)
+      }
+      const full = parts.join('\n\n')
+      return { summary: parts[0] ?? result, full: full || result }
+    } catch {
+      return { summary: result.slice(0, 200), full: result }
+    }
+  }
+
+  // Birth chart or compatibility — stored as JSON
+  if (type === 'birth-chart' || type === 'compatibility') {
+    try {
+      const parsed = JSON.parse(result)
+      const parts: string[] = []
+      for (const key of ['overall', 'identity', 'emotion', 'strength', 'love', 'career', 'purpose', 'challenge', 'advice']) {
+        if (typeof parsed[key] === 'string') parts.push(parsed[key])
+      }
+      const full = parts.join('\n\n')
+      return { summary: parts[0] ?? result, full: full || result }
+    } catch {
+      return { summary: result.slice(0, 200), full: result }
+    }
+  }
+
+  // Yes/No — "Answer: Yes\nCard Name\n\nReading text"
+  if (type === 'yes-no' || type === 'yes-no-deep') {
+    const lines = result.split('\n').filter(Boolean)
+    const answerLine = lines[0] ?? ''
+    const cardLine = lines[1] ?? ''
+    const body = lines.slice(2).join('\n').trim()
+    const summary = `${answerLine} · ${cardLine}${body ? '\n' + body.slice(0, 150) : ''}`
+    return { summary, full: result }
+  }
+
+  // Tarot — "Card Name (Upright)\n\nReading text"
+  const lines = result.split('\n').filter(Boolean)
+  const cardLine = lines[0] ?? ''
+  const body = lines.slice(1).join('\n').trim()
+  return {
+    summary: `${cardLine}${body ? '\n' + body.slice(0, 150) : ''}`,
+    full: result
+  }
+}
+
+function ReadingCard({ reading }: { reading: Reading }) {
+  const [expanded, setExpanded] = useState(false)
+  const meta = TYPE_META[reading.type] ?? { label: reading.type, icon: '📖', color: '#9B59B6' }
+  const { summary, full } = parseResult(reading.type, reading.result)
+  const hasMore = full.length > summary.length + 10
+
+  const date = new Date(reading.created_at).toLocaleDateString('en-US', {
+    month: 'short', day: 'numeric', year: 'numeric'
+  })
+
+  return (
+    <div
+      className="rounded-2xl p-5 transition-all"
+      style={{
+        backgroundColor: '#1A1A2E',
+        border: '1px solid rgba(155,89,182,0.25)',
+        borderLeft: `3px solid ${meta.color}`,
+      }}
+    >
+      {/* Header */}
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <span className="text-xl">{meta.icon}</span>
+          <span className="font-cinzel text-sm font-semibold" style={{ color: meta.color }}>
+            {meta.label}
+          </span>
+        </div>
+        <span className="text-textSub text-xs">{date}</span>
+      </div>
+
+      {/* Question (for yes-no / horoscope sign) */}
+      {reading.question && (
+        <p className="text-textSub text-xs italic mb-2 truncate">
+          {reading.type === 'horoscope' ? `♈ ${reading.question}` : `"${reading.question}"`}
+        </p>
+      )}
+
+      {/* Content */}
+      <p className="text-textMain text-sm leading-relaxed whitespace-pre-line">
+        {expanded ? full : summary}
+        {!expanded && full.length > summary.length + 10 && '...'}
+      </p>
+
+      {/* Expand / Collapse */}
+      {hasMore && (
+        <button
+          onClick={() => setExpanded(e => !e)}
+          className="mt-3 text-xs transition-colors"
+          style={{ color: meta.color }}
+        >
+          {expanded ? '▲ Show less' : '▼ Read full reading'}
+        </button>
+      )}
+    </div>
+  )
 }
 
 export default function HistoryPage() {
@@ -38,7 +153,7 @@ export default function HistoryPage() {
   if (status === 'loading' || loading) {
     return (
       <main className="min-h-screen flex items-center justify-center">
-        <div className="text-primary animate-pulse">Loading...</div>
+        <div className="text-textSub animate-pulse font-cinzel">Reading the stars...</div>
       </main>
     )
   }
@@ -59,36 +174,26 @@ export default function HistoryPage() {
   }
 
   return (
-    <main className="min-h-screen px-6 py-16 max-w-3xl mx-auto">
-      <div className="text-center mb-12">
-        <div className="text-gold text-sm tracking-[0.3em] uppercase font-cinzel mb-4">✦ Your Journey ✦</div>
-        <h1 className="font-cinzel text-4xl font-bold text-textMain mb-2">Reading History</h1>
-        <p className="text-textSub">Welcome back, {session.user?.name}</p>
+    <main className="min-h-screen px-4 py-12 max-w-3xl mx-auto">
+      <div className="text-center mb-10">
+        <div className="text-4xl mb-3">📖</div>
+        <h1 className="font-cinzel text-3xl font-bold text-gold mb-1">Reading History</h1>
+        <p className="text-textSub text-sm">Welcome back, {session.user?.name}</p>
       </div>
 
       {readings.length === 0 ? (
         <div className="text-center text-textSub py-20">
           <div className="text-5xl mb-4">🃏</div>
-          <p>No readings yet. Start your journey!</p>
+          <p className="mb-2">No readings yet.</p>
+          <p className="text-xs">Start with a tarot reading or daily horoscope.</p>
         </div>
       ) : (
-        <div className="space-y-4">
-          {readings.map((r) => (
-            <div key={r.id} className="rounded-2xl p-6"
-              style={{ backgroundColor: '#1A1A2E', border: '1px solid rgba(155,89,182,0.3)' }}>
-              <div className="flex items-center justify-between mb-3">
-                <span className="font-cinzel text-gold text-sm">{typeLabel[r.type] || r.type}</span>
-                <span className="text-textSub text-xs">
-                  {new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                </span>
-              </div>
-              {r.question && (
-                <p className="text-textSub text-sm italic mb-2">"{r.question}"</p>
-              )}
-              <p className="text-textMain text-sm leading-relaxed whitespace-pre-line line-clamp-4">{r.result}</p>
-            </div>
-          ))}
-        </div>
+        <>
+          <p className="text-textSub text-xs text-right mb-4">{readings.length} reading{readings.length !== 1 ? 's' : ''} saved</p>
+          <div className="space-y-4">
+            {readings.map(r => <ReadingCard key={r.id} reading={r} />)}
+          </div>
+        </>
       )}
     </main>
   )

@@ -103,7 +103,7 @@ export default function TarotPage() {
 
     if (session?.user?.email) {
       const saveText = deep
-        ? `${data.card?.name} ${data.card?.isReversed ? '(Reversed)' : '(Upright)'}\n[Deep Reading]`
+        ? `${data.card?.name} ${data.card?.isReversed ? '(Reversed)' : '(Upright)'}\n\n${data.deepReading ?? data.reading ?? ''}`
         : `${data.card?.name} ${data.card?.isReversed ? '(Reversed)' : '(Upright)'}\n\n${data.reading ?? ''}`
       await fetch('/api/reading/save', {
         method: 'POST',
