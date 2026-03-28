@@ -192,6 +192,9 @@ export default function HoroscopePage() {
                 Detailed planetary insights, deeper love & career analysis — exclusively for Pro members.
               </p>
 
+              {/* DEBUG — remove after fix */}
+              <p className="text-xs text-gray-500 mb-2">debug: session={session ? 'yes' : 'no'} plan={userPlan} deepRem={String(deepRemaining)}</p>
+
               {/* Not logged in */}
               {!session && (
                 <button onClick={() => signIn('google')}
