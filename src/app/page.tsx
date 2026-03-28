@@ -70,16 +70,15 @@ export default function Home() {
     <main className="min-h-screen px-4 md:px-6">
 
       {/* ── Hero ── */}
-      <section className="flex flex-col items-center justify-center text-center py-8 md:py-12 max-w-3xl mx-auto">
-        <div className="mb-3 text-gold text-xs tracking-[0.35em] uppercase font-cinzel">
-          ✦ Mystical Divination ✦
-        </div>
-        <h1 className="font-cinzel text-3xl md:text-4xl font-bold text-textMain mb-4 leading-tight">
-          Your Free<br />
-          <span style={{ color: '#9B59B6' }}>Tarot &amp; Astrology</span>
+      <section className="flex flex-col items-center justify-center text-center py-6 md:py-8 max-w-3xl mx-auto">
+        <h1 className="font-cinzel text-3xl md:text-4xl font-bold text-gold mb-3 leading-tight tracking-wide">
+          TarotRealm
         </h1>
-        <p className="text-textSub text-sm md:text-base max-w-lg mb-2">
-          Tarot readings, horoscopes, birth charts, and compatibility — grounded in real astrological tradition. No signup required.
+        <p className="font-cinzel text-base md:text-lg text-textSub mb-3 tracking-widest" style={{ color: '#9B59B6' }}>
+          Tarot &amp; Astrology, Grounded in Tradition
+        </p>
+        <p className="text-textSub text-sm max-w-lg">
+          Readings, horoscopes, birth charts, and compatibility. No signup required.
         </p>
       </section>
 
