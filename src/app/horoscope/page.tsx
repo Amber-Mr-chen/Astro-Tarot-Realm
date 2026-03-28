@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useSession, signIn } from 'next-auth/react'
 import { ZODIAC_SIGNS } from '@/lib/tarot'
 import Link from 'next/link'
@@ -15,7 +15,7 @@ function Stars({ count }: { count: number }) {
 }
 
 export default function HoroscopePage() {
-  const { data: session } = useSession()
+  const { data: session, status } = useSession()
   const [selected, setSelected] = useState<string | null>(null)
   const [state, setState] = useState<'idle' | 'loading' | 'done'>('idle')
   const [horoscope, setHoroscope] = useState<Horoscope | null>(null)
@@ -27,9 +27,24 @@ export default function HoroscopePage() {
   const [deepLoading, setDeepLoading] = useState(false)
   const [userPlan, setUserPlan] = useState<string>('free')
 
+  // Fetch user plan on mount, after session loads
+  useEffect(() => {
+    if (status === 'loading') return
+    fetch('/api/usage')
+      .then(r => r.json())
+      .then(data => {
+        setUserPlan(data.plan ?? 'free')
+        setDeepRemaining(data.deepRemaining ?? null)
+      })
+      .catch(() => {})
+  }, [status])
+
+  const isPro = userPlan === 'pro'
+
   async function getHoroscope(sign: string, deep = false) {
     setSelected(sign)
     setError(null)
+
     if (deep) {
       setDeepLoading(true)
     } else {
@@ -55,8 +70,7 @@ export default function HoroscopePage() {
 
     setHoroscope(data.horoscope)
     setRemaining(data.remaining ?? null)
-    setDeepRemaining(data.deepRemaining ?? null)
-    setUserPlan(data.plan ?? 'free')
+    if (data.deepRemaining !== undefined) setDeepRemaining(data.deepRemaining)
     setIsDeep(deep)
     setState('done')
 
@@ -72,7 +86,6 @@ export default function HoroscopePage() {
   }
 
   const selectedSign = ZODIAC_SIGNS.find(z => z.name === selected)
-  const isPro = userPlan === 'pro'
 
   return (
     <main className="min-h-screen px-6 py-16 max-w-4xl mx-auto">
@@ -129,19 +142,15 @@ export default function HoroscopePage() {
                 border: `2px solid ${isSelected ? z.color : z.color + '66'}`,
                 boxShadow: isSelected ? `0 0 24px ${z.color}88` : `0 2px 12px ${z.color}22`,
               }}>
-              {/* Background symbol watermark */}
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none"
                 style={{ fontSize: '5rem', opacity: 0.07, color: z.color }}>
                 {z.symbol}
               </div>
-              {/* Emoji */}
               <div className="text-4xl mb-2 relative z-10">{z.emoji}</div>
-              {/* Name */}
               <div className="font-cinzel font-bold text-sm relative z-10"
                 style={{ color: isSelected ? '#fff' : z.color }}>
                 {z.name}
               </div>
-              {/* Symbol small */}
               <div className="text-lg relative z-10 mt-1" style={{ color: isSelected ? 'rgba(255,255,255,0.7)' : z.color + 'aa' }}>
                 {z.symbol}
               </div>
@@ -183,7 +192,7 @@ export default function HoroscopePage() {
 
           {saved && <p className="text-green-400 text-sm text-center">✓ Reading saved to your history</p>}
 
-          {/* Deep Reading upsell — only shown after standard reading */}
+          {/* Deep Reading upsell — shown after standard reading only */}
           {!isDeep && (
             <div className="rounded-2xl p-6 text-center mt-4"
               style={{ background: 'linear-gradient(135deg, rgba(243,156,18,0.08), rgba(155,89,182,0.08))', border: '1px solid rgba(243,156,18,0.3)' }}>
@@ -191,9 +200,6 @@ export default function HoroscopePage() {
               <p className="text-textSub text-sm mb-4">
                 Detailed planetary insights, deeper love & career analysis — exclusively for Pro members.
               </p>
-
-              {/* DEBUG — remove after fix */}
-              <p className="text-xs text-gray-500 mb-2">debug: session={session ? 'yes' : 'no'} plan={userPlan} deepRem={String(deepRemaining)}</p>
 
               {/* Not logged in */}
               {!session && (
@@ -204,7 +210,7 @@ export default function HoroscopePage() {
                 </button>
               )}
 
-              {/* Logged in, not Pro */}
+              {/* Logged in, not Pro → show upgrade */}
               {session && !isPro && (
                 <Link href="/pricing"
                   className="inline-block px-8 py-3 rounded-full text-sm font-semibold text-white transition-all hover:opacity-80"
@@ -213,16 +219,18 @@ export default function HoroscopePage() {
                 </Link>
               )}
 
-              {/* Pro user, has remaining */}
+              {/* Pro user, quota available */}
               {session && isPro && (deepRemaining === null || deepRemaining > 0) && (
-                <button onClick={() => selected && getHoroscope(selected, true)} disabled={deepLoading}
+                <button
+                  onClick={() => selected && getHoroscope(selected, true)}
+                  disabled={deepLoading}
                   className="px-8 py-3 rounded-full text-sm font-semibold text-white transition-all hover:opacity-80 disabled:opacity-50"
                   style={{ background: 'linear-gradient(135deg, #F39C12, #E67E22)' }}>
                   {deepLoading ? 'Reading the stars...' : `✨ Get Deep Reading for ${selected}`}
                 </button>
               )}
 
-              {/* Pro user, exhausted */}
+              {/* Pro user, quota exhausted */}
               {session && isPro && deepRemaining !== null && deepRemaining <= 0 && (
                 <p className="text-textSub text-sm">You've used all 10 deep readings today. Come back tomorrow!</p>
               )}
@@ -234,7 +242,7 @@ export default function HoroscopePage() {
           )}
 
           {/* Low usage warning */}
-          {remaining !== null && remaining <= 1 && session && (
+          {remaining !== null && remaining <= 1 && session && !isPro && (
             <div className="bg-purple-500/10 border border-purple-500/30 rounded-lg p-3 text-sm text-purple-200 text-center">
               🌟 Only <strong>{remaining}</strong> reading left today. <Link href="/pricing" className="underline text-gold">Upgrade to Pro</Link> for unlimited reads.
             </div>
