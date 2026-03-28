@@ -8,6 +8,10 @@ type Horoscope = {
   love: { text: string; stars: number }
   career: { text: string; stars: number }
   money: { text: string; stars: number }
+  // Deep reading extras
+  energy?: { text: string; stars: number }
+  advice?: { text: string; stars: number }
+  lucky?: { color: string; number: number; time: string }
 }
 
 function Stars({ count }: { count: number }) {
@@ -220,6 +224,18 @@ export default function HoroscopePage() {
             {isDeep && <span className="text-xs ml-2 text-gold">✨ Deep</span>}
           </h2>
 
+          {/* Energy banner — deep reading only */}
+          {isDeep && horoscope.energy && (
+            <div className="rounded-2xl p-6"
+              style={{ background: 'linear-gradient(135deg, rgba(155,89,182,0.2), rgba(243,156,18,0.15))', border: '1px solid rgba(243,156,18,0.4)' }}>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="font-semibold text-gold">⚡ Today&apos;s Energy</h3>
+                <Stars count={horoscope.energy.stars} />
+              </div>
+              <p className="text-textMain leading-relaxed">{horoscope.energy.text}</p>
+            </div>
+          )}
+
           {[
             { key: 'love', label: '💕 Love & Relationships', data: horoscope.love },
             { key: 'career', label: '💼 Career & Goals', data: horoscope.career },
@@ -234,6 +250,43 @@ export default function HoroscopePage() {
               <p className="text-textSub leading-relaxed">{section.data.text}</p>
             </div>
           ))}
+
+          {/* Advice — deep reading only */}
+          {isDeep && horoscope.advice && (
+            <div className="rounded-2xl p-6"
+              style={{ background: 'linear-gradient(135deg, rgba(39,174,96,0.1), rgba(93,173,226,0.1))', border: '1px solid rgba(39,174,96,0.4)' }}>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="font-semibold" style={{ color: '#2ECC71' }}>🌟 Today&apos;s Guidance</h3>
+                <Stars count={horoscope.advice.stars} />
+              </div>
+              <p className="text-textMain leading-relaxed">{horoscope.advice.text}</p>
+            </div>
+          )}
+
+          {/* Lucky — deep reading only */}
+          {isDeep && horoscope.lucky && (
+            <div className="rounded-2xl p-5"
+              style={{ backgroundColor: '#1A1A2E', border: '1px solid rgba(243,156,18,0.3)' }}>
+              <h3 className="font-semibold text-gold mb-4">🍀 Lucky Elements Today</h3>
+              <div className="grid grid-cols-3 gap-4 text-center">
+                <div className="rounded-xl p-3" style={{ backgroundColor: 'rgba(155,89,182,0.1)' }}>
+                  <div className="text-2xl mb-1">🎨</div>
+                  <div className="text-xs text-textSub mb-1">Color</div>
+                  <div className="text-sm font-semibold text-textMain">{horoscope.lucky.color}</div>
+                </div>
+                <div className="rounded-xl p-3" style={{ backgroundColor: 'rgba(155,89,182,0.1)' }}>
+                  <div className="text-2xl mb-1">🔢</div>
+                  <div className="text-xs text-textSub mb-1">Number</div>
+                  <div className="text-sm font-semibold text-textMain">{horoscope.lucky.number}</div>
+                </div>
+                <div className="rounded-xl p-3" style={{ backgroundColor: 'rgba(155,89,182,0.1)' }}>
+                  <div className="text-2xl mb-1">⏰</div>
+                  <div className="text-xs text-textSub mb-1">Best Time</div>
+                  <div className="text-sm font-semibold text-textMain">{horoscope.lucky.time}</div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {saved && <p className="text-green-400 text-sm text-center">✓ Reading saved to your history</p>}
 
