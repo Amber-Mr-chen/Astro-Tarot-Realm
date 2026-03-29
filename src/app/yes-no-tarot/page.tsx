@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { useSession, signIn } from 'next-auth/react'
 import Link from 'next/link'
+import ShareButton from '../share-button'
 
 type Result = {
   card: { name: string; isReversed: boolean }
@@ -177,12 +178,7 @@ export default function YesNoPage() {
               style={{ background: 'linear-gradient(135deg, #9B59B6, #6C3483)', color: 'white' }}>
               Ask Another
             </button>
-            <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`}
-              target="_blank" rel="noopener noreferrer"
-              className="flex-1 py-3 rounded-full text-sm font-semibold text-center transition-all hover:opacity-80"
-              style={{ backgroundColor: '#1DA1F2', color: 'white' }}>
-              Share on X
-            </a>
+            <ShareButton text={shareText} />
           </div>
         </div>
       )}

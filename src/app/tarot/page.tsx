@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { useSession, signIn } from 'next-auth/react'
 import Link from 'next/link'
+import ShareButton from '../share-button'
 
 type DeepReading = {
   symbol: string
@@ -227,6 +228,11 @@ export default function TarotPage() {
           )}
 
           {saved && <p className="text-green-400 text-sm text-center">✓ Reading saved to your history</p>}
+
+          {/* Share */}
+          <div className="flex justify-center">
+            <ShareButton text={`I drew ${result.card.name} ${result.card.isReversed ? '(Reversed)' : '(Upright)'} on TarotRealm today ✨\n\n"${(result.reading ?? '').slice(0, 120)}…"\n\nGet your free reading → tarotrealm.xyz/tarot`} />
+          </div>
 
           {/* Upsell */}
           {!result.isDeep && (

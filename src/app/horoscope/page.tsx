@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useSession, signIn } from 'next-auth/react'
 import { ZODIAC_SIGNS } from '@/lib/tarot'
 import Link from 'next/link'
+import ShareButton from '../share-button'
 
 type Horoscope = {
   love: { text: string; stars: number }
@@ -289,6 +290,13 @@ export default function HoroscopePage() {
           )}
 
           {saved && <p className="text-green-400 text-sm text-center">✓ Reading saved to your history</p>}
+
+          {/* Share */}
+          {selected && horoscope && (
+            <div className="flex justify-center">
+              <ShareButton text={`My ${selected.charAt(0).toUpperCase() + selected.slice(1)} horoscope today on TarotRealm ⭐\n\nLove ${'★'.repeat(horoscope.love.stars)}${'☆'.repeat(5-horoscope.love.stars)} · Career ${'★'.repeat(horoscope.career.stars)}${'☆'.repeat(5-horoscope.career.stars)} · Money ${'★'.repeat(horoscope.money.stars)}${'☆'.repeat(5-horoscope.money.stars)}\n\nGet yours free → tarotrealm.xyz/horoscope`} />
+            </div>
+          )}
 
           {/* Deep Reading upsell */}
           {!isDeep && (
