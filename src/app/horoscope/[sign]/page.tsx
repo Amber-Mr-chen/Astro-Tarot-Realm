@@ -142,6 +142,8 @@ export default function SignPage() {
               </span>
             </div>
           )}
+
+          {/* Standard 3 sections */}
           {[
             { key: 'love', label: '💕 Love & Relationships', data: horoscope.love },
             { key: 'career', label: '💼 Career & Goals', data: horoscope.career },
@@ -156,6 +158,39 @@ export default function SignPage() {
               <p className="text-textSub leading-relaxed">{section.data.text}</p>
             </div>
           ))}
+
+          {/* Deep-only sections */}
+          {isDeep && (horoscope as any).energy && (
+            <div className="rounded-2xl p-6"
+              style={{ backgroundColor: '#1A1A2E', border: '1px solid rgba(243,156,18,0.3)' }}>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="font-semibold text-textMain">⚡ Energy & Planetary Influence</h3>
+                <Stars count={(horoscope as any).energy.stars} />
+              </div>
+              <p className="text-textSub leading-relaxed">{(horoscope as any).energy.text}</p>
+            </div>
+          )}
+          {isDeep && (horoscope as any).advice && (
+            <div className="rounded-2xl p-6"
+              style={{ backgroundColor: '#1A1A2E', border: '1px solid rgba(155,89,182,0.3)' }}>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="font-semibold text-textMain">🌟 Daily Cosmic Advice</h3>
+                <Stars count={(horoscope as any).advice.stars} />
+              </div>
+              <p className="text-textSub leading-relaxed">{(horoscope as any).advice.text}</p>
+            </div>
+          )}
+          {isDeep && (horoscope as any).lucky && (
+            <div className="rounded-2xl p-6 text-center"
+              style={{ background: 'linear-gradient(135deg, rgba(201,168,76,0.08), rgba(155,89,182,0.08))', border: '1px solid rgba(201,168,76,0.3)' }}>
+              <h3 className="font-cinzel text-sm font-bold text-gold mb-4 uppercase tracking-wider">✦ Today's Lucky Elements</h3>
+              <div className="grid grid-cols-3 gap-4">
+                <div><p className="text-xs text-textSub mb-1">Color</p><p className="text-textMain font-semibold">{(horoscope as any).lucky.color}</p></div>
+                <div><p className="text-xs text-textSub mb-1">Number</p><p className="text-textMain font-semibold">{(horoscope as any).lucky.number}</p></div>
+                <div><p className="text-xs text-textSub mb-1">Time</p><p className="text-textMain font-semibold">{(horoscope as any).lucky.time}</p></div>
+              </div>
+            </div>
+          )}
 
           {!isDeep && (
             <div className="rounded-xl p-4 text-center mt-4"
