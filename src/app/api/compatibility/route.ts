@@ -55,59 +55,65 @@ export async function POST(req: NextRequest) {
     let reading = { ...fallbackReading }
 
     if (ai) {
-      const sections = isPro
-        ? `"overall", "strength", "challenge", "love", "work", "advice"`
-        : `"overall", "strength", "advice"`
-
-      const prompt = `You are a relationship astrologer with 20 years of experience in synastry. You write with authority, warmth, and specificity. You never fabricate planetary positions. You speak from the signs' archetypal nature.
+      const basePrompt = `You are a relationship astrologer with 20 years of experience in synastry. You write with authority, warmth, and specificity. You never fabricate planetary positions. You speak from the signs' archetypal nature.
 
 STRICT WRITING RULES:
-- Write like a real person talking — not like AI generating content
-- Vary sentence length — mix short punchy sentences with longer ones
+- Write like a real person talking — not like AI
+- Vary sentence length — mix short punchy sentences with longer flowing ones
 - NEVER use: "must learn to", "they must", "in order to", "it is important", "Furthermore", "Moreover"
 - NEVER start consecutive sentences the same way
 - Be specific to ${signA} and ${signB}'s actual natures — not generic advice
-- Each section: 3-4 sentences, 80-120 words minimum
+- Each section: 4-5 sentences, 100-150 words. Write rich, detailed content.
 
-Analyzing ${signA} × ${signB} compatibility:
-- ${signA}: ${kA.element} sign, ${kA.quality} quality, ruled by ${kA.ruler}. Core: ${kA.core}. Emotional nature: ${kA.emotion}. Shadow: ${kA.shadow}. Gift: ${kA.gift}.
-- ${signB}: ${kB.element} sign, ${kB.quality} quality, ruled by ${kB.ruler}. Core: ${kB.core}. Emotional nature: ${kB.emotion}. Shadow: ${kB.shadow}. Gift: ${kB.gift}.
+${signA} × ${signB} context:
+- ${signA}: ${kA.element} sign, ${kA.quality} quality, ruled by ${kA.ruler}. Core: ${kA.core}. Emotional: ${kA.emotion}. Shadow: ${kA.shadow}. Gift: ${kA.gift}.
+- ${signB}: ${kB.element} sign, ${kB.quality} quality, ruled by ${kB.ruler}. Core: ${kB.core}. Emotional: ${kB.emotion}. Shadow: ${kB.shadow}. Gift: ${kB.gift}.
+Scores: Overall ${scores.overall}%  Love ${scores.love}%  Friendship ${scores.friendship}%  Work ${scores.work}%
 
-Scores (do not contradict): Overall: ${scores.overall}%  Love: ${scores.love}%  Friendship: ${scores.friendship}%  Work: ${scores.work}%
+CRITICAL: Output ONLY valid JSON. Every value is a plain string.`
 
-CRITICAL: Output ONLY a valid JSON object. Every value is a plain string. No nested objects, no arrays, no markdown.
-Example format: {"overall":"Virgo and Gemini share Mercury as their ruler...","strength":"What works here is the mental chemistry..."}
-
-Output only these sections: ${sections}
-JSON only, nothing else:`
-
-      try {
-        const response = await ai.run('@cf/meta/llama-3.1-8b-instruct', {
-          prompt,
-          max_tokens: isPro ? 1400 : 700,
-          temperature: 0.75,
-        })
-        const raw = String(response?.response ?? '')
-        const start = raw.indexOf('{')
-        const end = raw.lastIndexOf('}')
-
-        if (start !== -1 && end > start) {
-          const parsed = JSON.parse(raw.slice(start, end + 1))
-          const keys = isPro
-            ? ['overall','strength','challenge','love','work','advice']
-            : ['overall','strength','advice']
-
+      const parseAI = (raw: string, keys: string[]) => {
+        try {
+          const s = raw.indexOf('{'), e = raw.lastIndexOf('}')
+          if (s === -1 || e <= s) return
+          const parsed = JSON.parse(raw.slice(s, e + 1))
           for (const k of keys) {
-            if (parsed[k] !== undefined) {
-              const extracted = extractString(parsed[k])
-              if (extracted.length > 30 && !extracted.startsWith('{') && !extracted.includes('"overall"')) {
-                reading[k] = extracted
+            if (parsed[k]) {
+              const v = extractString(parsed[k])
+              if (v.length > 40 && !v.startsWith('{') && !v.includes('"overall"')) {
+                reading[k] = v
               }
             }
           }
-        }
-      } catch {
-        // Keep fallback reading
+        } catch { /* keep fallback */ }
+      }
+
+      if (!isPro) {
+        // Free: one call, 3 sections
+        try {
+          const res = await ai.run('@cf/meta/llama-3.1-8b-instruct', {
+            prompt: basePrompt + `\nOutput ONLY these 3 sections: {"overall":"...","strength":"...","advice":"..."}\nJSON only:`,
+            max_tokens: 750,
+            temperature: 0.75,
+          })
+          parseAI(String(res?.response ?? ''), ['overall', 'strength', 'advice'])
+        } catch { /* keep fallback */ }
+      } else {
+        // Pro: two parallel calls — batch 1 + batch 2
+        const [res1, res2] = await Promise.all([
+          ai.run('@cf/meta/llama-3.1-8b-instruct', {
+            prompt: basePrompt + `\nOutput ONLY these 3 sections:\n{"overall":"4-5 sentences on the overall energy and dynamic of this pairing","strength":"4-5 sentences on the greatest strength and what works best","advice":"4-5 sentences of specific astrological guidance for this pairing"}\nJSON only:`,
+            max_tokens: 850,
+            temperature: 0.75,
+          }).catch(() => null),
+          ai.run('@cf/meta/llama-3.1-8b-instruct', {
+            prompt: basePrompt + `\nOutput ONLY these 3 sections:\n{"challenge":"4-5 sentences on the key friction points and challenges","love":"4-5 sentences on romantic and emotional compatibility","work":"4-5 sentences on professional and collaborative compatibility"}\nJSON only:`,
+            max_tokens: 850,
+            temperature: 0.75,
+          }).catch(() => null),
+        ])
+        if (res1) parseAI(String(res1?.response ?? ''), ['overall', 'strength', 'advice'])
+        if (res2) parseAI(String(res2?.response ?? ''), ['challenge', 'love', 'work'])
       }
     }
 
