@@ -37,7 +37,7 @@ const plans = [
     badge: null,
     highlight: false,
     features: [
-      '3 readings per day',
+      '1 reading/day as guest, 3 readings/day signed in',
       'All reading types (Tarot, Yes/No, Horoscope)',
       '7-day reading history',
       'Standard readings',
@@ -108,7 +108,7 @@ const faqs = [
   },
   {
     q: 'What happens when I reach my daily limit?',
-    a: "Free users get 3 standard readings per day. After that, you'll need to wait until tomorrow or upgrade to Pro for unlimited access.",
+    a: "Visitors get 1 free reading per day without signing in. Sign in with Google to get 3 free readings per day. New users also receive 3 days of Pro access free on signup. Upgrade to Pro for unlimited readings anytime.",
   },
   {
     q: 'How does payment work?',
@@ -208,6 +208,14 @@ export default function PricingPage() {
         </h1>
         <p className="text-textSub text-lg max-w-xl mx-auto">
           Start free. Upgrade to Pro for unlimited readings and exclusive deep readings.
+        </p>
+      </div>
+
+      {/* New User Trial Banner */}
+      <div className="rounded-2xl p-4 mb-10 text-center"
+        style={{ background: 'linear-gradient(135deg, rgba(46,204,113,0.15), rgba(155,89,182,0.15))', border: '1px solid rgba(46,204,113,0.4)' }}>
+        <p className="text-sm font-semibold" style={{ color: '#2ecc71' }}>
+          🎁 New to TarotRealm? <span className="text-textMain font-normal">Sign up and get <strong>3 days of Pro free</strong> — no credit card required.</span>
         </p>
       </div>
 

@@ -202,19 +202,57 @@ export default function CompatibilityPage() {
           <div className="bg-surface border border-purple-900/40 rounded-2xl p-6 md:p-8 space-y-5">
             <h2 className="font-cinzel text-xl text-gold text-center">Astrological Analysis</h2>
 
+            {/* Sections for all users */}
             {[
-              { key: 'overall',   icon: '🌌', title: 'Overall Energy' },
-              { key: 'strength',  icon: '✨', title: 'Greatest Strength' },
-              { key: 'challenge', icon: '⚡', title: 'Key Challenge' },
-              { key: 'love',      icon: '💕', title: 'Love Compatibility' },
-              { key: 'work',      icon: '💼', title: 'Work Compatibility' },
-              { key: 'advice',    icon: '🔮', title: 'Astrological Guidance' },
+              { key: 'overall',  icon: '🌌', title: 'Overall Energy' },
+              { key: 'strength', icon: '✨', title: 'Greatest Strength' },
+              { key: 'advice',   icon: '🔮', title: 'Astrological Guidance' },
             ].filter(s => result.reading[s.key]).map(({ key, icon, title }) => (
               <div key={key} className="border-t border-purple-900/30 pt-4 first:border-0 first:pt-0">
                 <h3 className="text-gold font-semibold mb-2">{icon} {title}</h3>
                 <p className="text-textMain text-sm leading-relaxed">{String(result.reading[key])}</p>
               </div>
             ))}
+
+            {/* Pro-only sections */}
+            {result.plan === 'pro' ? (
+              [
+                { key: 'challenge', icon: '⚡', title: 'Key Challenge' },
+                { key: 'love',      icon: '💕', title: 'Love Compatibility' },
+                { key: 'work',      icon: '💼', title: 'Work Compatibility' },
+              ].filter(s => result.reading[s.key]).map(({ key, icon, title }) => (
+                <div key={key} className="border-t border-purple-900/30 pt-4">
+                  <h3 className="text-gold font-semibold mb-2">{icon} {title}</h3>
+                  <p className="text-textMain text-sm leading-relaxed">{String(result.reading[key])}</p>
+                </div>
+              ))
+            ) : (
+              /* Locked preview for free users */
+              <div className="border-t border-purple-900/30 pt-4 space-y-4">
+                {[
+                  { icon: '⚡', title: 'Key Challenge' },
+                  { icon: '💕', title: 'Love Compatibility' },
+                  { icon: '💼', title: 'Work Compatibility' },
+                ].map(({ icon, title }) => (
+                  <div key={title} className="relative">
+                    <h3 className="text-gold font-semibold mb-2">{icon} {title}</h3>
+                    <div className="relative overflow-hidden rounded-lg">
+                      <p className="text-textMain text-sm leading-relaxed blur-sm select-none pointer-events-none">
+                        This dimension of your compatibility reveals patterns that take time to fully understand. The tension and growth potential here are specific to your unique combination of signs and elements.
+                      </p>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="text-gold text-lg">🔒</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                <div className="text-center pt-2">
+                  <Link href="/pricing" className="inline-block px-5 py-2 rounded-full text-sm font-semibold text-bg" style={{ background: 'linear-gradient(135deg, #C9A84C, #E8C96D)' }}>
+                    ✨ Unlock Full Report — Upgrade to Pro
+                  </Link>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Pro upsell for free users */}

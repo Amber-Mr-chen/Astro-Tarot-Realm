@@ -68,11 +68,22 @@ export default function BirthChartPage() {
     e.preventDefault()
     if (!birthDate) return
 
+    // Validate date — catch impossible dates like Feb 31, Apr 31
+    const [year, month, day] = birthDate.split('-').map(Number)
+    const check = new Date(year, month - 1, day)
+    if (check.getMonth() !== month - 1 || check.getDate() !== day) {
+      setError(`${month}/${day} is not a valid date. Please check your birth date.`)
+      return
+    }
+    if (new Date(birthDate) > new Date()) {
+      setError('Date of birth cannot be in the future.')
+      return
+    }
+
     setLoading(true)
     setError('')
     setResult(null)
 
-    const [year, month, day] = birthDate.split('-').map(Number)
     const hour = birthTime ? parseInt(birthTime.split(':')[0]) : 12
 
     const sunSign = getSunSign(month, day)
@@ -134,6 +145,8 @@ export default function BirthChartPage() {
               value={birthDate}
               onChange={e => setBirthDate(e.target.value)}
               required
+              max={new Date().toISOString().split('T')[0]}
+              min="1900-01-01"
               className="w-full bg-bg border border-purple-900/40 rounded-lg px-4 py-3 text-textMain focus:outline-none focus:border-gold transition-colors"
             />
           </div>
@@ -206,12 +219,10 @@ export default function BirthChartPage() {
           {result.reading && (
             <div className="bg-surface border border-purple-900/40 rounded-2xl p-6 md:p-8 space-y-5">
               <h2 className="font-cinzel text-xl text-gold text-center">Your Cosmic Reading</h2>
+              {/* Sections available to all users */}
               {[
                 { key: 'identity',  icon: '☀️', title: 'Core Identity' },
                 { key: 'emotion',   icon: '🌙', title: 'Emotional World' },
-                { key: 'rising',    icon: '⬆️', title: 'Your Rising Energy' },
-                { key: 'purpose',   icon: '🌟', title: 'Life Purpose' },
-                { key: 'challenge', icon: '⚡', title: 'Growth & Challenge' },
                 { key: 'advice',    icon: '🔮', title: 'Cosmic Guidance' },
               ].filter(s => result.reading[s.key]).map(({ key, icon, title }) => (
                 <div key={key} className="border-t border-purple-900/30 pt-4 first:border-0 first:pt-0">
@@ -219,6 +230,46 @@ export default function BirthChartPage() {
                   <p className="text-textMain text-sm leading-relaxed">{String(result.reading[key])}</p>
                 </div>
               ))}
+
+              {/* Pro-only sections */}
+              {result.plan === 'pro' ? (
+                [
+                  { key: 'rising',    icon: '⬆️', title: 'Your Rising Energy' },
+                  { key: 'purpose',   icon: '🌟', title: 'Life Purpose' },
+                  { key: 'challenge', icon: '⚡', title: 'Growth & Challenge' },
+                ].filter(s => result.reading[s.key]).map(({ key, icon, title }) => (
+                  <div key={key} className="border-t border-purple-900/30 pt-4">
+                    <h3 className="text-gold font-semibold mb-2">{icon} {title}</h3>
+                    <p className="text-textMain text-sm leading-relaxed">{String(result.reading[key])}</p>
+                  </div>
+                ))
+              ) : (
+                /* Locked preview for free users */
+                <div className="border-t border-purple-900/30 pt-4 space-y-4">
+                  {[
+                    { icon: '⬆️', title: 'Your Rising Energy' },
+                    { icon: '🌟', title: 'Life Purpose' },
+                    { icon: '⚡', title: 'Growth & Challenge' },
+                  ].map(({ icon, title }) => (
+                    <div key={title} className="relative">
+                      <h3 className="text-gold font-semibold mb-2">{icon} {title}</h3>
+                      <div className="relative overflow-hidden rounded-lg">
+                        <p className="text-textMain text-sm leading-relaxed blur-sm select-none pointer-events-none">
+                          Your {title.toLowerCase()} reveals a deeply personal path shaped by the interplay of your signs. The cosmic forces at work here speak directly to your soul's journey and the patterns you are meant to transform in this lifetime.
+                        </p>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className="text-gold text-lg">🔒</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  <div className="text-center pt-2">
+                    <Link href="/pricing" className="inline-block px-5 py-2 rounded-full text-sm font-semibold text-bg" style={{ background: 'linear-gradient(135deg, #C9A84C, #E8C96D)' }}>
+                      ✨ Unlock Full Reading — Upgrade to Pro
+                    </Link>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

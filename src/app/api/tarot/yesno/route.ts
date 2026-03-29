@@ -15,6 +15,24 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Question is required' }, { status: 400 })
     }
 
+    // Filter nonsensical, self-referential, or abusive questions
+    const q = question.trim().toLowerCase()
+    const nonsensePatterns = [
+      /^am i (a )?(dog|cat|animal|bird|fish|pig|monkey|idiot|stupid|fool|dumb|crazy|insane|moron|loser|robot|alien|god|human|person|man|woman)\??$/i,
+      /^are you (sick|broken|stupid|crazy|dumb|a robot|an ai|real)\??$/i,
+      /^(do i exist|am i real|am i alive|am i dead)\??$/i,
+      /^(what is \d+\s*[\+\-\*\/]\s*\d+|how much is \d+)/i,
+      /^(hello|hi|hey|test|ok|okay|yes|no|maybe|lol|haha|wtf|wtf|omg)\??$/i,
+    ]
+    const isTooShort = q.replace(/[^a-z0-9\u4e00-\u9fff]/g, '').length < 4
+    const isNonsense = nonsensePatterns.some(p => p.test(q))
+    if (isTooShort || isNonsense) {
+      return NextResponse.json({
+        error: 'invalid_question',
+        message: 'Tarot works best with sincere, heartfelt questions — about love, decisions, growth, or the path ahead. Try asking something that truly matters to you.',
+      }, { status: 400 })
+    }
+
     // Comprehensive crisis detection - covers direct and implicit suicidal ideation
     const crisisPatterns = [
       // 1. Direct suicidal intent
