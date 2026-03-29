@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useSession, signIn } from 'next-auth/react'
 import Link from 'next/link'
 import ShareButton from '../share-button'
+import DeepReadingPreview from '../deep-reading-preview'
 
 type DeepReading = {
   symbol: string
@@ -236,24 +237,7 @@ export default function TarotPage() {
 
           {/* Upsell */}
           {!result.isDeep && (
-            <div className="rounded-xl p-4 text-center"
-              style={{ background: 'linear-gradient(135deg, rgba(243,156,18,0.1), rgba(155,89,182,0.1))', border: '1px solid rgba(243,156,18,0.3)' }}>
-              <p className="text-sm text-textSub mb-3">
-                Want the full picture? <strong className="text-textMain">Deep Reading</strong> reveals past-present-future, love, career, inner growth, today's action & a reflection question.
-              </p>
-              {session ? (
-                <button onClick={() => drawCard(true, result.card)}
-                  className="px-6 py-2 rounded-full text-sm font-semibold text-white hover:opacity-80"
-                  style={{ background: 'linear-gradient(135deg, #F39C12, #E67E22)' }}>
-                  ✨ Get Deep Reading (Pro)
-                </button>
-              ) : (
-                <Link href="/pricing" className="inline-block px-6 py-2 rounded-full text-sm font-semibold text-white"
-                  style={{ background: 'linear-gradient(135deg, #F39C12, #E67E22)' }}>
-                  Upgrade to Pro →
-                </Link>
-              )}
-            </div>
+            <DeepReadingPreview cardName={result.card.name} />
           )}
 
           <button onClick={() => { setState('idle'); setResult(null); setSaved(false); setError(null) }}

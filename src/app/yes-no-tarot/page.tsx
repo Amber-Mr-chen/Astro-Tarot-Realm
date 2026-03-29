@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useSession, signIn } from 'next-auth/react'
 import Link from 'next/link'
 import ShareButton from '../share-button'
+import DeepReadingPreview from '../deep-reading-preview'
 
 type Result = {
   card: { name: string; isReversed: boolean }
@@ -148,27 +149,7 @@ export default function YesNoPage() {
 
           {/* Deep Reading Upsell — only show after standard reading */}
           {!result.isDeep && (
-            <div className="rounded-xl p-4 text-center"
-              style={{ background: 'linear-gradient(135deg, rgba(243,156,18,0.1), rgba(155,89,182,0.1))', border: '1px solid rgba(243,156,18,0.3)' }}>
-              <p className="text-sm text-textSub mb-3">
-                Want to know <strong className="text-textMain">why</strong> and <strong className="text-textMain">what to do next</strong>? Deep Reading reveals hidden energies and detailed guidance.
-              </p>
-              {session ? (
-                <button onClick={() => ask(true, result.card)}
-                  className="px-6 py-2 rounded-full text-sm font-semibold text-white transition-all hover:opacity-80"
-                  style={{ background: 'linear-gradient(135deg, #F39C12, #E67E22)' }}>
-                  ✨ Get Deep Reading (Pro)
-                </button>
-              ) : (
-                <div className="space-y-2">
-                  <Link href="/pricing"
-                    className="inline-block px-6 py-2 rounded-full text-sm font-semibold text-white"
-                    style={{ background: 'linear-gradient(135deg, #F39C12, #E67E22)' }}>
-                    Upgrade to Pro →
-                  </Link>
-                </div>
-              )}
-            </div>
+            <DeepReadingPreview cardName={result.card.name} />
           )}
 
           {/* Action Buttons */}
