@@ -59,19 +59,24 @@ export async function POST(req: NextRequest) {
         ? `"overall", "strength", "challenge", "love", "work", "advice"`
         : `"overall", "strength", "advice"`
 
-      const prompt = `You are a professional astrologer with 20 years of experience in synastry and relationship astrology. You speak with quiet authority — warm, direct, and grounded in traditional astrological knowledge. You never guess or fabricate.
+      const prompt = `You are a relationship astrologer with 20 years of experience in synastry. You write with authority, warmth, and specificity. You never fabricate planetary positions. You speak from the signs' archetypal nature.
 
-Analyzing compatibility between:
+STRICT WRITING RULES:
+- Write like a real person talking — not like AI generating content
+- Vary sentence length — mix short punchy sentences with longer ones
+- NEVER use: "must learn to", "they must", "in order to", "it is important", "Furthermore", "Moreover"
+- NEVER start consecutive sentences the same way
+- Be specific to ${signA} and ${signB}'s actual natures — not generic advice
+- Each section: 3-4 sentences, 80-120 words minimum
+
+Analyzing ${signA} × ${signB} compatibility:
 - ${signA}: ${kA.element} sign, ${kA.quality} quality, ruled by ${kA.ruler}. Core: ${kA.core}. Emotional nature: ${kA.emotion}. Shadow: ${kA.shadow}. Gift: ${kA.gift}.
 - ${signB}: ${kB.element} sign, ${kB.quality} quality, ruled by ${kB.ruler}. Core: ${kB.core}. Emotional nature: ${kB.emotion}. Shadow: ${kB.shadow}. Gift: ${kB.gift}.
 
-Compatibility scores (already calculated — do not contradict these):
-- Overall: ${scores.overall}%  Love: ${scores.love}%  Friendship: ${scores.friendship}%  Work: ${scores.work}%
+Scores (do not contradict): Overall: ${scores.overall}%  Love: ${scores.love}%  Friendship: ${scores.friendship}%  Work: ${scores.work}%
 
-Write a compatibility reading in the voice of an experienced astrologer. Natural flowing paragraphs only — no bullet points, no lists. Speak with certainty. Avoid "possibly", "may", "might" — state what is true for this pairing. Be warm but direct. Each section: 3 sentences minimum.
-
-CRITICAL: Output ONLY a JSON object. Every value must be a plain string — no nested objects, no arrays.
-Example: {"overall":"Aries and Scorpio share a primal intensity...","strength":"The raw energy of Mars ruling both..."}
+CRITICAL: Output ONLY a valid JSON object. Every value is a plain string. No nested objects, no arrays, no markdown.
+Example format: {"overall":"Virgo and Gemini share Mercury as their ruler...","strength":"What works here is the mental chemistry..."}
 
 Output only these sections: ${sections}
 JSON only, nothing else:`
@@ -79,8 +84,8 @@ JSON only, nothing else:`
       try {
         const response = await ai.run('@cf/meta/llama-3.1-8b-instruct', {
           prompt,
-          max_tokens: isPro ? 900 : 450,
-          temperature: 0.72,
+          max_tokens: isPro ? 1400 : 700,
+          temperature: 0.75,
         })
         const raw = String(response?.response ?? '')
         const start = raw.indexOf('{')
