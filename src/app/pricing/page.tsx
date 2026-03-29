@@ -203,29 +203,6 @@ function PayPalButton({ planKey, color }: { planKey: string; color: string }) {
 
 export default function PricingPage() {
   const { data: session } = useSession()
-  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0 })
-
-  useEffect(() => {
-    // Persist offer deadline in localStorage — 4 days from first visit
-    const STORAGE_KEY = 'tr_offer_deadline'
-    let deadline = parseInt(localStorage.getItem(STORAGE_KEY) || '0')
-    if (!deadline || deadline < Date.now()) {
-      deadline = Date.now() + 4 * 24 * 60 * 60 * 1000
-      localStorage.setItem(STORAGE_KEY, String(deadline))
-    }
-    function update() {
-      const diff = deadline - Date.now()
-      if (diff <= 0) { setTimeLeft({ days: 0, hours: 0, minutes: 0 }); return }
-      setTimeLeft({
-        days: Math.floor(diff / 86400000),
-        hours: Math.floor((diff % 86400000) / 3600000),
-        minutes: Math.floor((diff % 3600000) / 60000),
-      })
-    }
-    update()
-    const t = setInterval(update, 30000)
-    return () => clearInterval(t)
-  }, [])
 
   return (
     <main className="min-h-screen px-6 py-16 max-w-5xl mx-auto">
@@ -234,14 +211,8 @@ export default function PricingPage() {
       <div className="rounded-2xl p-4 mb-8 text-center"
         style={{ background: 'linear-gradient(135deg, rgba(231,76,60,0.2), rgba(243,156,18,0.2))', border: '1px solid rgba(231,76,60,0.5)' }}>
         <p className="text-sm font-bold text-red-400 uppercase tracking-wider mb-1">🔥 Limited Time Offer</p>
-        <p className="text-textMain text-sm mb-2">
+        <p className="text-textMain text-sm">
           Special launch discount — <strong className="text-gold">save up to 33%</strong> on all Pro plans
-        </p>
-        <p className="text-xs text-textSub">
-          Offer ends in:&nbsp;
-          <span className="font-mono font-bold text-gold">
-            {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m
-          </span>
         </p>
       </div>
 
