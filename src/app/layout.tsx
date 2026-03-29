@@ -3,6 +3,7 @@ import './globals.css'
 import AuthProvider from './providers'
 import BackButton from './back-button'
 import AuthButton from './auth-button'
+import StarCanvas from './star-canvas'
 import MobileNav from './mobile-nav'
 import FeedbackWidget from './feedback-widget'
 
@@ -54,6 +55,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script async src="https://analytics.ahrefs.com/analytics.js" data-key="zgLcgdaoQctDwhSvzoEUgQ" />
       </head>
       <body className="min-h-screen" style={{ backgroundColor: '#0D0D1A' }}>
+        <StarCanvas />
         <AuthProvider>
           <nav className="border-b border-purple-900/30 px-4 md:px-6 py-4">
             <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">

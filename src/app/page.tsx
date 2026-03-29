@@ -3,7 +3,6 @@
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 import { useEffect } from 'react'
-import StarCanvas from './star-canvas'
 
 const FEATURES = [
   {
@@ -68,8 +67,7 @@ export default function Home() {
   }, [session])
 
   return (
-    <main className="min-h-screen px-4 md:px-6" style={{ position: 'relative', zIndex: 1 }}>
-      <StarCanvas />
+    <main className="min-h-screen px-4 md:px-6">
 
       {/* ── Hero ── */}
       <section className="flex flex-col items-center justify-center text-center py-6 md:py-8 max-w-3xl mx-auto">
