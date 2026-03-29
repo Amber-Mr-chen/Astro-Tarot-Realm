@@ -37,7 +37,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   }
 
   return (
-    <html lang="en" translate="no">
+    <html lang="en">
       <head>
         <meta name="google" content="notranslate" />
         <script
@@ -52,7 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body className="min-h-screen" translate="no" style={{ backgroundColor: '#0D0D1A' }}>
+      <body className="min-h-screen" style={{ backgroundColor: '#0D0D1A' }}>
         <AuthProvider>
           <nav className="border-b border-purple-900/30 px-4 md:px-6 py-4">
             <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
