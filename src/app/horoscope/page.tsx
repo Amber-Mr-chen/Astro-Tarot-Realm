@@ -181,9 +181,10 @@ export default function HoroscopePage() {
       <div className="grid grid-cols-3 md:grid-cols-4 gap-4 mb-8">
         {ZODIAC_SIGNS.map((z) => {
           const isSelected = selected === z.name
+          const signSlug = z.name.toLowerCase()
           return (
-            <button key={z.name} onClick={() => getHoroscope(z.name, false)}
-              className="rounded-2xl p-5 text-center transition-all hover:scale-105 relative overflow-hidden"
+            <Link key={z.name} href={`/horoscope/${signSlug}`}
+              className="rounded-2xl p-5 text-center transition-all hover:scale-105 relative overflow-hidden block"
               style={{
                 backgroundColor: isSelected ? z.color + 'cc' : z.bg,
                 border: `2px solid ${isSelected ? z.color : z.color + '66'}`,
@@ -206,7 +207,7 @@ export default function HoroscopePage() {
                 style={{ color: isSelected ? 'rgba(255,255,255,0.6)' : z.color + '88' }}>
                 {z.dates}
               </div>
-            </button>
+            </Link>
           )
         })}
       </div>
