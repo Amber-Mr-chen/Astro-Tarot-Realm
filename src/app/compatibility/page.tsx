@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { useSession, signIn } from 'next-auth/react'
 import Link from 'next/link'
+import ShareButton from '../share-button'
 
 const SIGNS = [
   { name: 'Aries',       emoji: '🔥', dates: 'Mar 21 - Apr 19' },
@@ -227,7 +228,8 @@ export default function CompatibilityPage() {
           )}
 
           {/* Try another */}
-          <div className="text-center">
+          <div className="flex flex-col items-center gap-3">
+            <ShareButton text={`I just checked my ${signA} × ${signB} compatibility on TarotRealm 💫\n\n💕 Love: ${result.scores.love}%  👥 Friendship: ${result.scores.friendship}%  💼 Work: ${result.scores.work}%\nOverall: ${result.scores.overall}%\n\nCheck yours free → tarotrealm.xyz/compatibility`} />
             <button
               onClick={() => { setResult(null); setSignA(''); setSignB('') }}
               className="text-sm text-purple-400 hover:text-gold transition-colors underline"
