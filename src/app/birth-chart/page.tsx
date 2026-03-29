@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useSession, signIn } from 'next-auth/react'
 import Link from 'next/link'
 import ShareButton from '../share-button'
+import ExploreMore from '../explore-more'
 
 // Sun sign calculation by birth date
 function getSunSign(month: number, day: number): string {
@@ -234,6 +235,11 @@ export default function BirthChartPage() {
           <div className="flex justify-center">
             <ShareButton text={`I just discovered my birth chart on TarotRealm ✨\n\n☀️ Sun: ${result.sunSign}  🌙 Moon: ${result.moonSign}${result.risingSign ? `  ⬆️ Rising: ${result.risingSign}` : ''}\n\nDiscover yours free → tarotrealm.xyz/birth-chart`} />
           </div>
+
+          <ExploreMore items={[
+            { icon: '💫', title: 'Compatibility', desc: 'See how your signs mesh with another', href: '/compatibility' },
+            { icon: '⭐', title: 'Daily Horoscope', desc: 'Check what today holds for your sign', href: '/horoscope' },
+          ]} />
         </div>
       )}
     </main>

@@ -4,6 +4,7 @@ import { useSession, signIn } from 'next-auth/react'
 import Link from 'next/link'
 import ShareButton from '../share-button'
 import DeepReadingPreview from '../deep-reading-preview'
+import ExploreMore from '../explore-more'
 
 type Result = {
   card: { name: string; isReversed: boolean }
@@ -151,6 +152,11 @@ export default function YesNoPage() {
           {!result.isDeep && (
             <DeepReadingPreview cardName={result.card.name} />
           )}
+
+          <ExploreMore items={[
+            { icon: '🃏', title: 'Daily Tarot', desc: 'Draw a card for deeper daily guidance', href: '/tarot' },
+            { icon: '💫', title: 'Compatibility', desc: 'See your cosmic chemistry with any sign', href: '/compatibility' },
+          ]} />
 
           {/* Action Buttons */}
           <div className="flex gap-3">

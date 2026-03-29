@@ -4,6 +4,7 @@ import { useSession, signIn } from 'next-auth/react'
 import { ZODIAC_SIGNS } from '@/lib/tarot'
 import Link from 'next/link'
 import ShareButton from '../share-button'
+import ExploreMore from '../explore-more'
 
 type Horoscope = {
   love: { text: string; stars: number }
@@ -317,6 +318,11 @@ export default function HoroscopePage() {
               <Link href="/pricing" className="underline text-gold">Upgrade to Pro</Link> for unlimited reads.
             </div>
           )}
+
+          <ExploreMore items={[
+            { icon: '🌌', title: 'Birth Chart', desc: 'Discover your Sun, Moon & Rising signs', href: '/birth-chart' },
+            { icon: '💫', title: 'Compatibility', desc: 'Check your cosmic chemistry with any sign', href: '/compatibility' },
+          ]} />
 
           <button
             onClick={() => { setState('idle'); setSelected(null); setHoroscope(null); setSaved(false); setIsDeep(false) }}

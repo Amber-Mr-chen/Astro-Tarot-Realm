@@ -4,6 +4,7 @@ import { useSession, signIn } from 'next-auth/react'
 import Link from 'next/link'
 import ShareButton from '../share-button'
 import DeepReadingPreview from '../deep-reading-preview'
+import ExploreMore from '../explore-more'
 
 type DeepReading = {
   symbol: string
@@ -239,6 +240,11 @@ export default function TarotPage() {
           {!result.isDeep && (
             <DeepReadingPreview cardName={result.card.name} />
           )}
+
+          <ExploreMore items={[
+            { icon: '✨', title: 'Yes or No Tarot', desc: 'Ask a direct question, get a clear answer', href: '/yes-no-tarot' },
+            { icon: '⭐', title: 'Daily Horoscope', desc: 'Check what the stars say for your sign', href: '/horoscope' },
+          ]} />
 
           <button onClick={() => { setState('idle'); setResult(null); setSaved(false); setError(null) }}
             className="w-full py-3 rounded-full text-sm font-semibold text-white hover:opacity-80"

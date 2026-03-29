@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useSession, signIn } from 'next-auth/react'
 import Link from 'next/link'
 import ShareButton from '../share-button'
+import ExploreMore from '../explore-more'
 
 const SIGNS = [
   { name: 'Aries',       emoji: '🔥', dates: 'Mar 21 - Apr 19' },
@@ -237,6 +238,11 @@ export default function CompatibilityPage() {
               Try another pairing →
             </button>
           </div>
+
+          <ExploreMore items={[
+            { icon: '🌌', title: 'Birth Chart', desc: 'Discover your Sun, Moon & Rising signs', href: '/birth-chart' },
+            { icon: '✨', title: 'Yes or No Tarot', desc: 'Get a direct answer to your question', href: '/yes-no-tarot' },
+          ]} />
         </div>
       )}
     </main>
