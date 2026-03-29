@@ -54,7 +54,7 @@ export default function SignPage() {
       const res = await fetch('/api/horoscope', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sign, deep }),
+        body: JSON.stringify({ sign: signData.name, deep }),
       })
       const data = await res.json()
       if (res.status === 429 || res.status === 403) {
