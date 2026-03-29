@@ -5,6 +5,7 @@ import Link from 'next/link'
 import ShareButton from '../share-button'
 import DeepReadingPreview from '../deep-reading-preview'
 import ExploreMore from '../explore-more'
+import ReadingLoader from '../reading-loader'
 
 type DeepReading = {
   symbol: string
@@ -198,9 +199,7 @@ export default function TarotPage() {
         </div>
       )}
 
-      {state === 'loading' && (
-        <div className="text-primary text-lg animate-pulse mb-8">The cards are speaking...</div>
-      )}
+      {state === 'loading' && <ReadingLoader type="tarot" />}
 
       {state === 'done' && result && (
         <div className="max-w-3xl w-full space-y-4 text-left">

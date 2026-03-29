@@ -4,6 +4,7 @@ import { useSession, signIn } from 'next-auth/react'
 import Link from 'next/link'
 import ShareButton from '../share-button'
 import ExploreMore from '../explore-more'
+import ReadingLoader from '../reading-loader'
 
 const SIGNS = [
   { name: 'Aries',       emoji: '🔥', dates: 'Mar 21 - Apr 19' },
@@ -169,6 +170,8 @@ export default function CompatibilityPage() {
           )}
         </div>
       )}
+
+      {loading && <ReadingLoader type="compatibility" />}
 
       {/* Results */}
       {result && (

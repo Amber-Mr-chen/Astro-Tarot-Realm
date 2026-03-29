@@ -5,6 +5,7 @@ import Link from 'next/link'
 import ShareButton from '../share-button'
 import DeepReadingPreview from '../deep-reading-preview'
 import ExploreMore from '../explore-more'
+import ReadingLoader from '../reading-loader'
 
 type Result = {
   card: { name: string; isReversed: boolean }
@@ -113,10 +114,12 @@ export default function YesNoPage() {
           <button onClick={() => ask(false)} disabled={!question.trim() || state === 'loading'}
             className="mt-4 w-full py-4 rounded-full font-semibold text-white transition-all hover:scale-105 disabled:opacity-50"
             style={{ background: 'linear-gradient(135deg, #9B59B6, #6C3483)' }}>
-            {state === 'loading' ? 'The cards are speaking...' : '✨ Ask the Cards'}
+            ✨ Ask the Cards
           </button>
         </div>
       )}
+
+      {state === 'loading' && <ReadingLoader type="yesno" />}
 
       {/* Result */}
       {state === 'done' && result && (

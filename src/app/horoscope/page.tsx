@@ -5,6 +5,7 @@ import { ZODIAC_SIGNS } from '@/lib/tarot'
 import Link from 'next/link'
 import ShareButton from '../share-button'
 import ExploreMore from '../explore-more'
+import ReadingLoader from '../reading-loader'
 
 type Horoscope = {
   love: { text: string; stars: number }
@@ -211,11 +212,7 @@ export default function HoroscopePage() {
       </div>
 
       {/* Loading */}
-      {state === 'loading' && (
-        <div className="text-center text-primary text-lg animate-pulse py-8">
-          Reading the stars for {selected}...
-        </div>
-      )}
+      {state === 'loading' && <ReadingLoader type="horoscope" />}
 
       {/* Results */}
       {state === 'done' && horoscope && (

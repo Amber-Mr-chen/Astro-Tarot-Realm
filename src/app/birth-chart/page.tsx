@@ -4,6 +4,7 @@ import { useSession, signIn } from 'next-auth/react'
 import Link from 'next/link'
 import ShareButton from '../share-button'
 import ExploreMore from '../explore-more'
+import ReadingLoader from '../reading-loader'
 
 // Sun sign calculation by birth date
 function getSunSign(month: number, day: number): string {
@@ -168,6 +169,8 @@ export default function BirthChartPage() {
           )}
         </div>
       )}
+
+      {loading && <ReadingLoader type="birthchart" />}
 
       {/* Results */}
       {result && (

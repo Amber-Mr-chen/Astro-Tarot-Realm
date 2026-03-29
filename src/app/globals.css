@@ -57,3 +57,26 @@ body {
   transform: translateY(-4px);
   transition: all 0.3s ease;
 }
+
+/* Reading Loader animations */
+@keyframes oracle-pulse {
+  0%, 100% { opacity: 0.3; transform: scale(0.85); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+@keyframes oracle-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes oracle-fade {
+  0%, 15% { opacity: 0; transform: translateY(6px); }
+  25%, 75% { opacity: 1; transform: translateY(0); }
+  85%, 100% { opacity: 0; transform: translateY(-6px); }
+}
+@keyframes oracle-glow {
+  0%, 100% { box-shadow: 0 0 8px rgba(201,168,76,0.3); }
+  50% { box-shadow: 0 0 24px rgba(201,168,76,0.7), 0 0 48px rgba(155,89,182,0.4); }
+}
+.oracle-pulse { animation: oracle-pulse 1.8s ease-in-out infinite; }
+.oracle-spin { animation: oracle-spin 8s linear infinite; }
+.oracle-fade { animation: oracle-fade 3s ease-in-out infinite; }
+.oracle-glow { animation: oracle-glow 2s ease-in-out infinite; }
