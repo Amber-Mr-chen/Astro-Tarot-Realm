@@ -3,20 +3,22 @@ import { useState } from 'react'
 import { useParams } from 'next/navigation'
 import { useSession, signIn } from 'next-auth/react'
 import Link from 'next/link'
+import ReadingLoader from '../../reading-loader'
+import { SIGN_STATIC } from '@/lib/astrology'
 
 const SIGNS = {
-  aries: { name: 'Aries', emoji: '♈', dates: 'Mar 21 - Apr 19', element: 'Fire' },
-  taurus: { name: 'Taurus', emoji: '♉', dates: 'Apr 20 - May 20', element: 'Earth' },
-  gemini: { name: 'Gemini', emoji: '♊', dates: 'May 21 - Jun 20', element: 'Air' },
-  cancer: { name: 'Cancer', emoji: '♋', dates: 'Jun 21 - Jul 22', element: 'Water' },
-  leo: { name: 'Leo', emoji: '♌', dates: 'Jul 23 - Aug 22', element: 'Fire' },
-  virgo: { name: 'Virgo', emoji: '♍', dates: 'Aug 23 - Sep 22', element: 'Earth' },
-  libra: { name: 'Libra', emoji: '♎', dates: 'Sep 23 - Oct 22', element: 'Air' },
-  scorpio: { name: 'Scorpio', emoji: '♏', dates: 'Oct 23 - Nov 21', element: 'Water' },
-  sagittarius: { name: 'Sagittarius', emoji: '♐', dates: 'Nov 22 - Dec 21', element: 'Fire' },
-  capricorn: { name: 'Capricorn', emoji: '♑', dates: 'Dec 22 - Jan 19', element: 'Earth' },
-  aquarius: { name: 'Aquarius', emoji: '♒', dates: 'Jan 20 - Feb 18', element: 'Air' },
-  pisces: { name: 'Pisces', emoji: '♓', dates: 'Feb 19 - Mar 20', element: 'Water' },
+  aries:       { name: 'Aries',       emoji: '🔥', dates: 'Mar 21 - Apr 19', element: 'Fire' },
+  taurus:      { name: 'Taurus',      emoji: '🌿', dates: 'Apr 20 - May 20', element: 'Earth' },
+  gemini:      { name: 'Gemini',      emoji: '🌬️', dates: 'May 21 - Jun 20', element: 'Air' },
+  cancer:      { name: 'Cancer',      emoji: '🌊', dates: 'Jun 21 - Jul 22', element: 'Water' },
+  leo:         { name: 'Leo',         emoji: '☀️', dates: 'Jul 23 - Aug 22', element: 'Fire' },
+  virgo:       { name: 'Virgo',       emoji: '🌾', dates: 'Aug 23 - Sep 22', element: 'Earth' },
+  libra:       { name: 'Libra',       emoji: '⚖️', dates: 'Sep 23 - Oct 22', element: 'Air' },
+  scorpio:     { name: 'Scorpio',     emoji: '🦂', dates: 'Oct 23 - Nov 21', element: 'Water' },
+  sagittarius: { name: 'Sagittarius', emoji: '🏹', dates: 'Nov 22 - Dec 21', element: 'Fire' },
+  capricorn:   { name: 'Capricorn',   emoji: '🏔️', dates: 'Dec 22 - Jan 19', element: 'Earth' },
+  aquarius:    { name: 'Aquarius',    emoji: '⚡', dates: 'Jan 20 - Feb 18', element: 'Air' },
+  pisces:      { name: 'Pisces',      emoji: '🐠', dates: 'Feb 19 - Mar 20', element: 'Water' },
 }
 
 type Horoscope = {
@@ -33,13 +35,14 @@ export default function SignPage() {
   const params = useParams()
   const sign = params.sign as string
   const signData = SIGNS[sign as keyof typeof SIGNS]
+  const staticData = SIGN_STATIC[signData?.name ?? '']
   const { data: session } = useSession()
   const [horoscope, setHoroscope] = useState<Horoscope | null>(null)
   const [loading, setLoading] = useState(false)
   const [isDeep, setIsDeep] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  if (!signData) {
+  if (!signData || !staticData) {
     return <div className="min-h-screen flex items-center justify-center text-textMain">Sign not found</div>
   }
 
@@ -54,13 +57,11 @@ export default function SignPage() {
         body: JSON.stringify({ sign, deep }),
       })
       const data = await res.json()
-
       if (res.status === 429 || res.status === 403) {
         setError(data.message)
         setLoading(false)
         return
       }
-
       if (data.horoscope) {
         setHoroscope(data.horoscope)
       } else {
@@ -74,23 +75,25 @@ export default function SignPage() {
 
   return (
     <main className="min-h-screen px-6 py-16 max-w-4xl mx-auto">
+
+      {/* Hero */}
       <div className="text-center mb-10">
         <div className="text-6xl mb-4">{signData.emoji}</div>
         <h1 className="font-cinzel text-4xl font-bold text-textMain mb-2">
           {signData.name} Daily Horoscope
         </h1>
-        <p className="text-textSub">{signData.dates} · {signData.element} Sign</p>
+        <p className="text-textSub">{signData.dates} · {signData.element} Sign · Ruled by {staticData.ruling}</p>
       </div>
 
+      {/* Today's Reading CTA */}
       {!horoscope && !loading && (
-        <div className="text-center space-y-4">
+        <div className="text-center space-y-4 mb-12">
           <button
             onClick={() => getReading(false)}
             className="px-8 py-4 rounded-full font-semibold text-white transition-all hover:opacity-80 block mx-auto"
             style={{ background: 'linear-gradient(135deg, #9B59B6, #6C3483)' }}>
-            Get Today's Reading
+            ✨ Get Today's {signData.name} Reading
           </button>
-
           <div className="rounded-xl p-4 max-w-sm mx-auto"
             style={{ background: 'linear-gradient(135deg, rgba(243,156,18,0.1), rgba(155,89,182,0.1))', border: '1px solid rgba(243,156,18,0.3)' }}>
             <p className="text-sm text-textSub mb-3">✨ <strong className="text-gold">Deep Reading</strong> — detailed planetary insights & actionable advice (Pro only)</p>
@@ -116,11 +119,7 @@ export default function SignPage() {
         </div>
       )}
 
-      {loading && (
-        <div className="text-center text-primary text-lg animate-pulse">
-          {isDeep ? 'Channeling deeper cosmic energies...' : 'Reading the stars...'}
-        </div>
-      )}
+      {loading && <ReadingLoader type="horoscope" />}
 
       {error && (
         <div className="rounded-2xl p-5 text-center mb-6"
@@ -134,7 +133,7 @@ export default function SignPage() {
       )}
 
       {horoscope && (
-        <div className="space-y-4">
+        <div className="space-y-4 mb-12">
           {isDeep && (
             <div className="text-center mb-2">
               <span className="text-xs px-3 py-1 rounded-full text-gold"
@@ -158,7 +157,6 @@ export default function SignPage() {
             </div>
           ))}
 
-          {/* After reading - upsell */}
           {!isDeep && (
             <div className="rounded-xl p-4 text-center mt-4"
               style={{ background: 'linear-gradient(135deg, rgba(243,156,18,0.1), rgba(155,89,182,0.1))', border: '1px solid rgba(243,156,18,0.3)' }}>
@@ -186,8 +184,90 @@ export default function SignPage() {
         </div>
       )}
 
-      <div className="mt-12 text-center">
-        <a href="/horoscope" className="text-primary hover:underline">← Back to all signs</a>
+      {/* ── Static SEO Content ── */}
+
+      {/* About this sign */}
+      <section className="mb-10">
+        <h2 className="font-cinzel text-2xl font-bold text-textMain mb-4">About {signData.name}</h2>
+        <div className="rounded-2xl p-6" style={{ backgroundColor: '#1A1A2E', border: '1px solid rgba(155,89,182,0.2)' }}>
+          <p className="text-textSub leading-relaxed mb-5">{staticData.about}</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div>
+              <h3 className="font-semibold text-green-400 text-sm mb-2 uppercase tracking-wide">✓ Strengths</h3>
+              <ul className="space-y-1">
+                {staticData.strengths.map(s => (
+                  <li key={s} className="text-textSub text-sm flex items-start gap-2">
+                    <span className="text-green-400 mt-0.5">•</span>{s}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-semibold text-orange-400 text-sm mb-2 uppercase tracking-wide">△ Challenges</h3>
+              <ul className="space-y-1">
+                {staticData.challenges.map(c => (
+                  <li key={c} className="text-textSub text-sm flex items-start gap-2">
+                    <span className="text-orange-400 mt-0.5">•</span>{c}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+          <div className="mt-5 pt-4" style={{ borderTop: '1px solid rgba(155,89,182,0.15)' }}>
+            <h3 className="font-semibold text-gold text-sm mb-2 uppercase tracking-wide">💫 Most Compatible With</h3>
+            <div className="flex gap-2 flex-wrap">
+              {staticData.compatible.map(c => (
+                <Link key={c} href={`/horoscope/${c.toLowerCase()}`}
+                  className="px-3 py-1 rounded-full text-xs font-semibold transition-all hover:opacity-80"
+                  style={{ backgroundColor: 'rgba(201,168,76,0.12)', border: '1px solid rgba(201,168,76,0.3)', color: '#C9A84C' }}>
+                  {c}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="mb-10">
+        <h2 className="font-cinzel text-2xl font-bold text-textMain mb-4">{signData.name} FAQ</h2>
+        <div className="space-y-3">
+          {staticData.faq.map(({ q, a }) => (
+            <div key={q} className="rounded-2xl p-5" style={{ backgroundColor: '#1A1A2E', border: '1px solid rgba(155,89,182,0.2)' }}>
+              <h3 className="font-semibold text-textMain mb-2 text-sm">{q}</h3>
+              <p className="text-textSub text-sm leading-relaxed">{a}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Cross-links */}
+      <section className="mb-10">
+        <h2 className="font-cinzel text-xl font-bold text-textMain mb-4">Explore More</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Link href="/compatibility"
+            className="rounded-2xl p-5 flex items-start gap-4 transition-all hover:scale-[1.02]"
+            style={{ backgroundColor: '#1A1A2E', border: '1px solid rgba(155,89,182,0.2)' }}>
+            <span className="text-2xl">💫</span>
+            <div>
+              <p className="font-semibold text-textMain text-sm">Zodiac Compatibility</p>
+              <p className="text-textSub text-xs mt-1">See how {signData.name} pairs with every other sign in love, friendship, and work.</p>
+            </div>
+          </Link>
+          <Link href="/birth-chart"
+            className="rounded-2xl p-5 flex items-start gap-4 transition-all hover:scale-[1.02]"
+            style={{ backgroundColor: '#1A1A2E', border: '1px solid rgba(155,89,182,0.2)' }}>
+            <span className="text-2xl">🌌</span>
+            <div>
+              <p className="font-semibold text-textMain text-sm">Birth Chart Reading</p>
+              <p className="text-textSub text-xs mt-1">Discover your Sun, Moon, and Rising signs for a complete cosmic portrait.</p>
+            </div>
+          </Link>
+        </div>
+      </section>
+
+      <div className="text-center">
+        <Link href="/horoscope" className="text-primary hover:underline text-sm">← Back to all signs</Link>
       </div>
     </main>
   )
