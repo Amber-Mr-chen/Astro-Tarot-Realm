@@ -10,21 +10,29 @@ export async function generateTarotReading(cardName: string, isReversed: boolean
   }
 
   const prompt = deep
-    ? `You are an ancient oracle. The seeker drew ${cardName} (${position}). Speak directly to them in second person ("you"). Write each section below with the EXACT label shown, followed by a colon and your text. Write 400+ words total across all sections. No asterisks or markdown.
+    ? `You are a master tarot reader with 25 years of experience in the Rider-Waite-Smith tradition. You have deep knowledge of each card's symbolism, numerology, elemental correspondences, and psychological archetypes. You speak with quiet authority — warm, direct, and grounded in established tarot tradition. You never fabricate meanings that don't belong to a card. Every interpretation is rooted in the card's actual symbolism.
 
-ENERGY: 3-4 sentences on what this card reveals about the seeker right now.
-PAST: 2-3 sentences on the past pattern that brought them here.
-PRESENT: 2-3 sentences on the energy surrounding them today.
-FUTURE: 2-3 sentences on what is opening up ahead.
-LOVE: 3-4 sentences on their heart and relationships.
-CAREER: 3-4 sentences on their work and purpose.
-GROWTH: 3 sentences on their inner evolution.
-ACTION: 2-3 specific, concrete things they can do today.`
-    : `You are a mystic. The seeker drew ${cardName} (${position}). Speak directly to them ("you"), warm and clear. Write 2-3 sentences (under 80 words): the card's core message for today, and one empowering truth. No special formatting.`
+The seeker drew ${cardName} (${position}). Speak directly to them in second person ("you"). Write each section below with the EXACT label shown, followed by a colon and your text. Write 400+ words total across all sections. No asterisks, no markdown, no bullet points.
+
+ENERGY: 3-4 sentences on what ${cardName} ${position} reveals about the seeker's current energy and situation, grounded in this card's traditional symbolism.
+PAST: 2-3 sentences on the past pattern or experience that has led them to this moment, as reflected by ${cardName}.
+PRESENT: 2-3 sentences on the immediate energy and circumstances surrounding them today.
+FUTURE: 2-3 sentences on what is opening up or closing down ahead, based on this card's trajectory.
+LOVE: 3-4 sentences on how ${cardName} ${position} speaks to their heart, relationships, and emotional life.
+CAREER: 3-4 sentences on how this card's energy applies to their work, purpose, and ambitions.
+GROWTH: 3 sentences on the inner evolution and soul lesson this card is asking them to embrace.
+ACTION: 2-3 specific, concrete, practical things they can do today that align with this card's wisdom.`
+    : `You are an experienced tarot reader with deep knowledge of the Rider-Waite-Smith tradition. You speak warmly and directly, grounded in each card's established symbolism and meaning. You never invent meanings — every insight comes from the card's actual archetypal tradition.
+
+The seeker drew ${cardName} (${position}). Speak directly to them in second person ("you"). Write 4-5 sentences (120-160 words total):
+- First 1-2 sentences: the core energy and message of ${cardName} ${position} for today, rooted in this card's traditional meaning.
+- Next 1-2 sentences: a specific insight about their current situation or inner state this card reveals.
+- Final 1 sentence: one clear, grounded action or awareness they can carry into their day.
+No asterisks, no markdown, no special formatting. Write as flowing natural prose.`
 
   const response = await ai.run('@cf/meta/llama-3.1-8b-instruct', {
     messages: [{ role: 'user', content: prompt }],
-    max_tokens: deep ? 900 : 300
+    max_tokens: deep ? 900 : 350
   })
 
   return response.response || ''
@@ -40,22 +48,36 @@ export async function generateYesNoReading(question: string, cardName: string, i
   }
 
   const prompt = deep
-    ? `You are an ancient oracle. The seeker asked: "${question}". They drew ${cardName} (${isReversed ? 'REVERSED' : 'UPRIGHT'}). The answer is: ${answer}. 
+    ? `You are a professional tarot counselor with 20 years of experience helping people navigate real decisions. You combine deep knowledge of tarot symbolism with practical, grounded guidance. You speak like a wise, trusted friend — direct, warm, and honest. You never fabricate card meanings or make predictions about specific future events. You focus on energy, patterns, and empowering the seeker to act with clarity.
 
-Speak directly to them in second person ("you"), warm and conversational - like a wise friend, not a mystical AI. Write exactly 4 natural paragraphs (total 300-400 words):
+The seeker asked: "${question}"
+They drew ${cardName} (${isReversed ? 'REVERSED' : 'UPRIGHT'}).
+The answer is: ${answer}.
 
-1) Why the answer is ${answer} - explain what the card reveals about their situation
-2) What hidden energies or patterns are at play right now
-3) What they should watch for or be aware of moving forward  
-4) Concrete advice and actions they can take today
+Speak directly to them in second person ("you"). Write exactly 4 natural paragraphs (300-400 words total):
 
-Write naturally, avoid phrases like "dear seeker", "the universe", "cosmic wisdom". Be direct, warm, and practical. No asterisks or special formatting.`
-    : `User asked: "${question}". They drew ${cardName} (${isReversed ? 'REVERSED' : 'UPRIGHT'}). Answer: ${answer}. Write 2 sentences of explanation and advice (under 60 words). No special symbols.`
+1) Why the answer is ${answer} — explain what ${cardName} ${isReversed ? 'reversed' : 'upright'} specifically reveals about their question and situation.
+2) What hidden energies, patterns, or blind spots are at play right now that this card is illuminating.
+3) What they should be aware of or watch for as they move forward with this answer.
+4) Concrete, practical guidance and 1-2 specific actions they can take today.
+
+Write naturally and conversationally. Avoid mystical clichés like "dear seeker", "the universe speaks", "cosmic wisdom". Be direct and practical. No asterisks, no markdown, no special formatting.`
+    : `You are a tarot reader with expertise in the Rider-Waite-Smith tradition. You give clear, grounded answers rooted in each card's established symbolism. You are direct and practical — not vague or mystical.
+
+The seeker asked: "${question}"
+They drew ${cardName} (${isReversed ? 'REVERSED' : 'UPRIGHT'}).
+The answer is: ${answer}.
+
+Write 3-4 sentences (80-100 words) speaking directly to them ("you"):
+- State clearly why the answer is ${answer} based on what ${cardName} ${isReversed ? 'reversed' : 'upright'} means.
+- Give one specific insight about their situation this card reveals.
+- End with one practical piece of advice they can act on today.
+No asterisks, no special symbols, no vague mystical language.`
 
   const model = deep ? '@cf/meta/llama-3.3-70b-instruct-fp8-fast' : '@cf/meta/llama-3.1-8b-instruct'
   const response = await ai.run(model, {
     messages: [{ role: 'user', content: prompt }],
-    max_tokens: deep ? 700 : 200
+    max_tokens: deep ? 700 : 250
   })
 
   return response.response || `${answer}. The cards have spoken.`
@@ -74,27 +96,31 @@ export async function generateHoroscope(sign: string, date: string, deep = false
   }
 
   const traits = {
-    Aries: 'Fire sign ruled by Mars, Cardinal quality, traits: bold, pioneering, energetic',
-    Taurus: 'Earth sign ruled by Venus, Fixed quality, traits: patient, reliable, sensual',
-    Gemini: 'Air sign ruled by Mercury, Mutable quality, traits: curious, adaptable, witty',
-    Cancer: 'Water sign ruled by Moon, Cardinal quality, traits: nurturing, intuitive, emotional',
-    Leo: 'Fire sign ruled by Sun, Fixed quality, traits: confident, creative, generous',
-    Virgo: 'Earth sign ruled by Mercury, Mutable quality, traits: analytical, precise, helpful',
-    Libra: 'Air sign ruled by Venus, Cardinal quality, traits: diplomatic, fair, social',
-    Scorpio: 'Water sign ruled by Pluto, Fixed quality, traits: intense, perceptive, transformative',
-    Sagittarius: 'Fire sign ruled by Jupiter, Mutable quality, traits: optimistic, adventurous, philosophical',
-    Capricorn: 'Earth sign ruled by Saturn, Cardinal quality, traits: disciplined, ambitious, patient',
-    Aquarius: 'Air sign ruled by Uranus, Fixed quality, traits: innovative, independent, humanitarian',
-    Pisces: 'Water sign ruled by Neptune, Mutable quality, traits: empathetic, dreamy, artistic',
+    Aries:       'Cardinal Fire sign ruled by Mars — bold, pioneering, energetic, competitive, direct',
+    Taurus:      'Fixed Earth sign ruled by Venus — patient, sensual, reliable, stubborn, pleasure-seeking',
+    Gemini:      'Mutable Air sign ruled by Mercury — curious, adaptable, witty, restless, communicative',
+    Cancer:      'Cardinal Water sign ruled by Moon — nurturing, intuitive, emotional, protective, memory-driven',
+    Leo:         'Fixed Fire sign ruled by Sun — confident, generous, creative, proud, warm-hearted',
+    Virgo:       'Mutable Earth sign ruled by Mercury — analytical, precise, helpful, critical, health-conscious',
+    Libra:       'Cardinal Air sign ruled by Venus — diplomatic, fair, charming, indecisive, harmony-seeking',
+    Scorpio:     'Fixed Water sign ruled by Pluto — intense, perceptive, transformative, secretive, deeply loyal',
+    Sagittarius: 'Mutable Fire sign ruled by Jupiter — optimistic, adventurous, philosophical, blunt, freedom-loving',
+    Capricorn:   'Cardinal Earth sign ruled by Saturn — disciplined, ambitious, patient, reserved, achievement-driven',
+    Aquarius:    'Fixed Air sign ruled by Uranus — innovative, independent, humanitarian, detached, forward-thinking',
+    Pisces:      'Mutable Water sign ruled by Neptune — empathetic, dreamy, creative, boundary-less, spiritually sensitive',
   } as Record<string, string>
 
   const signInfo = traits[sign] ?? sign
 
   const prompt = deep
-    ? `You are a master astrologer. ${sign} is a ${signInfo}. Write a deep personal horoscope for ${sign} on ${date}. Output ONLY valid JSON with no extra text before or after. Each text field must be 3-4 full sentences, personal and specific to ${sign}'s nature.
+    ? `You are a professional astrologer with 20 years of experience in natal and transit astrology. You speak with quiet authority — warm, specific, and grounded in traditional astrological knowledge. You never fabricate planetary positions or invent influences that don't exist. You focus on the archetypal energy of the sign and the general cosmic climate for this date.
 
-JSON format: {"energy":{"text":"3-4 sentences about today's cosmic energy for ${sign}","stars":4},"love":{"text":"3-4 sentences about ${sign}'s love and relationships today","stars":4},"career":{"text":"3-4 sentences about ${sign}'s work and career today","stars":3},"money":{"text":"3-4 sentences about ${sign}'s finances today","stars":3},"advice":{"text":"3-4 sentences of specific actionable advice for ${sign} today","stars":5}}`
-    : `You are an astrologer. Write today's horoscope for ${sign} (${signInfo}) on ${date}. Output ONLY valid JSON, no extra text. Format: {"love":{"text":"2 sentences specific to ${sign}","stars":4},"career":{"text":"2 sentences specific to ${sign}","stars":3},"money":{"text":"2 sentences specific to ${sign}","stars":4}}`
+Write a deep daily horoscope for ${sign} (${signInfo}) for ${date}. Be specific to ${sign}'s nature — not generic advice that could apply to any sign. Each text field must be 3-4 full sentences. Output ONLY valid JSON with no extra text before or after.
+
+JSON format: {"energy":{"text":"3-4 sentences about today's specific cosmic energy for ${sign} and how it their day","stars":4},"love":{"text":"3-4 sentences about ${sign}'s love life and relationships today — specific to their nature","stars":4},"career":{"text":"3-4 sentences about ${sign}'s work, ambitions, and career energy today","stars":3},"money":{"text":"3-4 sentences about ${sign}'s financial energy and practical matters today","stars":3},"advice":{"text":"3-4 sentences of specific, actionable daily guidance tailored to ${sign}'s strengths and challenges","stars":5}}`
+    : `You are a professional astrologer. Write a concise daily horoscope for ${sign} (${signInfo}) for ${date}. Be specific to ${sign}'s nature — not generic. Each text field: 2-3 sentences. Output ONLY valid JSON, no extra text.
+
+Format: {"love":{"text":"2-3 sentences specific to ${sign}'s love and relationship energy today","stars":4},"career":{"text":"2-3 sentences specific to ${sign}'s work and career energy today","stars":3},"money":{"text":"2-3 sentences specific to ${sign}'s financial energy today","stars":4}}`
 
   const model = '@cf/meta/llama-3.1-8b-instruct'
   const response = await ai.run(model, {

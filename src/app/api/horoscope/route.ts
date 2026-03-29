@@ -3,7 +3,7 @@ import { generateHoroscope } from '@/lib/ai'
 import { checkUsageLimit, incrementUsage } from '@/lib/usage'
 import { getToken } from 'next-auth/jwt'
 
-const CACHE_VERSION = 'v3'
+const CACHE_VERSION = 'v4'
 const cache = new Map<string, string>()
 
 // Zodiac traits used in prompts for authentic readings
