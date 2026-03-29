@@ -50,6 +50,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-J4FWP2DRWD');`
           }}
         />
+        {/* Ahrefs Analytics */}
+        <script async src="https://analytics.ahrefs.com/analytics.js" data-key="zgLcgdaoQctDwhSvzoEUgQ" />
       </head>
       <body className="min-h-screen" style={{ backgroundColor: '#0D0D1A' }}>
         <AuthProvider>
