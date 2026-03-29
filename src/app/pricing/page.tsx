@@ -67,15 +67,37 @@ const plans = [
     period: 'per year',
     planKey: 'yearly',
     color: '#F39C12',
-    badge: 'SAVE 37%',
+    badge: 'BEST VALUE',
     highlight: false,
     features: [
       'Everything in Pro Monthly',
-      'Only $2.50/month',
+      'Only $2.50/month — save $17.89',
+      'Less than $0.09 per day',
       '✨ 10 deep readings per day',
       'Early access to new features',
       'Priority support',
     ],
+  },
+]
+
+const REVIEWS = [
+  {
+    stars: 5,
+    text: 'The deep tarot reading was surprisingly accurate. It picked up on things I had been avoiding thinking about. Worth every penny.',
+    name: 'Sarah M.',
+    sign: 'Scorpio ♏',
+  },
+  {
+    stars: 5,
+    text: 'I check my birth chart and horoscope here every morning. The Pro plan basically pays for itself in the first week.',
+    name: 'Jessica L.',
+    sign: 'Libra ♎',
+  },
+  {
+    stars: 5,
+    text: 'Used the Yes/No deep reading before a big career decision. The guidance was thoughtful and gave me real clarity.',
+    name: 'Maria K.',
+    sign: 'Virgo ♍',
   },
 ]
 
@@ -248,6 +270,40 @@ export default function PricingPage() {
             )}
           </div>
         ))}
+      </div>
+
+      {/* Trust Bar */}
+      <div className="flex flex-wrap items-center justify-center gap-6 mb-12 py-4 rounded-2xl"
+        style={{ background: 'rgba(155,89,182,0.07)', border: '1px solid rgba(155,89,182,0.15)' }}>
+        {[
+          { icon: '🔒', text: 'Secure PayPal Payment' },
+          { icon: '⭐', text: '7-Day Money-Back Guarantee' },
+          { icon: '❌', text: 'Cancel Anytime' },
+          { icon: '⚡', text: 'Instant Activation' },
+        ].map(({ icon, text }) => (
+          <div key={text} className="flex items-center gap-2 text-sm text-textSub">
+            <span>{icon}</span>
+            <span>{text}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* User Reviews */}
+      <div className="mb-16">
+        <h2 className="font-cinzel text-2xl font-bold text-textMain text-center mb-8">What Our Members Say</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {REVIEWS.map((r) => (
+            <div key={r.name} className="rounded-2xl p-5 flex flex-col gap-3"
+              style={{ backgroundColor: '#1A1A2E', border: '1px solid rgba(155,89,182,0.2)' }}>
+              <div className="text-gold text-base">{'★'.repeat(r.stars)}</div>
+              <p className="text-textSub text-sm leading-relaxed flex-1">"{r.text}"</p>
+              <div>
+                <p className="text-textMain text-sm font-semibold">{r.name}</p>
+                <p className="text-textSub text-xs">{r.sign}</p>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* FAQ */}
