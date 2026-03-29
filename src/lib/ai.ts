@@ -120,17 +120,28 @@ export async function generateHoroscope(sign: string, date: string, deep = false
 
   const signInfo = traits[sign] ?? sign
 
+  const styleRules = `
+STRICT WRITING RULES — follow every one:
+- NEVER start any sentence with the sign name (not "${sign},", not "As a ${sign}")
+- NEVER fabricate specific planetary positions, degrees, or aspects (no "Venus in Pisces", no "Mars square Saturn") — you don't have today's ephemeris data
+- NEVER use these phrases: "However", "Nevertheless", "Furthermore", "Moreover", "It is worth noting", "don't be discouraged", "turn it into an opportunity", "use this as a chance"
+- NEVER use the same sentence structure twice in a row
+- Vary sentence length — mix short sharp sentences with longer flowing ones
+- Write from intuition, not analysis — feel into the energy, don't explain it
+- Be direct and specific to ${sign}'s actual nature, not generic advice`
+
   const prompt = deep
-    ? `You are a professional astrologer with 20 years of experience in natal and transit astrology. You speak with quiet authority — warm, specific, and grounded in traditional astrological knowledge. You never fabricate planetary positions or invent influences that don't exist. You focus on the archetypal energy of the sign and the general cosmic climate for this date.
+    ? `You are a seasoned astrologer who has read charts for 20 years. You write horoscopes that feel alive — specific, grounded, occasionally surprising. You speak from the sign's archetypal energy, never from made-up planetary data.
+${styleRules}
 
-Writing style: Write like a real astrologer speaking — not like AI. Natural rhythm, varied sentence length. Short punchy lines when needed. Avoid "Furthermore", "Moreover", "It is worth noting". Be specific to ${sign}, never generic.
+Write a deep daily horoscope for ${sign} (${signInfo}) for ${date}. Each text value: 3-4 sentences. Output ONLY valid JSON, nothing else before or after.
 
-Write a deep daily horoscope for ${sign} (${signInfo}) for ${date}. Each text field must be 3-4 full sentences. Output ONLY valid JSON with no extra text before or after.
+{"energy":{"text":"3-4 sentences — the dominant energy ${sign} carries today, what it feels like, how it shapes the day. First sentence must NOT start with the sign name.","stars":4},"love":{"text":"3-4 sentences — love and relationships through the lens of ${sign}'s actual emotional nature today.","stars":4},"career":{"text":"3-4 sentences — work and ambitions, grounded in what ${sign} is built for and where they struggle.","stars":3},"money":{"text":"3-4 sentences — financial energy and practical decisions, specific to ${sign}'s relationship with resources.","stars":3},"advice":{"text":"3-4 sentences — direct, actionable guidance that speaks to ${sign}'s real strengths and blind spots today.","stars":5}}`
+    : `You are a working astrologer. Write a short, vivid daily horoscope for ${sign} (${signInfo}) for ${date}.
+${styleRules}
+Each text value: 2-3 sentences. First sentence of each section must NOT start with the sign name. Output ONLY valid JSON, nothing else.
 
-JSON format: {"energy":{"text":"3-4 sentences about today's specific cosmic energy for ${sign} and how it affects their day","stars":4},"love":{"text":"3-4 sentences about ${sign}'s love life and relationships today — specific to their nature","stars":4},"career":{"text":"3-4 sentences about ${sign}'s work, ambitions, and career energy today","stars":3},"money":{"text":"3-4 sentences about ${sign}'s financial energy and practical matters today","stars":3},"advice":{"text":"3-4 sentences of specific, actionable daily guidance tailored to ${sign}'s strengths and challenges","stars":5}}`
-    : `You are a professional astrologer. Write a concise daily horoscope for ${sign} (${signInfo}) for ${date}. Be specific to ${sign}'s nature — not generic. Each text field: 2-3 sentences. Write naturally, like a real person — not AI. Output ONLY valid JSON, no extra text.
-
-Format: {"love":{"text":"2-3 sentences specific to ${sign}'s love and relationship energy today","stars":4},"career":{"text":"2-3 sentences specific to ${sign}'s work and career energy today","stars":3},"money":{"text":"2-3 sentences specific to ${sign}'s financial energy today","stars":4}}`
+{"love":{"text":"2-3 sentences on ${sign}'s love energy today — specific, not generic.","stars":4},"career":{"text":"2-3 sentences on ${sign}'s work energy today.","stars":3},"money":{"text":"2-3 sentences on ${sign}'s financial energy today.","stars":4}}`
 
   const model = '@cf/meta/llama-3.1-8b-instruct'
   const response = await ai.run(model, {
