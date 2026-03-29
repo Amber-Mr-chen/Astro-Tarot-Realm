@@ -31,6 +31,8 @@ const plans = [
   {
     name: 'Free',
     price: '$0',
+    originalPrice: null,
+    saveLabel: null,
     period: 'forever',
     planKey: null,
     color: 'rgba(155,89,182,0.4)',
@@ -47,6 +49,8 @@ const plans = [
   {
     name: 'Pro Monthly',
     price: '$3.99',
+    originalPrice: '$5.99',
+    saveLabel: 'SAVE 33%',
     period: 'per month',
     planKey: 'monthly',
     color: '#9B59B6',
@@ -64,6 +68,8 @@ const plans = [
   {
     name: 'Pro Yearly',
     price: '$29.99',
+    originalPrice: '$39.99',
+    saveLabel: 'SAVE 25%',
     period: 'per year',
     planKey: 'yearly',
     color: '#F39C12',
@@ -197,9 +203,48 @@ function PayPalButton({ planKey, color }: { planKey: string; color: string }) {
 
 export default function PricingPage() {
   const { data: session } = useSession()
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0 })
+
+  useEffect(() => {
+    // Persist offer deadline in localStorage — 4 days from first visit
+    const STORAGE_KEY = 'tr_offer_deadline'
+    let deadline = parseInt(localStorage.getItem(STORAGE_KEY) || '0')
+    if (!deadline || deadline < Date.now()) {
+      deadline = Date.now() + 4 * 24 * 60 * 60 * 1000
+      localStorage.setItem(STORAGE_KEY, String(deadline))
+    }
+    function update() {
+      const diff = deadline - Date.now()
+      if (diff <= 0) { setTimeLeft({ days: 0, hours: 0, minutes: 0 }); return }
+      setTimeLeft({
+        days: Math.floor(diff / 86400000),
+        hours: Math.floor((diff % 86400000) / 3600000),
+        minutes: Math.floor((diff % 3600000) / 60000),
+      })
+    }
+    update()
+    const t = setInterval(update, 30000)
+    return () => clearInterval(t)
+  }, [])
 
   return (
     <main className="min-h-screen px-6 py-16 max-w-5xl mx-auto">
+
+      {/* LIMITED TIME OFFER Banner */}
+      <div className="rounded-2xl p-4 mb-8 text-center"
+        style={{ background: 'linear-gradient(135deg, rgba(231,76,60,0.2), rgba(243,156,18,0.2))', border: '1px solid rgba(231,76,60,0.5)' }}>
+        <p className="text-sm font-bold text-red-400 uppercase tracking-wider mb-1">🔥 Limited Time Offer</p>
+        <p className="text-textMain text-sm mb-2">
+          Special launch discount — <strong className="text-gold">save up to 33%</strong> on all Pro plans
+        </p>
+        <p className="text-xs text-textSub">
+          Offer ends in:&nbsp;
+          <span className="font-mono font-bold text-gold">
+            {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m
+          </span>
+        </p>
+      </div>
+
       {/* Header */}
       <div className="text-center mb-16">
         <div className="text-gold text-sm tracking-[0.3em] uppercase font-cinzel mb-4">✦ Plans & Pricing ✦</div>
@@ -244,8 +289,18 @@ export default function PricingPage() {
                 {plan.badge}
               </div>
             )}
+            {/* Sale badge */}
+            {plan.saveLabel && (
+              <div className="absolute top-4 right-4 px-2 py-1 rounded-lg text-xs font-bold text-white"
+                style={{ backgroundColor: '#e74c3c' }}>
+                {plan.saveLabel}
+              </div>
+            )}
             <h3 className="font-cinzel text-xl font-bold text-textMain mb-2">{plan.name}</h3>
             <div className="mb-5">
+              {plan.originalPrice && (
+                <div className="text-sm text-textSub line-through mb-0.5">{plan.originalPrice}<span className="ml-1 text-xs">/ {plan.period}</span></div>
+              )}
               <span className="text-4xl font-bold text-gold">{plan.price}</span>
               <span className="text-textSub text-sm ml-1">{plan.period}</span>
             </div>
