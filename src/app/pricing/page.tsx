@@ -3,7 +3,7 @@ import { useSession, signIn } from 'next-auth/react'
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 
-const PAYPAL_CLIENT_ID = 'ARs_hmIYLj15iEcyjry3oHmQDR6Cge0riW7ex3Y2nZ_09jbrqmjkunr_AdX4ExPUf_64xFlB42NsbhCj'
+const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || 'ARs_hmIYLj15iEcyjry3oHmQDR6Cge0riW7ex3Y2nZ_09jbrqmjkunr_AdX4ExPUf_64xFlB42NsbhCj'
 
 // Load PayPal SDK once globally
 let paypalLoaded = false

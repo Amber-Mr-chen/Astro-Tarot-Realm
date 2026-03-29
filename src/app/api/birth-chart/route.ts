@@ -87,6 +87,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing sign data' }, { status: 400 })
     }
 
+    const VALID_SIGNS = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces']
+    if (!VALID_SIGNS.includes(sunSign) || !VALID_SIGNS.includes(moonSign) || (risingSign && !VALID_SIGNS.includes(risingSign))) {
+      return NextResponse.json({ error: 'Invalid sign data' }, { status: 400 })
+    }
+
     const isPro = usage.plan === 'pro'
     const sunK  = SIGN_KNOWLEDGE[sunSign]
     const moonK = SIGN_KNOWLEDGE[moonSign]

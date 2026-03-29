@@ -6,7 +6,7 @@ const FROM_EMAIL = 'TarotRealm <noreply@tarotrealm.xyz>'
 const PRICING_URL = 'https://tarotrealm.xyz/pricing'
 const ADMIN_EMAIL = 'wanglilong616@gmail.com'
 // Security token to prevent unauthorized calls
-const CRON_SECRET = 'tarotrealm-cron-2026'
+const CRON_SECRET = process.env.CRON_SECRET || 'tarotrealm-cron-2026'
 
 async function sendReminderEmail(apiKey: string, to: string, name: string, daysLeft: number): Promise<boolean> {
   const subject = daysLeft <= 1

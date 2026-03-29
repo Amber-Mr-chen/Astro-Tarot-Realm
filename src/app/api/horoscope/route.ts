@@ -72,6 +72,11 @@ export async function POST(req: NextRequest) {
     const { sign, deep } = await req.json()
     if (!sign) return NextResponse.json({ error: 'Sign is required' }, { status: 400 })
 
+    const VALID_SIGNS = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces']
+    if (!VALID_SIGNS.includes(sign)) {
+      return NextResponse.json({ error: 'Invalid sign' }, { status: 400 })
+    }
+
     const usage = await checkUsageLimit(email, ip)
 
     if (deep && usage.plan === 'pro' && (usage.deepRemaining ?? 0) <= 0) {

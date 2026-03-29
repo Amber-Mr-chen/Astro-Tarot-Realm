@@ -14,6 +14,9 @@ export async function POST(req: NextRequest) {
     if (!question?.trim()) {
       return NextResponse.json({ error: 'Question is required' }, { status: 400 })
     }
+    if (question.trim().length > 500) {
+      return NextResponse.json({ error: 'invalid_question', message: 'Your question is too long. Please keep it under 500 characters.' }, { status: 400 })
+    }
 
     // Filter nonsensical, self-referential, or abusive questions
     const q = question.trim().toLowerCase()
