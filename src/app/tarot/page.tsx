@@ -21,6 +21,7 @@ type Result = {
   deepReading?: DeepReading | null
   remaining: number
   deepRemaining?: number
+  plan?: string
   isDeep?: boolean
 }
 
@@ -236,9 +237,22 @@ export default function TarotPage() {
             <ShareButton text={`I drew ${result.card.name} ${result.card.isReversed ? '(Reversed)' : '(Upright)'} on TarotRealm today ✨\n\n"${(result.reading ?? '').slice(0, 120)}…"\n\nGet your free reading → tarotrealm.xyz/tarot`} />
           </div>
 
-          {/* Upsell */}
-          {!result.isDeep && (
+          {/* Upsell: Free 用户普通解读后显示预览；Pro 用户显示深度解读按钮 */}
+          {!result.isDeep && result.plan !== 'pro' && (
             <DeepReadingPreview cardName={result.card.name} />
+          )}
+          {!result.isDeep && result.plan === 'pro' && (
+            <div className="rounded-xl p-4 text-center"
+              style={{ background: 'linear-gradient(135deg, rgba(243,156,18,0.1), rgba(155,89,182,0.1))', border: '1px solid rgba(243,156,18,0.3)' }}>
+              <p className="text-sm text-textSub mb-3">
+                Want the full picture? <strong className="text-textMain">Deep Reading</strong> reveals past-present-future, love, career, inner growth & today's action.
+              </p>
+              <button onClick={() => drawCard(true, result.card)}
+                className="px-6 py-2 rounded-full text-sm font-semibold text-white hover:opacity-80"
+                style={{ background: 'linear-gradient(135deg, #F39C12, #E67E22)' }}>
+                ✨ Get Deep Reading
+              </button>
+            </div>
           )}
 
           <ExploreMore items={[

@@ -79,6 +79,7 @@ export async function POST(req: NextRequest) {
       reading: raw, 
       remaining: usage.remaining - 1,
       deepRemaining: usage.deepRemaining,
+      plan: usage.plan,
       isDeep: false
     })
   } catch (e) {

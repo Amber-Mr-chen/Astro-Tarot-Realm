@@ -180,6 +180,7 @@ export async function POST(req: NextRequest) {
       answer: card.isReversed ? 'No' : 'Yes', 
       remaining: usage.remaining - 1,
       deepRemaining: deep ? (usage.deepRemaining ?? 0) - 1 : usage.deepRemaining,
+      plan: usage.plan,
       isDeep: deep
     })
   } catch (e) {

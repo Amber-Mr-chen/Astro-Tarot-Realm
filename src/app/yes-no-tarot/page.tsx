@@ -12,6 +12,7 @@ type Result = {
   answer: string
   remaining: number
   deepRemaining?: number
+  plan?: string
   isDeep?: boolean
 }
 
@@ -148,9 +149,22 @@ export default function YesNoPage() {
             {saved && <p className="text-green-400 text-sm text-center mt-4">✓ Reading saved to your history</p>}
           </div>
 
-          {/* Deep Reading Upsell — only show after standard reading */}
-          {!result.isDeep && (
+          {/* Deep Reading Upsell — Free 用户显示预览；Pro 用户显示按钮 */}
+          {!result.isDeep && result.plan !== 'pro' && (
             <DeepReadingPreview cardName={result.card.name} />
+          )}
+          {!result.isDeep && result.plan === 'pro' && (
+            <div className="rounded-xl p-4 text-center"
+              style={{ background: 'linear-gradient(135deg, rgba(243,156,18,0.1), rgba(155,89,182,0.1))', border: '1px solid rgba(243,156,18,0.3)' }}>
+              <p className="text-sm text-textSub mb-3">
+                Want to know <strong className="text-textMain">why</strong> and <strong className="text-textMain">what to do next</strong>? Deep Reading reveals hidden energies and detailed guidance.
+              </p>
+              <button onClick={() => ask(true, result.card)}
+                className="px-6 py-2 rounded-full text-sm font-semibold text-white transition-all hover:opacity-80"
+                style={{ background: 'linear-gradient(135deg, #F39C12, #E67E22)' }}>
+                ✨ Get Deep Reading
+              </button>
+            </div>
           )}
 
           <ExploreMore items={[
