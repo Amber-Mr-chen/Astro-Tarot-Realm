@@ -13,12 +13,20 @@ export const metadata: Metadata = {
   keywords: 'free tarot reading, daily horoscope, yes no tarot, astrology, zodiac signs, tarot cards online',
   metadataBase: new URL('https://tarotrealm.xyz'),
   alternates: { canonical: 'https://tarotrealm.xyz' },
+  icons: {
+    icon: [
+      { url: '/logo.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico', sizes: '48x48' },
+    ],
+    apple: '/apple-touch-icon.png',
+  },
   openGraph: {
     title: 'Free Tarot Reading & Daily Horoscope | TarotRealm',
     description: 'Get your free tarot card reading and daily horoscope. Personalized astrology readings in seconds.',
     url: 'https://tarotrealm.xyz',
     siteName: 'TarotRealm',
     type: 'website',
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'TarotRealm - AI Tarot & Astrology' }],
   },
   robots: { index: true, follow: true },
 }

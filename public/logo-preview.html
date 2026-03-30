@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TarotRealm Logo Preview</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 40px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.5em;
+        }
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        .preview-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        .preview-card h2 {
+            margin: 0 0 20px 0;
+            font-size: 1.2em;
+            color: #333;
+        }
+        .logo-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 200px;
+        }
+        .size-label {
+            text-align: center;
+            margin-top: 15px;
+            color: #666;
+            font-size: 0.9em;
+        }
+        .dark-bg {
+            background: #1a0b2e;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .light-bg {
+            background: #f5f5f5;
+            border-radius: 12px;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔮 TarotRealm Logo Preview</h1>
+        
+        <div class="preview-grid">
+            <!-- Large Logo on Dark -->
+            <div class="preview-card">
+                <h2>Large (512x512) - Dark Background</h2>
+                <div class="logo-display dark-bg">
+                    <svg width="256" height="256" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Background circle -->
+                        <circle cx="256" cy="256" r="240" fill="#1a0b2e" stroke="#ffd700" stroke-width="4"/>
+                        
+                        <!-- Crescent Moon -->
+                        <path d="M 200 256 A 80 80 0 1 1 200 256 A 60 60 0 1 0 200 256" 
+                              fill="#ffd700" opacity="0.95"/>
+                        
+                        <!-- Stars -->
+                        <!-- Large star (top right) -->
+                        <path d="M 340 180 L 348 200 L 368 208 L 348 216 L 340 236 L 332 216 L 312 208 L 332 200 Z" 
+                              fill="#ffd700"/>
+                        
+                        <!-- Medium star (right) -->
+                        <path d="M 360 260 L 366 274 L 380 280 L 366 286 L 360 300 L 354 286 L 340 280 L 354 274 Z" 
+                              fill="#ffd700" opacity="0.9"/>
+                        
+                        <!-- Small star (bottom right) -->
+                        <path d="M 330 340 L 334 350 L 344 354 L 334 358 L 330 368 L 326 358 L 316 354 L 326 350 Z" 
+                              fill="#ffd700" opacity="0.8"/>
+                        
+                        <!-- Tiny sparkles -->
+                        <circle cx="280" cy="200" r="3" fill="#ffd700" opacity="0.7"/>
+                        <circle cx="320" cy="320" r="2" fill="#ffd700" opacity="0.6"/>
+                        <circle cx="240" cy="300" r="2.5" fill="#ffd700" opacity="0.7"/>
+                    </svg>
+                </div>
+                <div class="size-label">For app icons, tool directories</div>
+            </div>
+
+            <!-- Medium Logo on Light -->
+            <div class="preview-card">
+                <h2>Medium (192x192) - Light Background</h2>
+                <div class="logo-display light-bg">
+                    <svg width="192" height="192" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="256" cy="256" r="240" fill="#1a0b2e" stroke="#ffd700" stroke-width="4"/>
+                        <path d="M 200 256 A 80 80 0 1 1 200 256 A 60 60 0 1 0 200 256" 
+                              fill="#ffd700" opacity="0.95"/>
+                        <path d="M 340 180 L 348 200 L 368 208 L 348 216 L 340 236 L 332 216 L 312 208 L 332 200 Z" 
+                              fill="#ffd700"/>
+                        <path d="M 360 260 L 366 274 L 380 280 L 366 286 L 360 300 L 354 286 L 340 280 L 354 274 Z" 
+                              fill="#ffd700" opacity="0.9"/>
+                        <path d="M 330 340 L 334 350 L 344 354 L 334 358 L 330 368 L 326 358 L 316 354 L 326 350 Z" 
+                              fill="#ffd700" opacity="0.8"/>
+                        <circle cx="280" cy="200" r="3" fill="#ffd700" opacity="0.7"/>
+                        <circle cx="320" cy="320" r="2" fill="#ffd700" opacity="0.6"/>
+                        <circle cx="240" cy="300" r="2.5" fill="#ffd700" opacity="0.7"/>
+                    </svg>
+                </div>
+                <div class="size-label">For Android icons</div>
+            </div>
+
+            <!-- Small Favicon -->
+            <div class="preview-card">
+                <h2>Small (48x48) - Favicon</h2>
+                <div class="logo-display light-bg">
+                    <svg width="48" height="48" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="256" cy="256" r="240" fill="#1a0b2e"/>
+                        <path d="M 200 256 A 80 80 0 1 1 200 256 A 60 60 0 1 0 200 256" 
+                              fill="#ffd700"/>
+                        <path d="M 340 180 L 348 200 L 368 208 L 348 216 L 340 236 L 332 216 L 312 208 L 332 200 Z" 
+                              fill="#ffd700"/>
+                        <path d="M 360 260 L 366 274 L 380 280 L 366 286 L 360 300 L 354 286 L 340 280 L 354 274 Z" 
+                              fill="#ffd700"/>
+                    </svg>
+                </div>
+                <div class="size-label">Browser tab icon</div>
+            </div>
+
+            <!-- Social Share Preview -->
+            <div class="preview-card" style="grid-column: 1 / -1;">
+                <h2>Social Share (1200x630) - Open Graph</h2>
+                <div class="logo-display" style="background: linear-gradient(135deg, #1a0b2e 0%, #2d1b4e 100%); border-radius: 12px; padding: 40px;">
+                    <div style="display: flex; align-items: center; gap: 40px;">
+                        <svg width="200" height="200" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="256" cy="256" r="240" fill="rgba(255,215,0,0.1)" stroke="#ffd700" stroke-width="4"/>
+                            <path d="M 200 256 A 80 80 0 1 1 200 256 A 60 60 0 1 0 200 256" 
+                                  fill="#ffd700" opacity="0.95"/>
+                            <path d="M 340 180 L 348 200 L 368 208 L 348 216 L 340 236 L 332 216 L 312 208 L 332 200 Z" 
+                                  fill="#ffd700"/>
+                            <path d="M 360 260 L 366 274 L 380 280 L 366 286 L 360 300 L 354 286 L 340 280 L 354 274 Z" 
+                                  fill="#ffd700" opacity="0.9"/>
+                            <path d="M 330 340 L 334 350 L 344 354 L 334 358 L 330 368 L 326 358 L 316 354 L 326 350 Z" 
+                                  fill="#ffd700" opacity="0.8"/>
+                            <circle cx="280" cy="200" r="3" fill="#ffd700" opacity="0.7"/>
+                            <circle cx="320" cy="320" r="2" fill="#ffd700" opacity="0.6"/>
+                            <circle cx="240" cy="300" r="2.5" fill="#ffd700" opacity="0.7"/>
+                        </svg>
+                        <div style="color: white;">
+                            <h1 style="margin: 0 0 10px 0; font-size: 3em; color: #ffd700;">TarotRealm</h1>
+                            <p style="margin: 0; font-size: 1.5em; opacity: 0.9;">AI-Powered Tarot & Astrology Readings</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="size-label">For Twitter, Facebook, LinkedIn shares</div>
+            </div>
+        </div>
+
+        <div style="text-align: center; color: white; margin-top: 40px;">
+            <p style="font-size: 1.2em;">✨ 如果满意这个设计，我会生成所有需要的尺寸并集成到项目中 ✨</p>
+        </div>
+    </div>
+</body>
+</html>
