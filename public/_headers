@@ -1,0 +1,8 @@
+/sitemap.xml
+  Access-Control-Allow-Origin: *
+  X-Robots-Tag: all
+  Cache-Control: public, max-age=86400
+
+/robots.txt
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=86400

@@ -44,6 +44,8 @@ ${allPages.map(p => `  <url>
     headers: {
       'Content-Type': 'application/xml',
       'Cache-Control': 'public, max-age=86400',
+      'Access-Control-Allow-Origin': '*',
+      'X-Robots-Tag': 'all',
     },
   })
 }

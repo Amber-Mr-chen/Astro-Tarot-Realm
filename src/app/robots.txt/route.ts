@@ -7,6 +7,9 @@ Allow: /
 Sitemap: https://tarotrealm.xyz/sitemap.xml`
 
   return new NextResponse(content, {
-    headers: { 'Content-Type': 'text/plain' },
+    headers: {
+      'Content-Type': 'text/plain',
+      'Access-Control-Allow-Origin': '*',
+    },
   })
 }
