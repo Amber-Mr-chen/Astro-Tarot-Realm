@@ -14,10 +14,7 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://tarotrealm.xyz'),
   alternates: { canonical: 'https://tarotrealm.xyz' },
   icons: {
-    icon: [
-      { url: '/logo.svg', type: 'image/svg+xml' },
-      { url: '/favicon.ico', sizes: '48x48' },
-    ],
+    icon: '/favicon.ico',
     apple: '/apple-touch-icon.png',
   },
   openGraph: {
