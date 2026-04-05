@@ -25,10 +25,10 @@ jobs:
       - name: Build
         run: npx @opennextjs/cloudflare build
 
-      - name: Post build
-        run: node scripts/postbuild.js
+      - name: Fix worker filename
+        run: cp .open-next/worker.js .open-next/_worker.js
 
       - name: Deploy to Cloudflare Workers
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: npx wrangler@4.80.0 deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

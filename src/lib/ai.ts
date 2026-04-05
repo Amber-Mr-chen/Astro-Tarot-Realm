@@ -1,13 +1,36 @@
 import { getCloudflareContext } from '@opennextjs/cloudflare'
 
+// 标准解读用 7B 快速模型 (~3-5秒)，深度解读用 72B 高质量模型
+const FAST_MODEL = 'Qwen/Qwen2.5-7B-Instruct'
+const DEEP_MODEL = 'Qwen/Qwen2.5-72B-Instruct'
+
+async function callSiliconFlow(prompt: string, maxTokens: number, model: string): Promise<string> {
+  const ctx = await getCloudflareContext({ async: true })
+  const apiKey = (ctx.env as any).SILICONFLOW_API_KEY
+
+  if (!apiKey) return ''
+
+  const res = await fetch('https://api.siliconflow.cn/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model,
+      messages: [{ role: 'user', content: prompt }],
+      max_tokens: maxTokens,
+      temperature: 0.7,
+    }),
+  })
+
+  if (!res.ok) return ''
+  const data = await res.json() as any
+  return data.choices?.[0]?.message?.content || ''
+}
+
 export async function generateTarotReading(cardName: string, isReversed: boolean, deep = false): Promise<string> {
   const position = isReversed ? 'REVERSED' : 'UPRIGHT'
-  const ctx = await getCloudflareContext({ async: true })
-  const ai = (ctx.env as any).AI
-
-  if (!ai) {
-    return `The ${cardName} card (${position}) brings powerful energy today. Trust your intuition and embrace the journey ahead.`
-  }
 
   const prompt = deep
     ? `You are a master tarot reader with 25 years of experience in the Rider-Waite-Smith tradition. You have deep knowledge of each card's symbolism, numerology, elemental correspondences, and psychological archetypes. You speak with quiet authority — warm, direct, and grounded in established tarot tradition. You never fabricate meanings that don't belong to a card. Every interpretation is rooted in the card's actual symbolism.
@@ -34,22 +57,13 @@ The seeker drew ${cardName} (${position}). Speak directly to them in second pers
 - Final 1 sentence: one clear, grounded action or awareness they can carry into their day.
 No asterisks, no markdown, no special formatting. Write as flowing natural prose.`
 
-  const response = await ai.run('@cf/meta/llama-3.1-8b-instruct', {
-    messages: [{ role: 'user', content: prompt }],
-    max_tokens: deep ? 900 : 350
-  })
-
-  return response.response || ''
+  const model = deep ? DEEP_MODEL : FAST_MODEL
+  const result = await callSiliconFlow(prompt, deep ? 900 : 350, model)
+  return result || `The ${cardName} card (${position}) brings powerful energy today. Trust your intuition and embrace the journey ahead.`
 }
 
 export async function generateYesNoReading(question: string, cardName: string, isReversed: boolean, deep = false): Promise<string> {
   const answer = isReversed ? 'No' : 'Yes'
-  const ctx = await getCloudflareContext({ async: true })
-  const ai = (ctx.env as any).AI
-
-  if (!ai) {
-    return `${answer}. The ${cardName} card suggests this path. Trust your inner wisdom.`
-  }
 
   const prompt = deep
     ? `You are a professional tarot counselor with 20 years of experience helping people navigate real decisions. You combine deep knowledge of tarot symbolism with practical, grounded guidance. You speak like a wise, trusted friend — direct, warm, and honest. You never fabricate card meanings or make predictions about specific future events. You focus on energy, patterns, and empowering the seeker to act with clarity.
@@ -82,27 +96,12 @@ Write 3-4 sentences (80-100 words) speaking directly to them ("you"):
 - End with one practical piece of advice they can act on today.
 No asterisks, no special symbols, no vague mystical language.`
 
-  const model = deep ? '@cf/meta/llama-3.3-70b-instruct-fp8-fast' : '@cf/meta/llama-3.1-8b-instruct'
-  const response = await ai.run(model, {
-    messages: [{ role: 'user', content: prompt }],
-    max_tokens: deep ? 700 : 250
-  })
-
-  return response.response || `${answer}. The cards have spoken.`
+  const model = deep ? DEEP_MODEL : FAST_MODEL
+  const result = await callSiliconFlow(prompt, deep ? 700 : 250, model)
+  return result || `${answer}. The cards have spoken.`
 }
 
 export async function generateHoroscope(sign: string, date: string, deep = false): Promise<string> {
-  const ctx = await getCloudflareContext({ async: true })
-  const ai = (ctx.env as any).AI
-
-  if (!ai) {
-    return JSON.stringify({
-      love: { text: "Romance is in the air today.", stars: 4 },
-      career: { text: "Focus on your goals.", stars: 3 },
-      money: { text: "Financial stability ahead.", stars: 4 }
-    })
-  }
-
   const traits = {
     Aries:       'Cardinal Fire sign ruled by Mars — bold, pioneering, energetic, competitive, direct',
     Taurus:      'Fixed Earth sign ruled by Venus — patient, sensual, reliable, stubborn, pleasure-seeking',
@@ -143,11 +142,7 @@ Each text value: 2-3 sentences. First sentence of each section must NOT start wi
 
 {"love":{"text":"2-3 sentences on ${sign}'s love energy today — specific, not generic.","stars":4},"career":{"text":"2-3 sentences on ${sign}'s work energy today.","stars":3},"money":{"text":"2-3 sentences on ${sign}'s financial energy today.","stars":4}}`
 
-  const model = '@cf/meta/llama-3.1-8b-instruct'
-  const response = await ai.run(model, {
-    messages: [{ role: 'user', content: prompt }],
-    max_tokens: deep ? 1000 : 400
-  })
-
-  return String(response.response || '{}')
+  const model = deep ? DEEP_MODEL : FAST_MODEL
+  const result = await callSiliconFlow(prompt, deep ? 1000 : 400, model)
+  return result || '{}'
 }
