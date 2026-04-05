@@ -15,9 +15,9 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://tarotrealm.xyz' },
   icons: {
     icon: [
-      { url: '/icon-192.png', type: 'image/png', sizes: '192x192' },
+      { url: '/logo.jpg', type: 'image/jpeg', sizes: '1013x415' },
     ],
-    apple: '/apple-touch-icon.png',
+    apple: '/logo.jpg',
   },
   openGraph: {
     title: 'Free Tarot Reading & Daily Horoscope | TarotRealm',
