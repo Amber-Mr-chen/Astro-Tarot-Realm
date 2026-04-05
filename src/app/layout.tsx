@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://tarotrealm.xyz' },
   icons: {
     icon: [
-      { url: '/logo.svg', type: 'image/svg+xml' },
+      { url: '/icon-192.png', type: 'image/png', sizes: '192x192' },
     ],
     apple: '/apple-touch-icon.png',
   },
