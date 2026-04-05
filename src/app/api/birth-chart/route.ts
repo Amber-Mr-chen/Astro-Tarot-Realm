@@ -98,11 +98,11 @@ export async function POST(req: NextRequest) {
     const risingK = risingSign ? SIGN_KNOWLEDGE[risingSign] : null
 
     const ctx = await getCloudflareContext({ async: true })
-    const ai = (ctx.env as any).AI
+    const apiKey = (ctx.env as any).SILICONFLOW_API_KEY
 
     let reading: Record<string, string> = buildFallback(sunSign, moonSign, risingSign, isPro)
 
-    if (ai) {
+    if (apiKey) {
       const risingBlock = risingSign && risingK
         ? `Rising Sign: ${risingSign} — ruled by ${risingK.ruler}, ${risingK.element} ${risingK.quality}. Core: ${risingK.core}.`
         : `Rising Sign: not provided (no birth time given)`
@@ -127,12 +127,13 @@ Output only these sections: ${sections}
 JSON only, nothing else:`
 
       try {
-        const response = await ai.run('@cf/meta/llama-3.1-8b-instruct', {
-          prompt,
-          max_tokens: isPro ? 1000 : 550,
-          temperature: 0.65,
+        const sfRes = await fetch('https://api.siliconflow.cn/v1/chat/completions', {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ model: 'Qwen/Qwen2.5-7B-Instruct', messages: [{ role: 'user', content: prompt }], max_tokens: isPro ? 1000 : 550, temperature: 0.65 }),
         })
-        const raw = String(response?.response ?? '')
+        const sfData = await sfRes.json() as any
+        const raw = String(sfData.choices?.[0]?.message?.content ?? '')
         const start = raw.indexOf('{')
         const end = raw.lastIndexOf('}')
 

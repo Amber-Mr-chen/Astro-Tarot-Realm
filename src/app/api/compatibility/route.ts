@@ -51,10 +51,23 @@ export async function POST(req: NextRequest) {
 
     // AI-generated reading (fresh each request for natural variation)
     const ctx = await getCloudflareContext({ async: true })
-    const ai = (ctx.env as any).AI
+    const apiKey = (ctx.env as any).SILICONFLOW_API_KEY
     let reading = { ...fallbackReading }
 
-    if (ai) {
+    const sfCall = async (prompt: string, maxTokens: number) => {
+      if (!apiKey) return null
+      try {
+        const res = await fetch('https://api.siliconflow.cn/v1/chat/completions', {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ model: 'Qwen/Qwen2.5-7B-Instruct', messages: [{ role: 'user', content: prompt }], max_tokens: maxTokens, temperature: 0.75 }),
+        })
+        const data = await res.json() as any
+        return data.choices?.[0]?.message?.content ?? null
+      } catch { return null }
+    }
+
+    if (apiKey) {
       const basePrompt = `You are a relationship astrologer with 20 years of experience in synastry. You write with authority, warmth, and specificity. You never fabricate planetary positions. You speak from the signs' archetypal nature.
 
 STRICT WRITING RULES:
@@ -89,31 +102,17 @@ CRITICAL: Output ONLY valid JSON. Every value is a plain string.`
       }
 
       if (!isPro) {
-        // Free: one call, 3 sections
         try {
-          const res = await ai.run('@cf/meta/llama-3.1-8b-instruct', {
-            prompt: basePrompt + `\nOutput ONLY these 3 sections: {"overall":"...","strength":"...","advice":"..."}\nJSON only:`,
-            max_tokens: 750,
-            temperature: 0.75,
-          })
-          parseAI(String(res?.response ?? ''), ['overall', 'strength', 'advice'])
+          const raw = await sfCall(basePrompt + `\nOutput ONLY these 3 sections: {"overall":"...","strength":"...","advice":"..."}\nJSON only:`, 750)
+          if (raw) parseAI(raw, ['overall', 'strength', 'advice'])
         } catch { /* keep fallback */ }
       } else {
-        // Pro: two parallel calls — batch 1 + batch 2
-        const [res1, res2] = await Promise.all([
-          ai.run('@cf/meta/llama-3.1-8b-instruct', {
-            prompt: basePrompt + `\nOutput ONLY these 3 sections:\n{"overall":"4-5 sentences on the overall energy and dynamic of this pairing","strength":"4-5 sentences on the greatest strength and what works best","advice":"4-5 sentences of specific astrological guidance for this pairing"}\nJSON only:`,
-            max_tokens: 850,
-            temperature: 0.75,
-          }).catch(() => null),
-          ai.run('@cf/meta/llama-3.1-8b-instruct', {
-            prompt: basePrompt + `\nOutput ONLY these 3 sections:\n{"challenge":"4-5 sentences on the key friction points and challenges","love":"4-5 sentences on romantic and emotional compatibility","work":"4-5 sentences on professional and collaborative compatibility"}\nJSON only:`,
-            max_tokens: 850,
-            temperature: 0.75,
-          }).catch(() => null),
+        const [raw1, raw2] = await Promise.all([
+          sfCall(basePrompt + `\nOutput ONLY these 3 sections:\n{"overall":"4-5 sentences on the overall energy and dynamic of this pairing","strength":"4-5 sentences on the greatest strength and what works best","advice":"4-5 sentences of specific astrological guidance for this pairing"}\nJSON only:`, 850),
+          sfCall(basePrompt + `\nOutput ONLY these 3 sections:\n{"challenge":"4-5 sentences on the key friction points and challenges","love":"4-5 sentences on romantic and emotional compatibility","work":"4-5 sentences on professional and collaborative compatibility"}\nJSON only:`, 850),
         ])
-        if (res1) parseAI(String(res1?.response ?? ''), ['overall', 'strength', 'advice'])
-        if (res2) parseAI(String(res2?.response ?? ''), ['challenge', 'love', 'work'])
+        if (raw1) parseAI(raw1, ['overall', 'strength', 'advice'])
+        if (raw2) parseAI(raw2, ['challenge', 'love', 'work'])
       }
     }
 
