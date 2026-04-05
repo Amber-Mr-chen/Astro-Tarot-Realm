@@ -233,7 +233,7 @@ export default function TarotPage() {
 
           {/* Share */}
           <div className="flex justify-center">
-            <ShareButton text={`I drew ${result.card.name} ${result.card.isReversed ? '(Reversed)' : '(Upright)'} on TarotRealm today ✨\n\n"${(result.reading ?? '').slice(0, 120)}…"\n\nGet your free reading → tarotrealm.xyz/tarot`} />
+            <ShareButton cardName={result.card.name} isReversed={result.card.isReversed} reading={result.reading ?? ''} />
           </div>
 
           {/* Upsell: Free 用户普通解读后显示预览；Pro 用户显示深度解读按钮 */}
