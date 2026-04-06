@@ -1,7 +1,7 @@
 import { getCloudflareContext } from '@opennextjs/cloudflare'
 
 // 标准解读用 7B 快速模型 (~3-5秒)，深度解读用 72B 高质量模型
-const FAST_MODEL = 'Qwen/Qwen2.5-7B-Instruct'
+const FAST_MODEL = 'Qwen/Qwen2.5-72B-Instruct'
 const DEEP_MODEL = 'Qwen/Qwen2.5-72B-Instruct'
 
 async function callSiliconFlow(prompt: string, maxTokens: number, model: string): Promise<string> {

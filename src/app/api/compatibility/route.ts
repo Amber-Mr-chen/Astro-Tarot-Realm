@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
         const res = await fetch('https://api.siliconflow.cn/v1/chat/completions', {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ model: 'Qwen/Qwen2.5-7B-Instruct', messages: [{ role: 'user', content: prompt }], max_tokens: maxTokens, temperature: 0.75 }),
+          body: JSON.stringify({ model: 'Qwen/Qwen2.5-72B-Instruct', messages: [{ role: 'user', content: prompt }], max_tokens: maxTokens, temperature: 0.75 }),
         })
         const data = await res.json() as any
         return data.choices?.[0]?.message?.content ?? null

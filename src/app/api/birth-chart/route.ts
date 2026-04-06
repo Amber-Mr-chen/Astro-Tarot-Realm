@@ -130,7 +130,7 @@ JSON only, nothing else:`
         const sfRes = await fetch('https://api.siliconflow.cn/v1/chat/completions', {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ model: 'Qwen/Qwen2.5-7B-Instruct', messages: [{ role: 'user', content: prompt }], max_tokens: isPro ? 1000 : 550, temperature: 0.65 }),
+          body: JSON.stringify({ model: 'Qwen/Qwen2.5-72B-Instruct', messages: [{ role: 'user', content: prompt }], max_tokens: isPro ? 1000 : 550, temperature: 0.65 }),
         })
         const sfData = await sfRes.json() as any
         const raw = String(sfData.choices?.[0]?.message?.content ?? '')

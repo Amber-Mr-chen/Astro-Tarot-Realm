@@ -129,7 +129,7 @@ export async function POST(req: NextRequest) {
           const sfRes = await fetch('https://api.siliconflow.cn/v1/chat/completions', {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${apiKey2}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ model: 'Qwen/Qwen2.5-7B-Instruct', messages: [{ role: 'user', content: `Analyze ONLY for severe suicidal ideation or self-harm intent. Ignore casual questions about daily activities. Reply ONLY "CRISIS" if the person expresses desire to die, self-harm, or believes they shouldn't exist. Reply "SAFE" for everything else. Question: "${question}"` }], max_tokens: 5 }),
+            body: JSON.stringify({ model: 'Qwen/Qwen2.5-72B-Instruct', messages: [{ role: 'user', content: `Analyze ONLY for severe suicidal ideation or self-harm intent. Ignore casual questions about daily activities. Reply ONLY "CRISIS" if the person expresses desire to die, self-harm, or believes they shouldn't exist. Reply "SAFE" for everything else. Question: "${question}"` }], max_tokens: 5 }),
           })
           const sfData = await sfRes.json() as any
           const semanticResult = sfData.choices?.[0]?.message?.content ?? ''
