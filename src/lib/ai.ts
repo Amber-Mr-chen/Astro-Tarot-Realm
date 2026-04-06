@@ -133,14 +133,16 @@ STRICT WRITING RULES — follow every one:
     ? `You are a seasoned astrologer who has read charts for 20 years. You write horoscopes that feel alive — specific, grounded, occasionally surprising. You speak from the sign's archetypal energy, never from made-up planetary data.
 ${styleRules}
 
-Write a deep daily horoscope for ${sign} (${signInfo}) for ${date}. Each text value: 3-4 sentences. Output ONLY valid JSON, nothing else before or after.
+Write a deep daily horoscope for ${sign} (${signInfo}) for ${date}. 
+Each section MUST be 80-120 words.
+Output ONLY valid JSON, nothing else before or after.
 
-{"energy":{"text":"3-4 sentences — the dominant energy ${sign} carries today, what it feels like, how it shapes the day. First sentence must NOT start with the sign name.","stars":4},"love":{"text":"3-4 sentences — love and relationships through the lens of ${sign}'s actual emotional nature today.","stars":4},"career":{"text":"3-4 sentences — work and ambitions, grounded in what ${sign} is built for and where they struggle.","stars":3},"money":{"text":"3-4 sentences — financial energy and practical decisions, specific to ${sign}'s relationship with resources.","stars":3},"advice":{"text":"3-4 sentences — direct, actionable guidance that speaks to ${sign}'s real strengths and blind spots today.","stars":5}}`
-    : `You are a working astrologer. Write a short, vivid daily horoscope for ${sign} (${signInfo}) for ${date}.
+{"energy":{"text":"Detailed paragraph — the dominant energy ${sign} carries today, what it feels like, how it shapes the day. First sentence must NOT start with the sign name.","stars":4},"love":{"text":"Detailed paragraph — love and relationships through the lens of ${sign}'s actual emotional nature today.","stars":4},"career":{"text":"Detailed paragraph — work and ambitions, grounded in what ${sign} is built for and where they struggle.","stars":3},"money":{"text":"Detailed paragraph — financial energy and practical decisions, specific to ${sign}'s relationship with resources.","stars":3},"advice":{"text":"Detailed paragraph — direct, actionable guidance that speaks to ${sign}'s real strengths and blind spots today.","stars":5}}`
+    : `You are a working astrologer. Write a vivid, detailed daily horoscope for ${sign} (${signInfo}) for ${date}.
 ${styleRules}
-Each text value: 2-3 sentences. First sentence of each section must NOT start with the sign name. Output ONLY valid JSON, nothing else.
+Each section MUST be 60-100 words. Output ONLY valid JSON, nothing else.
 
-{"love":{"text":"2-3 sentences on ${sign}'s love energy today — specific, not generic.","stars":4},"career":{"text":"2-3 sentences on ${sign}'s work energy today.","stars":3},"money":{"text":"2-3 sentences on ${sign}'s financial energy today.","stars":4}}`
+{"love":{"text":"Detailed analysis of ${sign}'s love energy today — include specific advice and a 'watch out for' point.","stars":4},"career":{"text":"Detailed analysis of ${sign}'s work energy today — include concrete professional guidance.","stars":3},"money":{"text":"Detailed analysis of ${sign}'s financial energy today — include practical money tips.","stars":4}}`
 
   const model = deep ? DEEP_MODEL : FAST_MODEL
   const result = await callSiliconFlow(prompt, deep ? 1000 : 400, model)
