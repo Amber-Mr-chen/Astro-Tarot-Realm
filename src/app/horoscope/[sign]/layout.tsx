@@ -63,9 +63,37 @@ export default async function SignLayout({ children, params }: { children: React
     ],
   }
 
+  // Breadcrumb + Article schema for richer SERP
+  const slug = sign.toLowerCase()
+  const articleSchema = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Horoscope', item: 'https://tarotrealm.xyz/horoscope' },
+          { '@type': 'ListItem', position: 2, name: name }
+        ]
+      },
+      {
+        '@type': 'Article',
+        '@id': `https://tarotrealm.xyz/horoscope/${slug}#article`,
+        mainEntityOfPage: `https://tarotrealm.xyz/horoscope/${slug}`,
+        headline: `${name} Zodiac Sign: Traits, Compatibility, Love & Career Guidance`,
+        description: `Discover the ${name} zodiac sign (${dates}): ${element.toLowerCase()} traits, love and compatibility, career strengths, and practical guidance. Explore your daily horoscope and tarot insights.`,
+        image: `https://tarotrealm.xyz/og-image.png`,
+        dateModified: new Date().toISOString(),
+        author: { '@type': 'Organization', name: 'TarotRealm' },
+        publisher: { '@type': 'Organization', name: 'TarotRealm', logo: { '@type': 'ImageObject', url: 'https://tarotrealm.xyz/logo.png' } },
+        articleSection: ['Personality', 'Love & Relationships', 'Career & Money', 'Health & Wellness', 'Tarot for Sign', 'Compatibility']
+      }
+    ]
+  }
+
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
       {children}
     </>
   )
