@@ -1,3 +1,12 @@
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Privacy Policy | TarotRealm',
+  description: 'Read the TarotRealm privacy policy and learn how we handle account, payment, and reading data.',
+  alternates: { canonical: 'https://tarotrealm.xyz/privacy' },
+  robots: { index: true, follow: true },
+}
+
 export default function PrivacyPage() {
   return (
     <main className="min-h-screen px-6 py-16 max-w-3xl mx-auto">

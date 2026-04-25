@@ -1,3 +1,12 @@
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Terms of Service | TarotRealm',
+  description: 'Read the TarotRealm terms of service for using our tarot, horoscope, birth chart, and compatibility tools.',
+  alternates: { canonical: 'https://tarotrealm.xyz/terms' },
+  robots: { index: true, follow: true },
+}
+
 export default function TermsPage() {
   return (
     <main className="min-h-screen px-6 py-16 max-w-3xl mx-auto">

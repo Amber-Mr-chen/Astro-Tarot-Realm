@@ -18,8 +18,8 @@ export async function GET() {
     { url: '/birth-chart',   priority: '0.8', changefreq: 'weekly' },
     { url: '/compatibility', priority: '0.8', changefreq: 'weekly' },
     { url: '/pricing',      priority: '0.7', changefreq: 'monthly' },
-    { url: '/terms',        priority: '0.3', changefreq: 'monthly' },
-    { url: '/privacy',      priority: '0.3', changefreq: 'monthly' },
+    { url: '/terms',        priority: '0.3', changefreq: 'yearly' },
+    { url: '/privacy',      priority: '0.3', changefreq: 'yearly' },
   ]
 
   const signPages = ZODIAC_SIGNS.map(sign => ({
